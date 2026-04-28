@@ -1,0 +1,258 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/icons/tab_close_normal.svg</file>
+        <file>res/icons/tab_close_active.svg</file>
+        <file>res/icons/tab_close_hover.svg</file>
+        <file alias="message_error.svg">res/icons/message_error.svg</file>
+        <file alias="message_info.svg">res/icons/message_info.svg</file>
+        <file alias="message_confirm.svg">res/icons/message_confirm.svg</file>
+        <file alias="message_warn.svg">res/icons/message_warn.svg</file>
+        <file alias="loading.svg">res/icons/loading.svg</file>
+        <file alias="loading_light.svg">res/icons/loading_light.svg</file>
+        <file alias="loading_finished.svg">res/icons/loading_finished.svg</file>
+        <file alias="loading_finished_light.svg">res/icons/loading_finished_light.svg</file>
+        <file alias="close.svg">res/icons/title/close.svg</file>
+        <file alias="close_light.svg">res/icons/title/close_light.svg</file>
+        <file alias="minimize.svg">res/icons/title/minimize.svg</file>
+        <file alias="minimize_light.svg">res/icons/title/minimize_light.svg</file>
+        <file alias="maximize.svg">res/icons/title/maximize.svg</file>
+        <file alias="maximize_light.svg">res/icons/title/maximize_light.svg</file>
+        <file alias="restore.svg">res/icons/title/restore.svg</file>
+        <file alias="restore_light.svg">res/icons/title/restore_light.svg</file>
+        <file alias="close_unix_normal.svg">res/icons/title/close_unix_normal.svg</file>
+        <file alias="close_unix_hover.svg">res/icons/title/close_unix_hover.svg</file>
+        <file alias="close_unix_pressed.svg">res/icons/title/close_unix_pressed.svg</file>
+        <file alias="minimize_unix_normal.svg">res/icons/title/minimize_unix_normal.svg</file>
+        <file alias="minimize_unix_hover.svg">res/icons/title/minimize_unix_hover.svg</file>
+        <file alias="minimize_unix_pressed.svg">res/icons/title/minimize_unix_pressed.svg</file>
+        <file alias="maximize_unix_normal.svg">res/icons/title/maximize_unix_normal.svg</file>
+        <file alias="maximize_unix_hover.svg">res/icons/title/maximize_unix_hover.svg</file>
+        <file alias="maximize_unix_pressed.svg">res/icons/title/maximize_unix_pressed.svg</file>
+        <file alias="restore_unix_normal.svg">res/icons/title/restore_unix_normal.svg</file>
+        <file alias="restore_unix_hover.svg">res/icons/title/restore_unix_hover.svg</file>
+        <file alias="restore_unix_pressed.svg">res/icons/title/restore_unix_pressed.svg</file>
+        <file alias="close_unix_normal_light.svg">res/icons/title/close_unix_normal_light.svg</file>
+        <file alias="close_unix_hover_light.svg">res/icons/title/close_unix_hover_light.svg</file>
+        <file alias="close_unix_pressed_light.svg">res/icons/title/close_unix_pressed_light.svg</file>
+        <file alias="minimize_unix_normal_light.svg">res/icons/title/minimize_unix_normal_light.svg</file>
+        <file alias="minimize_unix_hover_light.svg">res/icons/title/minimize_unix_hover_light.svg</file>
+        <file alias="minimize_unix_pressed_light.svg">res/icons/title/minimize_unix_pressed_light.svg</file>
+        <file alias="maximize_unix_normal_light.svg">res/icons/title/maximize_unix_normal_light.svg</file>
+        <file alias="maximize_unix_hover_light.svg">res/icons/title/maximize_unix_hover_light.svg</file>
+        <file alias="maximize_unix_pressed_light.svg">res/icons/title/maximize_unix_pressed_light.svg</file>
+        <file alias="restore_unix_normal_light.svg">res/icons/title/restore_unix_normal_light.svg</file>
+        <file alias="restore_unix_hover_light.svg">res/icons/title/restore_unix_hover_light.svg</file>
+        <file alias="restore_unix_pressed_light.svg">res/icons/title/restore_unix_pressed_light.svg</file>
+        <file alias="close_kde_normal.svg">res/icons/title/close_kde_normal.svg</file>
+        <file alias="close_kde_hover.svg">res/icons/title/close_kde_hover.svg</file>
+        <file alias="close_kde_pressed.svg">res/icons/title/close_kde_pressed.svg</file>
+        <file alias="minimize_kde_normal.svg">res/icons/title/minimize_kde_normal.svg</file>
+        <file alias="minimize_kde_hover.svg">res/icons/title/minimize_kde_hover.svg</file>
+        <file alias="minimize_kde_pressed.svg">res/icons/title/minimize_kde_pressed.svg</file>
+        <file alias="maximize_kde_normal.svg">res/icons/title/maximize_kde_normal.svg</file>
+        <file alias="maximize_kde_hover.svg">res/icons/title/maximize_kde_hover.svg</file>
+        <file alias="maximize_kde_pressed.svg">res/icons/title/maximize_kde_pressed.svg</file>
+        <file alias="restore_kde_normal.svg">res/icons/title/restore_kde_normal.svg</file>
+        <file alias="restore_kde_hover.svg">res/icons/title/restore_kde_hover.svg</file>
+        <file alias="restore_kde_pressed.svg">res/icons/title/restore_kde_pressed.svg</file>
+        <file alias="close_kde_normal_light.svg">res/icons/title/close_kde_normal_light.svg</file>
+        <file alias="close_kde_hover_light.svg">res/icons/title/close_kde_hover_light.svg</file>
+        <file alias="close_kde_pressed_light.svg">res/icons/title/close_kde_pressed_light.svg</file>
+        <file alias="minimize_kde_normal_light.svg">res/icons/title/minimize_kde_normal_light.svg</file>
+        <file alias="minimize_kde_hover_light.svg">res/icons/title/minimize_kde_hover_light.svg</file>
+        <file alias="minimize_kde_pressed_light.svg">res/icons/title/minimize_kde_pressed_light.svg</file>
+        <file alias="maximize_kde_normal_light.svg">res/icons/title/maximize_kde_normal_light.svg</file>
+        <file alias="maximize_kde_hover_light.svg">res/icons/title/maximize_kde_hover_light.svg</file>
+        <file alias="maximize_kde_pressed_light.svg">res/icons/title/maximize_kde_pressed_light.svg</file>
+        <file alias="restore_kde_normal_light.svg">res/icons/title/restore_kde_normal_light.svg</file>
+        <file alias="restore_kde_hover_light.svg">res/icons/title/restore_kde_hover_light.svg</file>
+        <file alias="restore_kde_pressed_light.svg">res/icons/title/restore_kde_pressed_light.svg</file>
+        <file alias="menu_indicator_normal.svg">res/icons/menu_indicator_normal.svg</file>
+        <file alias="menu_indicator_hover.svg">res/icons/menu_indicator_hover.svg</file>
+        <file alias="menu_indicator_pressed.svg">res/icons/menu_indicator_pressed.svg</file>
+        <file alias="menu_indicator_normal_light.svg">res/icons/menu_indicator_normal_light.svg</file>
+        <file alias="menu_indicator_hover_light.svg">res/icons/menu_indicator_hover_light.svg</file>
+        <file alias="menu_indicator_pressed_light.svg">res/icons/menu_indicator_pressed_light.svg</file>
+        <file alias="menu_indicator_undef.svg">res/icons/menu_indicator_undef.svg</file>
+        <file>res/icons/radiobox.png</file>
+        <file alias="radiobox_1.25x.png">res/icons/radiobox@1.25x.png</file>
+        <file alias="radiobox_1.5x.png">res/icons/radiobox@1.5x.png</file>
+        <file alias="radiobox_1.75x.png">res/icons/radiobox@1.75x.png</file>
+        <file alias="radiobox_2x.png">res/icons/radiobox@2x.png</file>
+        <file>res/icons/checkbox.png</file>
+        <file alias="checkbox_1.25x.png">res/icons/checkbox@1.25x.png</file>
+        <file alias="checkbox_1.5x.png">res/icons/checkbox@1.5x.png</file>
+        <file alias="checkbox_1.75x.png">res/icons/checkbox@1.75x.png</file>
+        <file alias="checkbox_2x.png">res/icons/checkbox@2x.png</file>
+        <file>res/icons/arrow_down.png</file>
+        <file alias="arrow_down_dark.png">res/icons/arrow_down_dark.png</file>
+        <file alias="arrow_down_1.25x.png">res/icons/arrow_down@1.25x.png</file>
+        <file alias="arrow_down_1.5x.png">res/icons/arrow_down@1.5x.png</file>
+        <file alias="arrow_down_1.75x.png">res/icons/arrow_down@1.75x.png</file>
+        <file alias="arrow_down_2x.png">res/icons/arrow_down@2x.png</file>
+        <file alias="app.ico">res/icons/desktopeditors.ico</file>
+        <file>res/icons/splash.svg</file>
+        <file alias="logo_light.svg">res/icons/logo_light.svg</file>
+        <file alias="logo_light.png">res/icons/logo_light.png</file>
+        <file alias="logo_light_1.25x.png">res/icons/logo_light@1.25x.png</file>
+        <file alias="logo_light_1.5x.png">res/icons/logo_light@1.5x.png</file>
+        <file alias="logo_light_1.75x.png">res/icons/logo_light@1.75x.png</file>
+        <file alias="logo_dark.svg">res/icons/logo_dark.svg</file>
+        <file alias="logo_dark.png">res/icons/logo_dark.png</file>
+        <file alias="logo_dark_1.25x.png">res/icons/logo_dark@1.25x.png</file>
+        <file alias="logo_dark_1.5x.png">res/icons/logo_dark@1.5x.png</file>
+        <file alias="logo_dark_1.75x.png">res/icons/logo_dark@1.75x.png</file>
+    </qresource>
+    <qresource prefix="/tabbar/icons">
+        <file alias="de.svg">res/icons/tabbar/tabicon_de_normal.svg</file>
+        <file alias="pdf-form.svg">res/icons/tabbar/tabicon_pdf_normal.svg</file>
+        <file alias="pe.svg">res/icons/tabbar/tabicon_pe_normal.svg</file>
+        <file alias="se.svg">res/icons/tabbar/tabicon_se_normal.svg</file>
+        <file alias="ve.svg">res/icons/tabbar/tabicon_ve_normal.svg</file>
+        <file alias="pdf.svg">res/icons/tabbar/tabicon_pdf_normal.svg</file>
+        <file alias="portal.svg">res/icons/tabbar/portal.svg</file>
+        <file alias="portal_light.svg">res/icons/tabbar/portal_light.svg</file>
+        <file alias="newdoc.svg">res/icons/tabbar/tabicon_undefined.svg</file>
+        <file alias="loader.svg">res/icons/tabbar/loading.svg</file>
+        <file alias="close_normal.svg">res/icons/tabbar/tab_close_normal_dark.svg</file>
+        <file alias="close_hover.svg">res/icons/tabbar/tab_close_hover_dark.svg</file>
+        <file alias="close_pressed.svg">res/icons/tabbar/tab_close_pressed_dark.svg</file>
+        <file alias="close_active_normal.svg">res/icons/tabbar/tab_close_normal_light.svg</file>
+        <file alias="close_active_hover.svg">res/icons/tabbar/tab_close_hover_light.svg</file>
+        <file alias="close_active_pressed.svg">res/icons/tabbar/tab_close_pressed_light.svg</file>
+        <file alias="scrolltab_ln_light.svg">res/icons/tabbar/scroll_left_normal_light.svg</file>
+        <file alias="scrolltab_ld_light.svg">res/icons/tabbar/scroll_left_disabled_light.svg</file>
+        <file alias="scrolltab_lh_light.svg">res/icons/tabbar/scroll_left_hover_light.svg</file>
+        <file alias="scrolltab_lp_light.svg">res/icons/tabbar/scroll_left_pressed_light.svg</file>
+        <file alias="scrolltab_rn_light.svg">res/icons/tabbar/scroll_right_normal_light.svg</file>
+        <file alias="scrolltab_rd_light.svg">res/icons/tabbar/scroll_right_disabled_light.svg</file>
+        <file alias="scrolltab_rh_light.svg">res/icons/tabbar/scroll_right_hover_light.svg</file>
+        <file alias="scrolltab_rp_light.svg">res/icons/tabbar/scroll_right_pressed_light.svg</file>
+        <file alias="scrolltab_ln.svg">res/icons/tabbar/scroll_left_normal.svg</file>
+        <file alias="scrolltab_ld.svg">res/icons/tabbar/scroll_left_disabled.svg</file>
+        <file alias="scrolltab_lh.svg">res/icons/tabbar/scroll_left_hover.svg</file>
+        <file alias="scrolltab_lp.svg">res/icons/tabbar/scroll_left_pressed.svg</file>
+        <file alias="scrolltab_rn.svg">res/icons/tabbar/scroll_right_normal.svg</file>
+        <file alias="scrolltab_rd.svg">res/icons/tabbar/scroll_right_disabled.svg</file>
+        <file alias="scrolltab_rh.svg">res/icons/tabbar/scroll_right_hover.svg</file>
+        <file alias="scrolltab_rp.svg">res/icons/tabbar/scroll_right_pressed.svg</file>
+    </qresource>
+    <qresource prefix="/title/icons">
+        <file alias="buttons.svg">res/icons/webeditor/buttons.svg</file>
+        <file alias="secure.svg">res/icons/webeditor/secureicon.svg</file>
+    </qresource>
+    <qresource prefix="/menu/icons">
+        <file alias="iconssmall_1x.png">res/icons/menu/iconssmall.png</file>
+        <file alias="iconssmall_1.25x.png">res/icons/menu/iconssmall@1.25x.png</file>
+        <file alias="iconssmall_1.5x.png">res/icons/menu/iconssmall@1.5x.png</file>
+        <file alias="iconssmall_1.75x.png">res/icons/menu/iconssmall@1.75x.png</file>
+        <file alias="iconssmall_2x.png">res/icons/menu/iconssmall@2x.png</file>
+        <file alias="iconssmall_2.5x.svg">res/icons/menu/iconssmall@2.5x.svg</file>
+    </qresource>
+    <qresource prefix="/styles">
+        <file alias="styles.qss">res/styles/styles.qss</file>
+        <file alias="styles_unix.qss">res/styles/styles_unix.qss</file>
+        <file alias="editor.qss">res/styles/editor.qss</file>
+        <file alias="editor_unix.qss">res/styles/editor_unix.qss</file>
+        <file alias="message.qss">res/styles/message.qss</file>
+        <file alias="tabbar.qss">res/styles/tabbar.qss</file>
+        <file alias="download.qss">res/styles/download.qss</file>
+        <file alias="openssl.qss">res/styles/openssl.qss</file>
+    </qresource>
+    <qresource prefix="/styles@1.5x">
+        <file alias="styles.qss">res/styles/styles@1.5x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@1.25x">
+        <file alias="styles.qss">res/styles/styles@1.25x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@1.75x">
+        <file alias="styles.qss">res/styles/styles@1.75x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@2x">
+        <file alias="styles.qss">res/styles/styles@2x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@2.25x">
+        <file alias="styles.qss">res/styles/styles@2.25x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@2.5x">
+        <file alias="styles.qss">res/styles/styles@2.5x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@2.75x">
+        <file alias="styles.qss">res/styles/styles@2.75x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@3x">
+        <file alias="styles.qss">res/styles/styles@3x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@3.5x">
+        <file alias="styles.qss">res/styles/styles@3.5x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@4x">
+        <file alias="styles.qss">res/styles/styles@4x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@4.5x">
+        <file alias="styles.qss">res/styles/styles@4.5x.qss</file>
+    </qresource>
+    <qresource prefix="/styles@5x">
+        <file alias="styles.qss">res/styles/styles@5x.qss</file>
+    </qresource>
+    <qresource prefix="/i18n">
+        <file alias="ar-SA.qm">langs/ar_SA.qm</file>
+        <file alias="be-BY.qm">langs/be.qm</file>
+        <file alias="bg-BG.qm">langs/bg.qm</file>
+        <file alias="ca-ES.qm">langs/ca.qm</file>
+        <file alias="cs-CZ.qm">langs/cs.qm</file>
+        <file alias="da-DK.qm">langs/da.qm</file>
+        <file alias="de-DE.qm">langs/de.qm</file>
+        <file alias="el-GR.qm">langs/el_GR.qm</file>
+        <file alias="en-US.qm">langs/en.qm</file>
+        <file alias="en-GB.qm">langs/en_GB.qm</file>
+        <file alias="es-ES.qm">langs/es.qm</file>
+        <file alias="et-EE.qm">langs/et.qm</file>
+        <file alias="fi-FI.qm">langs/fi.qm</file>
+        <file alias="fr-FR.qm">langs/fr.qm</file>
+        <file alias="ga-IE.qm">langs/ga.qm</file>
+        <file alias="gl-ES.qm">langs/gl.qm</file>
+        <file alias="he-IL.qm">langs/he.qm</file>
+        <file alias="hi-IN.qm">langs/hi.qm</file>
+        <file alias="hr-HR.qm">langs/hr.qm</file>
+        <file alias="hu-HU.qm">langs/hu.qm</file>
+        <file alias="hy-AM.qm">langs/hy.qm</file>
+        <file alias="id-ID.qm">langs/id.qm</file>
+        <file alias="it-IT.qm">langs/it_IT.qm</file>
+        <file alias="ja-JP.qm">langs/ja.qm</file>
+        <file alias="ko-KR.qm">langs/ko.qm</file>
+        <file alias="lo-LA.qm">langs/lo.qm</file>
+        <file alias="lt-LT.qm">langs/lt.qm</file>
+        <file alias="lv-LV.qm">langs/lv.qm</file>
+        <file alias="nl-NL.qm">langs/nl.qm</file>
+        <file alias="no-NO.qm">langs/no.qm</file>
+        <file alias="pl-PL.qm">langs/pl.qm</file>
+        <file alias="pt-BR.qm">langs/pt_BR.qm</file>
+        <file alias="pt-PT.qm">langs/pt_PT.qm</file>
+        <file alias="ro-RO.qm">langs/ro.qm</file>
+        <file alias="ru-RU.qm">langs/ru.qm</file>
+        <file alias="si-LK.qm">langs/si.qm</file>
+        <file alias="sk-SK.qm">langs/sk.qm</file>
+        <file alias="sl-SI.qm">langs/sl.qm</file>
+        <file alias="sq-AL.qm">langs/sq.qm</file>
+        <file alias="sr-Latn-RS.qm">langs/sr_Latn_RS.qm</file>
+        <file alias="sr-Cyrl-RS.qm">langs/sr_Cyrl_RS.qm</file>
+        <file alias="sv-SE.qm">langs/sv.qm</file>
+        <file alias="tr-TR.qm">langs/tr.qm</file>
+        <file alias="uk-UA.qm">langs/uk.qm</file>
+        <file alias="ur-PK.qm">langs/ur.qm</file>
+        <file alias="vi-VN.qm">langs/vi.qm</file>
+        <file alias="zh-CN.qm">langs/zh_CN.qm</file>
+        <file alias="zh-TW.qm">langs/zh_TW.qm</file>
+        <file alias="qtbase_ru-RU.qm">langs/qtbase_ru.qm</file>
+    </qresource>
+    <qresource prefix="/themes">
+        <file alias="theme-light.json">res/styles/theme-light.json</file>
+        <file alias="theme-classic-light.json">res/styles/theme-classic-light.json</file>
+        <file alias="theme-dark.json">res/styles/theme-dark.json</file>
+        <file alias="theme-contrast-dark.json">res/styles/theme-contrast-dark.json</file>
+        <file alias="theme-gray.json">res/styles/theme-gray.json</file>
+        <file alias="theme-white.json">res/styles/theme-white.json</file>
+        <file alias="theme-night.json">res/styles/theme-night.json</file>
+    </qresource>
+</RCC>

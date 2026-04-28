@@ -1,0 +1,244 @@
+
+:root {
+    .theme-contrast-dark {
+        --toolbar-header-document: #1e1e1e;
+        --toolbar-header-spreadsheet: #1e1e1e;
+        --toolbar-header-presentation: #1e1e1e;
+        --toolbar-header-pdf: #1e1e1e;
+        --toolbar-header-visio: #1e1e1e;
+
+        --text-toolbar-header-on-background-document: #2a2a2a;
+        --text-toolbar-header-on-background-spreadsheet: #2a2a2a;
+        --text-toolbar-header-on-background-presentation: #2a2a2a;
+        --text-toolbar-header-on-background-pdf: #2a2a2a;
+        --text-toolbar-header-on-background-visio: #2a2a2a;
+
+        --background-normal: #212121;
+        --background-toolbar: #2a2a2a;
+        --background-toolbar-tab: var(--background-toolbar);
+        --background-toolbar-additional: #2a2a2a;
+        --background-primary-dialog-button: #E6E6E6;
+        --background-accent-button: #4d76a8;
+        --background-notification-popover: #5f5d81;
+        --background-notification-badge: #ffd112;
+        --background-scrim: fade(black, 60%);
+        --background-loader: fade(#121212, 95%);
+        --background-alt-key-hint: #FFD938;
+        --background-contrast-popover: #121212;
+        --background-fill-button: #ffd112;
+        --background-pane: var(--background-toolbar);
+        --background-pane-additional: var(--background-pane);
+
+        --highlight-button-hover: #424242;
+        --highlight-button-pressed: #666666;
+        --highlight-button-pressed-hover: #828282;
+        --highlight-primary-dialog-button-hover: #a6a6a6;
+        --highlight-primary-dialog-button-pressed: var(--highlight-primary-dialog-button-hover);
+        --highlight-header-button-hover: fade(#fff, 20%);
+        --highlight-header-button-pressed: fade(#fff, 35%);
+        --highlight-text-select: #96c8fd;
+        --highlight-fill-button-hover: #ffe165;
+        --highlight-fill-button-pressed: #dfb500;
+
+        --border-toolbar: #616161;
+        --border-divider: #414141;
+        --border-toolbar-active-panel-top: var(--border-toolbar);
+        --border-toolbar-active-tab: var(--border-toolbar);
+        --border-regular-control: #696969;
+        --border-preview-hover: #828282;
+        --border-preview-select: #888;
+        --border-control-focus: #b8b8b8;
+        --border-color-shading: fade(#fff, 15%);
+        --border-contrast-popover: #616161;
+        --border-button-pressed-focus: #b8b8b8;
+
+        --text-normal: #e8e8e8;
+        --text-normal-pressed: #e8e8e8;
+        --text-secondary: #b8b8b8;
+        --text-tertiary: #888888;
+        --text-link: #ffd78c;
+        --text-link-hover: #ffd78c;
+        --text-link-active: #ffd78c;
+        --text-link-visited: #ffd78c;
+        --text-inverse: #121212;
+        --text-toolbar-header: #e8e8e8;
+        --text-contrast-background: #fff;
+        --text-alt-key-hint: #121212;
+
+        --icon-normal: #e8e8e8;
+        --icon-normal-pressed: #e8e8e8;
+        --icon-toolbar-header: #d0d0d0;
+        --icon-success: #090;
+
+        --highlight-header-tab-underline-document: var(--text-toolbar-header);
+        --highlight-header-tab-underline-spreadsheet: var(--text-toolbar-header);
+        --highlight-header-tab-underline-presentation: var(--text-toolbar-header);
+        --highlight-header-tab-underline-pdf: var(--text-toolbar-header);
+        --highlight-header-tab-underline-visio: var(--text-toolbar-header);
+
+        --highlight-toolbar-tab-underline-document: var(--text-toolbar-header);
+        --highlight-toolbar-tab-underline-spreadsheet: var(--text-toolbar-header);
+        --highlight-toolbar-tab-underline-presentation: var(--text-toolbar-header);
+        --highlight-toolbar-tab-underline-pdf: var(--text-toolbar-header);
+        --highlight-toolbar-tab-underline-visio: var(--text-toolbar-header);
+
+        // Canvas
+
+        --canvas-background: #121212;
+        --canvas-content-background: #fff;
+        --canvas-page-border: #616161;
+
+        --canvas-ruler-background: #414141;
+        --canvas-ruler-border: #616161;
+        --canvas-ruler-margins-background: #1e1e1e;
+        --canvas-ruler-mark: #d0d0d0;
+        --canvas-ruler-handle-border: #b8b8b8;
+        --canvas-ruler-handle-border-disabled: #717171;
+
+        --canvas-high-contrast: #c3c3c3;
+        --canvas-high-contrast-disabled: #7d7d7d;
+
+        --canvas-cell-title-text: #e8e8e8;
+        --canvas-cell-title-background: #1d1d1d;
+        --canvas-cell-title-background-hover: #303030;
+        --canvas-cell-title-background-selected: #3d3d3d;
+        --canvas-cell-title-border: #616161;
+        --canvas-cell-title-border-hover: #a0a0a0;
+        --canvas-cell-title-border-selected: #888888;
+
+        --canvas-dark-cell-title: #55B27B;
+        --canvas-dark-cell-title-hover: #7AFFAF;
+        --canvas-dark-cell-title-selected: #6EE59F;
+        --canvas-dark-cell-title-border: #717171;
+        --canvas-dark-cell-title-border-hover: #a0a0a0;
+        --canvas-dark-cell-title-border-selected: #b8b8b8;
+
+        --canvas-scroll-thumb: #2a2a2a;
+        --canvas-scroll-thumb-hover: #424242;
+        --canvas-scroll-thumb-pressed: #4d4d4d;
+        --canvas-scroll-thumb-border: #616161;
+        --canvas-scroll-thumb-border-hover: #616161;
+        --canvas-scroll-thumb-border-pressed: #616161;
+        --canvas-scroll-arrow: #7d7d7d;
+        --canvas-scroll-arrow-hover: #8c8c8c;
+        --canvas-scroll-arrow-pressed: #999999;
+        --canvas-scroll-thumb-target: #717171;
+        --canvas-scroll-thumb-target-hover: #8c8c8c;
+        --canvas-scroll-thumb-target-pressed: #999999;
+
+        --canvas-sheet-view-cell-background: #73bf91;
+        --canvas-sheet-view-cell-background-hover: #97e3b6;
+        --canvas-sheet-view-cell-background-pressed: #aaffcc;
+        --canvas-sheet-view-cell-title-label: #121212;
+        --canvas-sheet-view-select-all-icon: #3d664e;
+
+        --canvas-select-all-icon: #7d7d7d;
+
+        --canvas-anim-pane-background: #2a2a2a;
+        --canvas-anim-pane-item-fill-selected: #666666;
+        --canvas-anim-pane-item-fill-hovered: #424242;
+        --canvas-anim-pane-button-fill: #424242;
+        --canvas-anim-pane-button-fill-hovered: #424242;
+        --canvas-anim-pane-button-fill-disabled: fade(#424242, 40%);
+        --canvas-anim-pane-play-button-fill: #fff;
+        --canvas-anim-pane-play-button-outline: #696969;
+        --canvas-anim-pane-effect-bar-entrance-fill: #77b583;
+        --canvas-anim-pane-effect-bar-entrance-outline: #0e8a26;
+        --canvas-anim-pane-effect-bar-emphasis-fill: #fbc37c;
+        --canvas-anim-pane-effect-bar-emphasis-outline: #ff8e00;
+        --canvas-anim-pane-effect-bar-exit-fill: #f59a9a;
+        --canvas-anim-pane-effect-bar-exit-outline: #f23d3d;
+        --canvas-anim-pane-effect-bar-path-fill: #a1cee3;
+        --canvas-anim-pane-effect-bar-path-outline: #254662;
+        --canvas-anim-pane-timeline-ruler-outline: #616161;
+        --canvas-anim-pane-timeline-ruler-tick: #414141;
+
+        --canvas-anim-pane-timeline-scroller-fill: #666666;
+        --canvas-anim-pane-timeline-scroller-outline: #e8e8e8;
+        --canvas-anim-pane-timeline-scroller-opacity: 0;
+        --canvas-anim-pane-timeline-scroller-opacity-hovered: .4;
+        --canvas-anim-pane-timeline-scroller-opacity-active: 1;
+
+        // Others
+
+        --button-small-normal-icon-offset-x: -20px;
+        --button-small-active-icon-offset-x: -20px;
+        --button-large-normal-icon-offset-x: -31px;
+        --button-large-active-icon-offset-x: -31px;
+        --button-huge-normal-icon-offset-x: -40px;
+        --button-huge-active-icon-offset-x: -40px;
+        --button-xhuge-normal-icon-offset-x: -28px;
+        --button-xhuge-active-icon-offset-x: -28px;
+        //--button-xhuge-normal-icon-offset-x: -37px;
+        //--button-xhuge-active-icon-offset-x: -37px;
+
+        --modal-window-mask-opacity: 0.6;
+        --image-border-types-filter: invert(100%) brightness(4);
+        --image-border-types-filter-selected: invert(100%) brightness(4);
+        --component-normal-icon-filter: invert(100%);
+
+        --component-normal-icon-opacity: .8;
+        --component-hover-icon-opacity: .8;
+        --component-active-icon-opacity: 1;
+        --component-active-hover-icon-opacity: 1;
+        --component-disabled-opacity: .4;
+
+        --header-component-normal-icon-opacity: .8;
+        --header-component-hover-icon-opacity: .8;
+        --header-component-active-icon-opacity: 1;
+        --header-component-active-hover-icon-opacity: 1;
+
+        --menu-icon-item-checked-offset-x: -20px;
+
+        --border-sidemenu: var(--scaled-one-pixel, 1px) solid var(--border-toolbar);
+        --background-statusbar: var(--background-pane);
+        --border-toolbar-z-clear: var(--border-toolbar);
+        --shadow-toolbar: 0px 1px 0 0 var(--border-toolbar);
+        --shadow-toolbar-style-off: var(--shadow-toolbar);
+
+        --celleditor-cell-name-border-right: var(--scaled-one-pixel, 1px) solid var(--border-toolbar);
+
+        --background-fill-input: var(--background-normal);
+        --background-fill-input-disabled: var(--background-normal);
+        --background-fill-input-readonly: var(--background-normal);
+
+        --highlight-category-button-hover: var(--highlight-button-hover);
+        --highlight-category-button-pressed: var(--highlight-button-pressed);
+        --highlight-header-input-hover: var(--highlight-header-button-hover);
+        --highlight-header-input-pressed: var(--highlight-header-button-pressed);
+
+        --border-fill-input: var(--border-regular-control);
+        --border-fill-input-focused: var(--border-control-focus);
+        --border-fill-input-disabled: var(--border-regular-control);
+        --border-fill-input-readonly: var(--border-regular-control);
+
+        --text-fill-input: var(--text-normal);
+        --text-fill-input-disabled: var(--text-normal);
+        --text-fill-input-readonly: var(--text-normal);
+
+        --shadow-fill-input: none;
+        --shadow-control-focus: inset 0 0 0 1px var(--border-control-focus);
+        --shadow-control-pressed-focus: inset 0 0 0 1px var(--background-normal), 0 0 0 1px var(--border-button-pressed-focus);
+        --shadow-control-primary-pressed-focus: inset 0 0 0 1px var(--background-normal);
+
+        --toolbar-simple-border-bottom: var(--scaled-one-pixel, 1px) solid var(--border-toolbar);
+        --toolbar-preferred-tab-style: fill;
+        --border-editor-sdk: var(--scaled-one-pixel, 1px) solid var(--border-toolbar);
+
+        --highlight-comment-hover: #3A3A3A;
+        --highlight-comment-pressed: #5B5B5B;
+
+        //--rb-background-normal: var(--background-normal);
+        //--rb-background-normal-hover: var(--background-normal);
+        //--rb-background-checked: var(--background-normal);
+        //--rb-background-checked-hover: var(--background-normal);
+        //--rb-border-normal: var(--border-regular-control);
+        //--rb-border-normal-hover: var(--border-regular-control);
+        //--rb-border-normal-focus: var(--border-control-focus);
+        //--rb-border-checked: var(--border-regular-control);
+        //--rb-border-checked-hover: var(--border-regular-control);
+        //--rb-border-checked-focus: var(--border-control-focus);
+        //--rb-check-mark-size: 4px;
+        //--rb-check-mark-background: var(--text-normal);
+    }
+}

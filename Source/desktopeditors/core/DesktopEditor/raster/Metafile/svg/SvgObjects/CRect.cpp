@@ -1,0 +1,127 @@
+#include "CRect.h"
+#include "CContainer.h"
+#include "../SvgTypes.h"
+
+namespace SVG
+{
+	CRect::CRect(CSvgReader& oReader, CRenderedObject *pParent)
+		: CRenderedObject(oReader, pParent)
+	{}
+
+	CRect::~CRect()
+	{}
+
+	void CRect::SetAttribute(const std::string& sName, CSvgReader& oReader)
+	{
+		if ("x" == sName)
+			m_oRect.m_oX.SetValue(oReader.GetText());
+		else if ("y" == sName)
+			m_oRect.m_oY.SetValue(oReader.GetText());
+		else if ("width" == sName)
+			m_oRect.m_oWidth.SetValue(oReader.GetText());
+		else if ("height" == sName)
+			m_oRect.m_oHeight.SetValue(oReader.GetText());
+		else if ("rx" == sName)
+			m_oRx.SetValue(oReader.GetText());
+		else if ("ry" == sName)
+			m_oRy.SetValue(oReader.GetText());
+		else
+			CRenderedObject::SetAttribute(sName, oReader);
+
+		if (m_oRx.Empty() && !m_oRy.Empty())
+			m_oRx = m_oRy;
+		else if (!m_oRx.Empty() && m_oRy.Empty())
+			m_oRy = m_oRx;
+	}
+
+	void CRect::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		CRenderedObject::SetData(mAttributes, ushLevel, bHardMode);
+
+		SetStroke(mAttributes, ushLevel, bHardMode);
+		SetFill(mAttributes, ushLevel, bHardMode);
+	}
+
+	bool CRect::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
+	{
+		Aggplus::CMatrix oOldTransform;
+
+		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
+			return false;
+
+		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
+
+		double dParentWidth  = oBounds.m_dRight  - oBounds.m_dLeft;
+		double dParentHeight = oBounds.m_dBottom - oBounds.m_dTop;
+
+		double dX      = m_oRect.m_oX     .ToDouble(NSCSS::Pixel, dParentWidth);
+		double dY      = m_oRect.m_oY     .ToDouble(NSCSS::Pixel, dParentHeight);
+		double dWidth  = m_oRect.m_oWidth .ToDouble(NSCSS::Pixel, dParentWidth);
+		double dHeight = m_oRect.m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
+
+		if (m_oRx.Empty() && m_oRy.Empty())
+		{
+			pRenderer->PathCommandMoveTo(dX, dY);
+			pRenderer->PathCommandLineTo(dX + dWidth, dY);
+			pRenderer->PathCommandLineTo(dX + dWidth, dY + dHeight);
+			pRenderer->PathCommandLineTo(dX, dY + dHeight);
+			pRenderer->PathCommandClose();
+		}
+		else
+		{
+			double dRx = m_oRx.ToDouble(NSCSS::Pixel);
+			double dRy = m_oRy.ToDouble(NSCSS::Pixel);
+
+			pRenderer->PathCommandMoveTo(dX, dY + dRy);
+
+			pRenderer->PathCommandLineTo(dX, dY + dHeight - dRy);
+			pRenderer->PathCommandArcTo(dX, dY + dHeight - dRy * 2, dRx * 2., dRy * 2., 180., -90.);
+
+			pRenderer->PathCommandLineTo(dX + dWidth - dRx, dY + dHeight);
+			pRenderer->PathCommandArcTo(dX + dWidth - dRx * 2, dY + dHeight - dRy * 2., dRx * 2., dRy * 2., 90, -90.0);
+
+			pRenderer->PathCommandLineTo(dX + dWidth, dY + dRy);
+			pRenderer->PathCommandArcTo(dX + dWidth - dRx * 2.0, dY, dRx * 2.0, dRy * 2.0, 0.0, -90.0);
+
+			pRenderer->PathCommandLineTo(dX + dRx, dY);
+			pRenderer->PathCommandArcTo(dX, dY, dRx * 2.0, dRy * 2.0, 270, -90.0);
+
+			pRenderer->PathCommandClose();
+		}
+
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
+
+		return true;
+	}
+
+	void CRect::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContexObject) const
+	{
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, false, pContexObject))
+			nTypePath += c_nStroke;
+
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true, pContexObject))
+			nTypePath += c_nWindingFillMode;
+	}
+
+	TBounds CRect::GetBounds(SvgMatrix* pTransform) const
+	{
+		TBounds oBounds;
+
+		oBounds.m_dLeft   = m_oRect.m_oX.ToDouble(NSCSS::Pixel);
+		oBounds.m_dTop    = m_oRect.m_oY.ToDouble(NSCSS::Pixel);
+		oBounds.m_dRight  = oBounds.m_dLeft + m_oRect.m_oWidth.ToDouble(NSCSS::Pixel);
+		oBounds.m_dBottom = oBounds.m_dTop  + m_oRect.m_oHeight.ToDouble(NSCSS::Pixel);
+
+		if (nullptr != pTransform)
+		{
+			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
+
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
+			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+
+			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
+		}
+
+		return oBounds;
+	}
+}

@@ -1,0 +1,92 @@
+Usage: configure.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --update=UPDATE       defines whether it's necessary to update/clone repos.
+                        If it's set to true (1 === true), build_tools
+                        automatically get the necessary subrepos. If it's set
+                        to false (0 === false), you should define which ones
+                        to use
+  --update-light=UPDATE-LIGHT
+                        performs pull/clone without switching branches, can be
+                        used only if update is true.
+  --branch=BRANCH       branch/tag name, used only if update is true and
+                        update_light is not used. Updates/clones all the repos
+                        and switches the branch to the proper one deleting all
+                        the local changes
+  --clean=CLEAN         defines whether to build everything anew
+  --module=MODULE       defines what modules to build. You can specify several
+                        of them, e.g. --module 'core desktop builder server
+                        mobile'
+  --develop=DEVELOP     defines develop mode
+  --beta=BETA           defines beta mode
+  --platform=PLATFORM   defines the destination platform for your build
+                        ['win_64', 'win_32', 'win_64_xp', 'win_32_xp',
+                        'win_arm64', 'linux_64', 'linux_32', 'mac_64', 'ios',
+                        'android_arm64_v8a', 'android_armv7', 'android_x86',
+                        'android_x86_64'; combinations: 'native': your current
+                        system (windows/linux/mac only); 'all': all available
+                        systems; 'windows': win_64 win_32 win_64_xp win_32_xp;
+                        'linux': linux_64 linux_32; 'mac': mac_64; 'android':
+                        android_arm64_v8a android_armv7 android_x86
+                        android_x86_64]
+  --config=CONFIG       provides ability to specify additional parameters for
+                        qmake
+  --qt-dir=QT-DIR       defines qmake directory path. qmake can be found in
+                        qt-dir/compiler/bin directory
+  --qt-dir-xp=QT-DIR-XP
+                        defines qmake directory path for Windows XP. qmake can
+                        be found in 'qt-dir/compiler/bin directory
+  --external-folder=EXTERNAL-FOLDER
+                        defines a directory with external folder
+  --sql-type=SQL-TYPE   defines the sql type wich will be used
+  --db-port=DB-PORT     defines the sql db-port wich will be used
+  --db-name=DB-NAME     defines the sql db-name wich will be used
+  --db-user=DB-USER     defines the sql db-user wich will be used
+  --db-pass=DB-PASS     defines the sql db-pass wich will be used
+  --compiler=COMPILER   defines compiler name. It is not recommended to use it
+                        as it's defined automatically (msvc2015, msvc2015_64,
+                        gcc, gcc_64, clang, clang_64, etc)
+  --no-apps=NO-APPS     disables building desktop apps that use qt
+  --themesparams=THEMESPARAMS
+                        provides settings for generating presentation themes
+                        thumbnails
+  --git-protocol=GIT-PROTOCOL
+                        can be used only if update is set to true - 'https',
+                        'ssh'
+  --branding=BRANDING   provides branding path
+  --branding-name=BRANDING-NAME
+                        provides branding name
+  --branding-url=BRANDING-URL
+                        provides branding url
+  --sdkjs-addon=SDKJS-ADDONS
+                        provides sdkjs addons
+  --sdkjs-addon-desktop=SDKJS-ADDONS-DESKTOP
+                        provides sdkjs addons for desktop
+  --server-addon=SERVER-ADDONS
+                        provides server addons
+  --web-apps-addon=WEB-APPS-ADDONS
+                        provides web-apps addons
+  --sdkjs-plugin=SDKJS-PLUGIN
+                        provides plugins for server-based and desktop versions
+                        of the editors
+  --sdkjs-plugin-server=SDKJS-PLUGIN-SERVER
+                        provides plugins for server-based version of the
+                        editors
+  --features=FEATURES   native features (config addon)
+  --vs-version=VS-VERSION
+                        version of visual studio
+  --vs-path=VS-PATH     path to vcvarsall
+  --siteUrl=SITEURL     site url
+  --multiprocess=MULTIPROCESS
+                        provides ability to specify single process for make
+  --sysroot=SYSROOT     provides ability to use sysroot (ubuntu 16.04) to
+                        build c++ code. If value is "1", then the sysroot from
+                        tools/linux/sysroot will be used, and if it is not
+                        there, it will download it and unpack it. You can also
+                        set value as the path to the your own sysroot (rarely
+                        used). Only for linux
+  --qemu-win-arm64-dir=QEMU-WIN-ARM64-DIR
+                        dir to qemu virtual machine for win_arm64 cross build.
+                        It should contains start.bat. More info in
+                        tools/win/qemu.

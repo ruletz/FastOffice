@@ -1,0 +1,218 @@
+#pragma once
+#include "../../../../DesktopEditor/common/StringBuilder.h"
+
+#include "BaseItem.h"
+#include "Shape.h"
+#include "../managers/FontManager.h"
+#include "../managers/FontStyleManager.h"
+#include "../styles/FontStyle.h"
+#include "../../resources/Constants.h"
+#include "../../resources/LinesTable.h"
+
+namespace NSDocxRenderer
+{
+	enum class eVertAlignType
+	{
+		vatUnknown,
+		vatBase,
+		vatSubscript,
+		vatSuperscript
+	};
+
+	// sizes in selected font
+	struct CSelectedSizes
+	{
+		double dWidth{0};
+		double dHeight{0};
+
+		CSelectedSizes() = default;
+		~CSelectedSizes() = default;
+		CSelectedSizes(const CSelectedSizes& oSelectedSizes);
+		CSelectedSizes& operator=(const CSelectedSizes& oSelectedSizes);
+	};
+
+	class CContText : public CBaseItem, public IOoxmlItem
+	{
+	public:
+		// utils
+		std::shared_ptr<CFontStyle> m_pFontStyle{nullptr};
+
+		CFontManager* m_pManager        {nullptr};
+		std::shared_ptr<CShape> m_pShape{nullptr};
+
+		// super/sub script
+		std::weak_ptr<CContText> m_pCont {};
+		eVertAlignType m_eVertAlignType  {eVertAlignType::vatUnknown};
+
+		// highlights
+		bool m_bIsStrikeoutPresent{false};
+		bool m_bIsDoubleStrikeout {false};
+		bool m_bIsHighlightPresent{false};
+		LONG m_lHighlightColor    {c_iBlackColor};
+		bool m_bIsUnderlinePresent{false};
+		eLineType m_eUnderlineType{eLineType::ltUnknown};
+		LONG m_lUnderlineColor    {c_iBlackColor};
+		bool m_bIsShadowPresent   {false};
+		bool m_bIsOutlinePresent  {false};
+		bool m_bIsEmbossPresent   {false};
+		bool m_bIsEngravePresent  {false};
+		bool m_bIsRtl             {false};
+
+		// font to calc selected sizes
+		NSStructures::CFont m_oSelectedFont{};
+
+		// origin font
+		std::wstring m_wsOriginFontName{};
+		int m_nOriginFontFaceIndex{};
+
+		// sizes
+		double m_dSpaceWidthMM{0};
+		double m_dSpacing{0};
+		CSelectedSizes m_oSelectedSizes{};
+
+		double m_dTopWithAscent{0};
+		double m_dBotWithDescent{0};
+
+		UINT m_iNumDuplicates{0};
+
+		bool m_bIsAddBrEnd{false};
+		bool m_bWriteStyleRaw{false};
+		bool m_bPossibleHorSplit{false};
+		bool m_bCollectMetaInfo{false};
+
+		std::vector<unsigned int> m_arGids{};
+		std::vector<double> m_arOriginLefts{};
+		bool m_bFontSubstitution = false;
+
+		CContText() = default;
+		CContText(CFontManager* pManager) : m_pManager(pManager) {}
+		CContText(const CContText& rCont);
+		virtual ~CContText();
+
+		virtual void Clear();
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToBin(NSWasm::CData& oWriter) const override final;
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CContText* pItem) const noexcept;
+
+		// calc sizes in selected font (uses m_oSelectedFont & m_pManager)
+		void CalcSelected();
+
+		size_t GetLength() const noexcept;
+		void AddTextBack(const NSStringUtils::CStringUTF32& oText,
+		                 const std::vector<double>& arSymWidths,
+		                 const std::vector<unsigned int>& arGids,
+		                 const std::vector<double>& arOriginLefts);
+		void AddTextFront(const NSStringUtils::CStringUTF32& oText,
+		                  const std::vector<double>& arSymWidths,
+		                  const std::vector<unsigned int>& arGids,
+		                  const std::vector<double>& arOriginLefts);
+		void SetText(const NSStringUtils::CStringUTF32& oText,
+		             const std::vector<double>& arSymWidths,
+		             std::vector<unsigned int>&& arGids,
+		             std::vector<double>&& arOriginLefts);
+
+		void AddSymBack(uint32_t cSym, double dWidth, double dLeft, unsigned int nGid = 0);
+		void AddSymFront(uint32_t cSym, double dWidth, double dLeft, unsigned int nGid = 0);
+		void SetSym(uint32_t cSym, double dWidth, double dLeft, unsigned int nGid = 0);
+
+		void RemoveLastSym();
+
+		uint32_t GetLastSym() const;
+
+		const NSStringUtils::CStringUTF32& GetText() const noexcept;
+		const std::vector<double>& GetSymWidths() const noexcept;
+		const std::vector<double>& GetSymLefts() const noexcept;
+
+		std::shared_ptr<CContText> Split(size_t index);
+		std::shared_ptr<CContText> Split(double dLeft);
+
+		CContText& operator=(const CContText& rCont);
+		bool IsEqual(const CContText* pCont) const noexcept;
+
+		UINT GetNumberOfFeatures() const noexcept;
+		bool IsDuplicate(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType) const noexcept;
+
+		bool IsOnlySpaces() const;
+		bool IsDiacritical() const noexcept;
+		double CalculateSpace() const noexcept;
+
+		// check font effect and delete not needed cont
+		// return true if was deleted
+		static bool CheckFontEffects
+		(std::shared_ptr<CContText>& pFirstCont,
+		 std::shared_ptr<CContText>& pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType);
+
+		static bool CheckVertAlignTypeBetweenConts
+		(std::shared_ptr<CContText> pFirstCont,
+		 std::shared_ptr<CContText> pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType);
+
+		static bool IsUnicodeRtl(uint32_t cSym);
+		static bool IsUnicodeBullet(uint32_t cSym);
+		static bool IsUnicodeEnumEnd(uint32_t cSym);
+		static bool IsUnicodeNumber(uint32_t cSym);
+		static bool IsUnicodeSpace(uint32_t c);
+		static bool IsUnicodeSymbol(uint32_t symbol);
+		static bool IsUnicodeDiacriticalMark(uint32_t symbol);
+
+		static bool IsFontsEqual(const NSStructures::CFont& oFont1, const NSStructures::CFont& oFont2);
+
+	private:
+		NSStringUtils::CStringUTF32 m_oText{};
+		std::vector<double> m_arSymWidths{};
+	};
+
+	class CContTextBuilder
+	{
+	protected:
+		using cont_ptr_t = std::shared_ptr<CContText>;
+
+	public:
+		CContTextBuilder() = delete;
+		CContTextBuilder(CFontStyleManager* pFontStyleManager, CFontSelector* pFontSelector);
+		~CContTextBuilder() = default;
+
+		// after call CContTextBuilder conts is empty
+		std::vector<cont_ptr_t> GetConts();
+
+		// after call CContTextBuilder diacs is empty
+		std::vector<cont_ptr_t> GetDiacs();
+
+		void AddUnicode(
+		        double dTop,
+		        double dBot,
+		        double dLeft,
+		        double dRight,
+		        const NSStructures::CFont& oFont,
+		        const NSStructures::CBrush& oBrush,
+		        CFontManager* pFontManager,
+		        const NSStringUtils::CStringUTF32& oText,
+		        size_t nOrder = 0,
+		        const PUINT pGids = nullptr,
+		        bool bForcedBold = false,
+		        bool bUseDefaultFont = false,
+		        bool bWriteStyleRaw = false,
+		        bool bCollectMetaInfo = false,
+		        bool bFontSubstitution = false);
+
+		void NullCurrCont();
+		void Clear();
+	private:
+
+		std::vector<cont_ptr_t> m_arConts;
+		std::vector<cont_ptr_t> m_arDiacs;
+
+		cont_ptr_t m_pCurrCont {nullptr};
+
+		NSStructures::CFont m_oPrevFont;
+		NSStructures::CBrush m_oPrevBrush;
+
+		CFontStyleManager* m_pFontStyleManager {nullptr};
+		CFontSelector* m_pFontSelector {nullptr};
+		double m_dPrevRight = 0;
+	};
+}

@@ -1,0 +1,37 @@
+#ifndef CTRLSHAPELINE_H
+#define CTRLSHAPELINE_H
+
+#include "CtrlGeneralShape.h"
+
+namespace HWP
+{
+class CCtrlShapeLine : public CCtrlGeneralShape
+{
+	int m_nStartX;
+	int m_nStartY;
+	int m_nEndX;
+	int m_nEndY;
+	short m_shAttr;
+
+	void ReadFromHWPX(CXMLReader& oReader);
+	void ReadFromHWPML(CXMLReader& oReader);
+public:
+	CCtrlShapeLine();
+	CCtrlShapeLine(const HWP_STRING& sCtrlID);
+	CCtrlShapeLine(const CCtrlGeneralShape& oShape);
+	CCtrlShapeLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
+
+	EShapeType GetShapeType() const override;
+
+	int GetStartX() const;
+	int GetStartY() const;
+	int GetEndX() const;
+	int GetEndY() const;
+
+	static void ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	static void ParseCtrl(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+};
+}
+
+#endif // CTRLSHAPELINE_H

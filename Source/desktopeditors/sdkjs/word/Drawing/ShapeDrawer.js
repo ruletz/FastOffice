@@ -1,0 +1,2738 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2024
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+
+"use strict";
+
+(function(window, undefined){
+
+// Import
+var getFullImageSrc2 = AscCommon.getFullImageSrc2;
+
+var getSourceImageSize = AscCommon.getSourceImageSize;
+
+var getFillRect = AscCommon.getFillRect;
+
+var CShapeColor = AscFormat.CShapeColor;
+
+var c_oAscFill = Asc.c_oAscFill;
+
+function DrawLineEnd(xEnd, yEnd, xPrev, yPrev, type, w, len, drawer, trans)
+{
+    switch (type)
+    {
+        case AscFormat.LineEndType.None:
+            break;
+        case AscFormat.LineEndType.Arrow:
+        {
+            if (Asc.editor.isPdfEditor() == true) {
+                drawer.CheckDash();
+            }
+
+            var _ex = xPrev - xEnd;
+            var _ey = yPrev - yEnd;
+            var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+            _ex /= _elen;
+            _ey /= _elen;
+
+            var _vx = _ey;
+            var _vy = -_ex;
+
+            var tmpx = xEnd + len * _ex;
+            var tmpy = yEnd + len * _ey;
+
+            var x1 = tmpx + _vx * w/2;
+            var y1 = tmpy + _vy * w/2;
+
+            var x3 = tmpx - _vx * w/2;
+            var y3 = tmpy - _vy * w/2;
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer.ds();
+            drawer._e();
+
+            break;
+        }
+        case AscFormat.LineEndType.ReverseArrow:
+        {
+            if (Asc.editor.isPdfEditor() == true) {
+                drawer.CheckDash();
+            }
+
+            var _ex = xPrev - xEnd;
+            var _ey = yPrev - yEnd;
+            var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+            _ex /= _elen;
+            _ey /= _elen;
+
+            var _vx = _ey;
+            var _vy = -_ex;
+
+            var tmpx = xEnd - len * _ex;
+            var tmpy = yEnd - len * _ey;
+
+            var x1 = tmpx + _vx * w/2;
+            var y1 = tmpy + _vy * w/2;
+
+            var x3 = tmpx - _vx * w/2;
+            var y3 = tmpy - _vy * w/2;
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer.ds();
+            drawer._e();
+
+            break;
+        }
+        case AscFormat.LineEndType.Diamond:
+        {
+            var _ex = xPrev - xEnd;
+            var _ey = yPrev - yEnd;
+            var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+            _ex /= _elen;
+            _ey /= _elen;
+
+            var _vx = _ey;
+            var _vy = -_ex;
+
+            var tmpx = xEnd + len/2 * _ex;
+            var tmpy = yEnd + len/2 * _ey;
+
+            var x1 = xEnd + _vx * w/2;
+            var y1 = yEnd + _vy * w/2;
+
+            var x3 = xEnd - _vx * w/2;
+            var y3 = yEnd - _vy * w/2;
+
+            var tmpx2 = xEnd - len/2 * _ex;
+            var tmpy2 = yEnd - len/2 * _ey;
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(tmpx, tmpy), trans.TransformPointY(tmpx, tmpy));
+            drawer._l(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(tmpx2, tmpy2), trans.TransformPointY(tmpx2, tmpy2));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer._z();
+            if (Asc.editor.isPdfEditor()) {
+                let oRGBColor;
+                if (drawer.Shape.GetRGBColor) {
+                    oRGBColor = drawer.Shape.GetRGBColor(drawer.Shape.GetFillColor());
+                }
+                else if (drawer.Shape.group) {
+                    oRGBColor = drawer.Shape.group.GetRGBColor(drawer.Shape.group.GetFillColor());
+                }
+
+                if (oRGBColor) {
+                    drawer.Graphics.m_oPen.Color.R = oRGBColor.r;
+                    drawer.Graphics.m_oPen.Color.G = oRGBColor.g;
+                    drawer.Graphics.m_oPen.Color.B = oRGBColor.b;
+                }
+            }
+            drawer.drawStrokeFillStyle();
+            drawer._e();
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(tmpx, tmpy), trans.TransformPointY(tmpx, tmpy));
+            drawer._l(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(tmpx2, tmpy2), trans.TransformPointY(tmpx2, tmpy2));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer._z();
+            drawer.ds();
+            drawer._e();
+
+            break;
+        }
+        case AscFormat.LineEndType.Square:
+        {
+            var angle = Math.atan2(yEnd - yPrev, xEnd - xPrev);
+            function rotatePoints(aPoints) {
+                // Поворачиваем каждую вершину вокруг центра
+                for (var i = 0; i < aPoints.length; i++) {
+                    var x = aPoints[i].x - xEnd;
+                    var y = aPoints[i].y - yEnd;
+
+                    // Применяем матрицу поворота
+                    var rotatedX = x * Math.cos(angle) - y * Math.sin(angle);
+                    var rotatedY = x * Math.sin(angle) + y * Math.cos(angle);
+
+                    // Возвращаем вершины на место
+                    aPoints[i].x = rotatedX + xEnd;
+                    aPoints[i].y = rotatedY + yEnd;
+                }
+            }
+
+            var x1 = xEnd - w/2;
+            var y1 = yEnd + w/2;
+
+            var x2 = xEnd - w/2;
+            var y2 = yEnd - w/2;
+
+            var x3 = xEnd + w/2;
+            var y3 = yEnd - w/2;
+
+            var x4 = xEnd + w/2;
+            var y4 = yEnd + w/2;
+
+            let aSmall = [
+                { x: x1, y: y1 },
+                { x: x2, y: y2 },
+                { x: x3, y: y3 },
+                { x: x4, y: y4 }
+            ]
+
+            rotatePoints(aSmall);
+            
+            drawer._s();
+            drawer._m(trans.TransformPointX(aSmall[0].x, aSmall[0].y), trans.TransformPointY(aSmall[0].x, aSmall[0].y));
+            for (var i = 1; i < aSmall.length; i++) {
+                drawer._l(trans.TransformPointX(aSmall[i].x, aSmall[i].y), trans.TransformPointY(aSmall[i].x, aSmall[i].y));
+            }
+            drawer._z();
+            if (Asc.editor.isPdfEditor()) {
+                let oRGBColor;
+                if (drawer.Shape.GetRGBColor) {
+                    oRGBColor = drawer.Shape.GetRGBColor(drawer.Shape.GetFillColor());
+                }
+                else if (drawer.Shape.group) {
+                    oRGBColor = drawer.Shape.group.GetRGBColor(drawer.Shape.group.GetFillColor());
+                }
+
+                if (oRGBColor) {
+                    drawer.Graphics.m_oPen.Color.R = oRGBColor.r;
+                    drawer.Graphics.m_oPen.Color.G = oRGBColor.g;
+                    drawer.Graphics.m_oPen.Color.B = oRGBColor.b;
+                }
+            }
+            drawer.drawStrokeFillStyle();
+            drawer._e();
+
+            x1 = xEnd - w * 2/4;
+            y1 = yEnd + w * 2/4;
+
+            x2 = xEnd - w * 2/4;
+            y2 = yEnd - w * 2/4;
+
+            x3 = xEnd + w * 2/4;
+            y3 = yEnd - w * 2/4;
+
+            x4 = xEnd + w * 2/4;
+            y4 = yEnd + w * 2/4;
+
+            let aBig = [
+                { x: x1, y: y1 },
+                { x: x2, y: y2 },
+                { x: x3, y: y3 },
+                { x: x4, y: y4 }
+            ]
+
+            rotatePoints(aBig);
+            
+            drawer._s();
+            drawer._m(trans.TransformPointX(aBig[0].x, aBig[0].y), trans.TransformPointY(aBig[0].x, aBig[0].y));
+            for (var i = 1; i < aBig.length; i++) {
+                drawer._l(trans.TransformPointX(aBig[i].x, aBig[i].y), trans.TransformPointY(aBig[i].x, aBig[i].y));
+            }
+            drawer._z();
+            drawer.ds();
+            drawer._e();
+            break;
+        }
+        case AscFormat.LineEndType.Oval:
+        {
+            var _ex = xPrev - xEnd;
+            var _ey = yPrev - yEnd;
+            var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+            _ex /= _elen;
+            _ey /= _elen;
+
+            var _vx = _ey;
+            var _vy = -_ex;
+
+            var tmpx = xEnd + len/2 * _ex;
+            var tmpy = yEnd + len/2 * _ey;
+
+            var tmpx2 = xEnd - len/2 * _ex;
+            var tmpy2 = yEnd - len/2 * _ey;
+
+            var cx1 = tmpx + _vx * 3*w/4;
+            var cy1 = tmpy + _vy * 3*w/4;
+            var cx2 = tmpx2 + _vx * 3*w/4;
+            var cy2 = tmpy2 + _vy * 3*w/4;
+
+            var cx3 = tmpx - _vx * 3*w/4;
+            var cy3 = tmpy - _vy * 3*w/4;
+            var cx4 = tmpx2 - _vx * 3*w/4;
+            var cy4 = tmpy2 - _vy * 3*w/4;
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(tmpx, tmpy), trans.TransformPointY(tmpx, tmpy));
+            drawer._c(trans.TransformPointX(cx1, cy1), trans.TransformPointY(cx1, cy1),
+                trans.TransformPointX(cx2, cy2), trans.TransformPointY(cx2, cy2),
+                trans.TransformPointX(tmpx2, tmpy2), trans.TransformPointY(tmpx2, tmpy2));
+
+            drawer._c(trans.TransformPointX(cx4, cy4), trans.TransformPointY(cx4, cy4),
+                trans.TransformPointX(cx3, cy3), trans.TransformPointY(cx3, cy3),
+                trans.TransformPointX(tmpx, tmpy), trans.TransformPointY(tmpx, tmpy));
+
+            if (Asc.editor.isPdfEditor()) {
+                let oRGBColor;
+                if (drawer.Shape.GetRGBColor) {
+                    oRGBColor = drawer.Shape.GetRGBColor(drawer.Shape.GetFillColor());
+                }
+                else if (drawer.Shape.group) {
+                    oRGBColor = drawer.Shape.group.GetRGBColor(drawer.Shape.group.GetFillColor());
+                }
+
+                if (oRGBColor) {
+                    drawer.Graphics.m_oPen.Color.R = oRGBColor.r;
+                    drawer.Graphics.m_oPen.Color.G = oRGBColor.g;
+                    drawer.Graphics.m_oPen.Color.B = oRGBColor.b;
+                }
+            }
+            drawer.drawStrokeFillStyle();
+            drawer._e();
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(tmpx, tmpy), trans.TransformPointY(tmpx, tmpy));
+            drawer._c(trans.TransformPointX(cx1, cy1), trans.TransformPointY(cx1, cy1),
+                trans.TransformPointX(cx2, cy2), trans.TransformPointY(cx2, cy2),
+                trans.TransformPointX(tmpx2, tmpy2), trans.TransformPointY(tmpx2, tmpy2));
+
+            drawer._c(trans.TransformPointX(cx4, cy4), trans.TransformPointY(cx4, cy4),
+                trans.TransformPointX(cx3, cy3), trans.TransformPointY(cx3, cy3),
+                trans.TransformPointX(tmpx, tmpy), trans.TransformPointY(tmpx, tmpy));
+
+            drawer.ds();
+            drawer._e();
+            break;
+        }
+        case AscFormat.LineEndType.Stealth:
+        {
+            var _ex = xPrev - xEnd;
+            var _ey = yPrev - yEnd;
+            var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+            _ex /= _elen;
+            _ey /= _elen;
+
+            var _vx = _ey;
+            var _vy = -_ex;
+
+            var tmpx = xEnd + len * _ex;
+            var tmpy = yEnd + len * _ey;
+
+            var x1 = tmpx + _vx * w/2;
+            var y1 = tmpy + _vy * w/2;
+
+            var x3 = tmpx - _vx * w/2;
+            var y3 = tmpy - _vy * w/2;
+
+            var x4 = xEnd + (len - w/2) * _ex;
+            var y4 = yEnd + (len - w/2) * _ey;
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer._l(trans.TransformPointX(x4, y4), trans.TransformPointY(x4, y4));
+            drawer._z();
+            drawer.drawStrokeFillStyle();
+            drawer._e();
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer._l(trans.TransformPointX(x4, y4), trans.TransformPointY(x4, y4));
+            drawer._z();
+            drawer.ds();
+            drawer._e();
+
+            break;
+        }
+        case AscFormat.LineEndType.ReverseTriangle:
+        {
+            var _ex = xPrev - xEnd;
+            var _ey = yPrev - yEnd;
+            var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+            _ex /= _elen;
+            _ey /= _elen;
+
+            var _vx = _ey;
+            var _vy = -_ex;
+
+            var tmpx = xEnd - len * _ex;
+            var tmpy = yEnd - len * _ey;
+
+            var x1 = tmpx + _vx * w/2;
+            var y1 = tmpy + _vy * w/2;
+
+            var x3 = tmpx - _vx * w/2;
+            var y3 = tmpy - _vy * w/2;
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer._z();
+            if (Asc.editor.isPdfEditor()) {
+                let oRGBColor;
+                if (drawer.Shape.GetRGBColor) {
+                    oRGBColor = drawer.Shape.GetRGBColor(drawer.Shape.GetFillColor());
+                }
+                else if (drawer.Shape.group) {
+                    oRGBColor = drawer.Shape.group.GetRGBColor(drawer.Shape.group.GetFillColor());
+                } 
+
+                if (oRGBColor) {
+                    drawer.Graphics.m_oPen.Color.R = oRGBColor.r;
+                    drawer.Graphics.m_oPen.Color.G = oRGBColor.g;
+                    drawer.Graphics.m_oPen.Color.B = oRGBColor.b;
+                }
+            }
+
+            drawer.drawStrokeFillStyle();
+            drawer._e();
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer._z();
+            drawer.ds();
+            drawer._e();
+            break;
+        }
+        case AscFormat.LineEndType.Triangle:
+        {
+            var _ex = xPrev - xEnd;
+            var _ey = yPrev - yEnd;
+            var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+            _ex /= _elen;
+            _ey /= _elen;
+
+            var _vx = _ey;
+            var _vy = -_ex;
+
+            var tmpx = xEnd + len * _ex;
+            var tmpy = yEnd + len * _ey;
+
+            var x1 = tmpx + _vx * w/2;
+            var y1 = tmpy + _vy * w/2;
+
+            var x3 = tmpx - _vx * w/2;
+            var y3 = tmpy - _vy * w/2;
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer._z();
+            if (Asc.editor.isPdfEditor()) {
+                let oRGBColor;
+                if (drawer.Shape.GetRGBColor) {
+                    oRGBColor = drawer.Shape.GetRGBColor(drawer.Shape.GetFillColor());
+                }
+                else if (drawer.Shape.group) {
+                    oRGBColor = drawer.Shape.group.GetRGBColor(drawer.Shape.group.GetFillColor());
+                }
+
+                if (oRGBColor) {
+                    drawer.Graphics.m_oPen.Color.R = oRGBColor.r;
+                    drawer.Graphics.m_oPen.Color.G = oRGBColor.g;
+                    drawer.Graphics.m_oPen.Color.B = oRGBColor.b;
+                }
+            }
+
+            drawer.drawStrokeFillStyle();
+            drawer._e();
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+            drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer._z();
+            drawer.ds();
+            drawer._e();
+            break;
+        }
+        case AscFormat.LineEndType.Butt:
+        {
+            var _ex = xPrev - xEnd;
+            var _ey = yPrev - yEnd;
+            var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+            _ex /= _elen;
+            _ey /= _elen;
+
+            var _vx = _ey;
+            var _vy = -_ex;
+
+            var tmpx = xEnd + len * _ex;
+            var tmpy = yEnd + len * _ey;
+
+            var angle = Math.atan2(yEnd - yPrev, xEnd - xPrev);
+            // Вычисляем координаты конца перпендикулярной линии
+            var perpendicularLength = w;
+            var x1 = xEnd + perpendicularLength * Math.cos(angle - Math.PI / 2);
+            var y1 = yEnd + perpendicularLength * Math.sin(angle - Math.PI / 2);
+            var x2 = xEnd - perpendicularLength * Math.cos(angle - Math.PI / 2);
+            var y2 = yEnd - perpendicularLength * Math.sin(angle - Math.PI / 2);
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(x2, y2), trans.TransformPointY(x2, y2));
+            drawer.ds();
+            break;
+        }
+        case AscFormat.LineEndType.Slash:
+        {
+            var _ex = xPrev - xEnd;
+            var _ey = yPrev - yEnd;
+            var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+            _ex /= _elen;
+            _ey /= _elen;
+
+            var _vx = _ey;
+            var _vy = -_ex;
+
+            var tmpx = xEnd + len * _ex;
+            var tmpy = yEnd + len * _ey;
+
+            var angle = Math.atan2(yEnd - yPrev, xEnd - xPrev) + (30 * Math.PI / 180);
+
+            // Вычисляем координаты конца перпендикулярной линии
+            var perpendicularLength = w;
+            var x1 = xEnd + perpendicularLength * Math.cos(angle - Math.PI / 2);
+            var y1 = yEnd + perpendicularLength * Math.sin(angle - Math.PI / 2);
+            var x2 = xEnd - perpendicularLength * Math.cos(angle - Math.PI / 2);
+            var y2 = yEnd - perpendicularLength * Math.sin(angle - Math.PI / 2);
+
+            drawer._s();
+            drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+            drawer._l(trans.TransformPointX(x2, y2), trans.TransformPointY(x2, y2));
+            drawer.ds();
+            break;
+        }
+        // visio types are handled below
+    }
+
+    if (type === AscFormat.LineEndType.vsdxOpenASMEArrow ||
+        type === AscFormat.LineEndType.vsdxFilledASMEArrow ||
+        type === AscFormat.LineEndType.vsdxClosedASMEArrow) {
+        len *= 1.5;
+        let isFilled = type === AscFormat.LineEndType.vsdxFilledASMEArrow;
+        let isOpen = type === AscFormat.LineEndType.vsdxOpenASMEArrow;
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, 0, isFilled, isOpen, w, len);
+    } else if (type === AscFormat.LineEndType.vsdxOpenSharpArrow ||
+        type === AscFormat.LineEndType.vsdxFilledSharpArrow ||
+        type === AscFormat.LineEndType.vsdxClosedSharpArrow) {
+        let isFilled = type === AscFormat.LineEndType.vsdxFilledSharpArrow;
+        let isOpen = type === AscFormat.LineEndType.vsdxOpenSharpArrow;
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, 0, isFilled, isOpen, w, len);
+    } else if (type === AscFormat.LineEndType.vsdxOpen90Arrow ||
+        type === AscFormat.LineEndType.vsdxFilled90Arrow ||
+        type === AscFormat.LineEndType.vsdxClosed90Arrow) {
+        len /= 2;
+        let isFilled = type === AscFormat.LineEndType.vsdxFilled90Arrow;
+        let isOpen = type === AscFormat.LineEndType.vsdxOpen90Arrow;
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, 0, isFilled, isOpen, w, len);
+    } else if (type === AscFormat.LineEndType.vsdxIndentedFilledArrow ||
+        type === AscFormat.LineEndType.vsdxIndentedClosedArrow ||
+        type === AscFormat.LineEndType.vsdxOutdentedFilledArrow ||
+        type === AscFormat.LineEndType.vsdxOutdentedClosedArrow) {
+        let isArrowFilled = type === AscFormat.LineEndType.vsdxIndentedFilledArrow ||
+            type === AscFormat.LineEndType.vsdxOutdentedFilledArrow;
+
+        let isIndented = type === AscFormat.LineEndType.vsdxIndentedFilledArrow ||
+            type === AscFormat.LineEndType.vsdxIndentedClosedArrow;
+
+        var _ex = xPrev - xEnd;
+        var _ey = yPrev - yEnd;
+        var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+        _ex /= _elen; // cos a
+        _ey /= _elen; // sin a
+
+        // a now is 90 - a + invert cos
+        var _vx = _ey;
+        var _vy = -_ex;
+
+        // (xEnd, yEnd) - right arrow point
+        var tmpx = xEnd + len * _ex;
+        var tmpy = yEnd + len * _ey;
+
+        // (x1, y1) - top arrow point
+        var x1 = tmpx + _vx * w/2;
+        var y1 = tmpy + _vy * w/2;
+
+        // (x3, y3) - bottom arrow point
+        var x3 = tmpx - _vx * w/2;
+        var y3 = tmpy - _vy * w/2;
+
+        let controlPointShift = isIndented? 0.75 * len : 1.25 * len;
+
+        var x4 = xEnd + controlPointShift * _ex;
+        var y4 = yEnd + controlPointShift * _ey;
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+        drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+        drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+        let cpxLocal = trans.TransformPointX(x4, y4);
+        let cpyLocal = trans.TransformPointY(x4, y4);
+        let endXLocal = trans.TransformPointX(x1, y1);
+        let endYLocal = trans.TransformPointY(x1, y1);
+        drawer._c2(cpxLocal, cpyLocal, endXLocal, endYLocal);
+        drawer._z();
+
+        stokeOrFillPath(drawer, isArrowFilled);
+
+        drawer._e();
+    } else if (type === AscFormat.LineEndType.vsdxOpenFletch ||
+        type === AscFormat.LineEndType.vsdxFilledFletch ||
+        type === AscFormat.LineEndType.vsdxClosedFletch) {
+        let isArrowFilled = false;
+        let isArrowClosed = false;
+        if (type === AscFormat.LineEndType.vsdxFilledFletch) {
+            isArrowClosed = true;
+            isArrowFilled = true;
+        } else if (type === AscFormat.LineEndType.vsdxClosedFletch) {
+            isArrowFilled = false;
+            isArrowClosed = true;
+        }
+        var _ex = xPrev - xEnd;
+        var _ey = yPrev - yEnd;
+        var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+        _ex /= _elen; // cos a
+        _ey /= _elen; // sin a
+
+        // a now is 90 - a + invert cos
+        var _vx = _ey;
+        var _vy = -_ex;
+
+        // (xEnd, yEnd) - right arrow point
+
+        // left arrow point?
+        var tmpx = xEnd + len * _ex;
+        var tmpy = yEnd + len * _ey;
+
+        // (x1, y1) - top arrow point
+        var x1 = tmpx + _vx * w/2;
+        var y1 = tmpy + _vy * w/2;
+
+        // (x3, y3) - bottom arrow point
+        var x3 = tmpx - _vx * w/2;
+        var y3 = tmpy - _vy * w/2;
+
+        let controlPointShift = 0.5 * len;
+
+        var x4 = xEnd + controlPointShift * _ex;
+        var y4 = yEnd + controlPointShift * _ey;
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+        let cpxLocal = trans.TransformPointX(x4, y4);
+        let cpyLocal = trans.TransformPointY(x4, y4);
+        let endXLocal = trans.TransformPointX(xEnd, yEnd);
+        let endYLocal = trans.TransformPointY(xEnd, yEnd);
+        drawer._c2(cpxLocal, cpyLocal, endXLocal, endYLocal);
+
+        // drawer._m(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+        drawer._c2(cpxLocal, cpyLocal, trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+
+        if (isArrowClosed) {
+            // drawer._m(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+            drawer._c2(cpxLocal, cpyLocal, trans.TransformPointX(x1, y1),  trans.TransformPointY(x1, y1));
+        }
+
+        // drawer._z();
+
+        stokeOrFillPath(drawer, isArrowFilled);
+
+        drawer._e();
+    } else if (type === AscFormat.LineEndType.vsdxDimensionLine) {
+        const drawLineAngle = Math.atan2(yEnd - yPrev, xEnd - xPrev) + (45 * Math.PI / 180);
+
+        // Вычисляем координаты конца перпендикулярной линии
+        const perpendicularLength = w * Math.sin(Math.PI / 4); // don't know why it's not just =w here
+        const x1 = xEnd + perpendicularLength * Math.cos(drawLineAngle); // top right point for visio
+        const y1 = yEnd + perpendicularLength * Math.sin(drawLineAngle); // top right point for visio
+        const x2 = xEnd - perpendicularLength * Math.cos(drawLineAngle);
+        const y2 = yEnd - perpendicularLength * Math.sin(drawLineAngle);
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+        drawer._l(trans.TransformPointX(x2, y2), trans.TransformPointY(x2, y2));
+        drawer.ds();
+    } else if (type === AscFormat.LineEndType.vsdxFilledDot ||
+        type === AscFormat.LineEndType.vsdxClosedDot) {
+        let isFilled = type === AscFormat.LineEndType.vsdxFilledDot;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, 0, w, len, isFilled);
+    } else if (type === AscFormat.LineEndType.vsdxFilledSquare ||
+        type === AscFormat.LineEndType.vsdxClosedSquare) {
+        let isArrowFilled = type === AscFormat.LineEndType.vsdxFilledSquare;
+        let _ex = xPrev - xEnd;
+        let _ey = yPrev - yEnd;
+        let _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+        _ex /= _elen; // cos a
+        _ey /= _elen; // sin a
+
+        let isRotated = false;
+        _ex = isRotated? _ex : 1; // cos a
+        _ey = isRotated? _ey : 0; // sin a
+
+        // a now is 90 - a + invert cos
+        let _vx = _ey;
+        let _vy = -_ex;
+
+        // (xEnd, yEnd) - right arrow point
+
+        let paramsScale = 0.4;
+
+        // left arrow point?
+        let tmpx = xEnd + len * paramsScale * _ex;
+        let tmpy = yEnd + len * paramsScale * _ey;
+
+        // (x1, y1) - left top arrow point
+        let x1 = tmpx + _vx * w * paramsScale;
+        let y1 = tmpy + _vy * w * paramsScale;
+
+        // (x2, y2) - left bottom arrow point
+        let x2 = tmpx - _vx * w * paramsScale;
+        let y2 = tmpy - _vy * w * paramsScale;
+
+        // right arrow point?
+        let tmpxRight = xEnd - len * paramsScale * _ex;
+        let tmpyRight = yEnd - len * paramsScale * _ey;
+
+        // (x3, y3) - left top arrow point
+        let x3 = tmpxRight + _vx * w * paramsScale;
+        let y3 = tmpyRight + _vy * w * paramsScale;
+
+        // (x4, y4) - left bottom arrow point
+        let x4 = tmpxRight - _vx * w * paramsScale;
+        let y4 = tmpyRight - _vy * w * paramsScale;
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+        drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+        drawer._l(trans.TransformPointX(x4, y4), trans.TransformPointY(x4, y4));
+        drawer._l(trans.TransformPointX(x2, y2), trans.TransformPointY(x2, y2));
+
+        drawer._z();
+
+        stokeOrFillPath(drawer, isArrowFilled);
+
+        drawer._e();
+    } else if (type === AscFormat.LineEndType.vsdxDiamond) {
+        drawRhomb(drawer, xPrev, yPrev, xEnd, yEnd, 0);
+    } else if (type === AscFormat.LineEndType.vsdxBackslash) {
+        let _ex = xPrev - xEnd;
+        let _ey = yPrev - yEnd;
+
+        const arrowPartLen =  Math.sqrt(_ex * _ex + _ey * _ey);
+        const arrowCos = _ex / arrowPartLen;
+        const arrowSin = _ey / arrowPartLen;
+        const xShift = len * arrowCos;
+        const yShift = len * arrowSin;
+        const drawLineAngle = Math.atan2(yEnd - yPrev, xEnd - xPrev) - (45 * Math.PI / 180);
+
+        // Вычисляем координаты конца перпендикулярной линии
+        const perpendicularLength = w * Math.sin(Math.PI / 4); // don't know why it's not just =w here
+        const x1 = xEnd + perpendicularLength * Math.cos(drawLineAngle) + xShift; // top right point for visio
+        const y1 = yEnd + perpendicularLength * Math.sin(drawLineAngle) + yShift; // top right point for visio
+        const x2 = xEnd - perpendicularLength * Math.cos(drawLineAngle) + xShift;
+        const y2 = yEnd - perpendicularLength * Math.sin(drawLineAngle) + yShift;
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+        drawer._l(trans.TransformPointX(x2, y2), trans.TransformPointY(x2, y2));
+        drawer.ds();
+
+        drawer._e();
+    } else if (type === AscFormat.LineEndType.vsdxOpenOneDash) {
+        let shift = 0.75 * len;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+    } else if (type === AscFormat.LineEndType.vsdxOpenTwoDash) {
+        let shift = 0.75 * len;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift * 1.5);
+    } else if (type === AscFormat.LineEndType.vsdxOpenThreeDash) {
+        let shift = 0.75 * len;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift * 1.5);
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift * 2);
+    } else if (type === AscFormat.LineEndType.vsdxFork) {
+        drawFork(drawer, xPrev, yPrev, xEnd, yEnd);
+    } else if (type === AscFormat.LineEndType.vsdxDashFork) {
+        drawFork(drawer, xPrev, yPrev, xEnd, yEnd);
+
+        let shift = 1.5 * len * 0.75;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+    } else if (type === AscFormat.LineEndType.vsdxClosedFork) {
+        let isFilled = false;
+        drawFork(drawer, xPrev, yPrev, xEnd, yEnd);
+
+        let shift = 0.75 * len * 1.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, isFilled);
+    } else if (type === AscFormat.LineEndType.vsdxClosedPlus) {
+        let shift = 0.75 * len * 1.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, false);
+
+        shift = 0.75 * len * 0.5;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+    } else if (type === AscFormat.LineEndType.vsdxClosedOneDash) {
+        let shift = 0.75 * len * 1.5;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+
+        shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, false);
+    } else if (type === AscFormat.LineEndType.vsdxClosedTwoDash) {
+        let shift = 0.75 * len * 2;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+
+        shift = 0.75 * len * 1.5;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+
+        shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, false);
+    } else if (type === AscFormat.LineEndType.vsdxClosedThreeDash) {
+        let shift = 0.75 * len * 2.5;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 2;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 1.5;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, false);
+    } else if (type === AscFormat.LineEndType.vsdxClosedDiamond) {
+        let shift = 0.75 * len * 1.25;
+        drawRhomb(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, false);
+    } else if (type === AscFormat.LineEndType.vsdxFilledOneDash) {
+        let shift = 0.75 * len * 1.5;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, true);
+    } else if (type === AscFormat.LineEndType.vsdxFilledTwoDash) {
+        let shift = 0.75 * len * 2;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 1.5;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, true);
+    } else if (type === AscFormat.LineEndType.vsdxFilledThreeDash) {
+        let shift = 0.75 * len * 2.5;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 2;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 1.5;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, true);
+    } else if (type === AscFormat.LineEndType.vsdxFilledDiamond) {
+        let shift = 0.75 * len * 1.25;
+        drawRhomb(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+        shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, true);
+    } else if (type === AscFormat.LineEndType.vsdxFilledDoubleArrow) {
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, 0, true, false, w, len);
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, len, true, false, w, len);
+    } else if (type === AscFormat.LineEndType.vsdxClosedDoubleArrow) {
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, 0, false, false, w, len);
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, len, false, false, w, len);
+    } else if (type === AscFormat.LineEndType.vsdxClosedNoDash) {
+        let shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, false);
+    } else if (type === AscFormat.LineEndType.vsdxFilledNoDash) {
+        let shift = 0.75 * len * 0.5;
+        drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, true);
+    } else if (type === AscFormat.LineEndType.vsdxOpenDoubleArrow) {
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, 0, false, true, w, len);
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, len, false, true, w, len);
+    } else if (type === AscFormat.LineEndType.vsdxOpenArrowSingleDash) {
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, 0, false, true, w, len);
+        let shift = 0.75 * len * 2;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+    } else if (type === AscFormat.LineEndType.vsdxOpenDoubleArrowSingleDash) {
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, 0, false, true, w, len);
+        drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, len, false, true, w, len);
+        let shift = 0.75 * len * 2 + len;
+        drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift);
+    }
+
+    /**
+     * @param {CShapeDrawer} drawer
+     * @param {boolean} isFilled - if not filled it is stroke bcs if both repeat all commands
+     */
+    function stokeOrFillPath(drawer, isFilled) {
+        if (isFilled) {
+            if (Asc.editor.isPdfEditor()) {
+                let oRGBColor;
+                if (drawer.Shape.GetRGBColor) {
+                    oRGBColor = drawer.Shape.GetRGBColor(drawer.Shape.GetFillColor());
+                }
+                else if (drawer.Shape.group) {
+                    oRGBColor = drawer.Shape.group.GetRGBColor(drawer.Shape.group.GetFillColor());
+                }
+
+                if (oRGBColor) {
+                    drawer.Graphics.m_oPen.Color.R = oRGBColor.r;
+                    drawer.Graphics.m_oPen.Color.G = oRGBColor.g;
+                    drawer.Graphics.m_oPen.Color.B = oRGBColor.b;
+                }
+            }
+            drawer.drawStrokeFillStyle();
+        }
+        let isStroke = !isFilled;
+        if (isStroke) {
+            drawer.ds();
+        }
+    }
+
+    /**
+     * Draws fork BEFORE line end
+     * @param drawer
+     * @param xPrev
+     * @param yPrev
+     * @param xEnd
+     * @param yEnd
+     */
+    function drawFork(drawer, xPrev, yPrev, xEnd, yEnd) {
+        var arrowAngle = Math.atan2(yEnd - yPrev, xEnd - xPrev);
+        var perpendicularAngle = arrowAngle - (90 * Math.PI / 180);
+
+
+        // Вычисляем координаты конца перпендикулярной линии
+        var perpendicularLength = w / 2;
+        let horLength = w * 0.75;
+        var x1 = xEnd + perpendicularLength * Math.cos(perpendicularAngle); // top right point
+        var y1 = yEnd + perpendicularLength * Math.sin(perpendicularAngle); // top right point
+        var x2 = xEnd - perpendicularLength * Math.cos(perpendicularAngle); // bottom right point
+        var y2 = yEnd - perpendicularLength * Math.sin(perpendicularAngle); // bottom right point
+        let x3 = xEnd - horLength * Math.cos(arrowAngle); // left point
+        let y3 = yEnd - horLength * Math.sin(arrowAngle); // left point
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+        drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+        drawer._l(trans.TransformPointX(x2, y2), trans.TransformPointY(x2, y2));
+        drawer.ds();
+
+        drawer._e();
+    }
+
+    /**
+     * Draws vertical line ON line end
+     * @param drawer
+     * @param xPrev
+     * @param yPrev
+     * @param xEnd
+     * @param yEnd
+     * @param shift
+     */
+    function drawVerticalLine(drawer, xPrev, yPrev, xEnd, yEnd, shift) {
+        let arrowAngle = Math.atan2(yEnd - yPrev, xEnd - xPrev);
+        var drawLineAngle = arrowAngle  - (90 * Math.PI / 180);
+
+        // Вычисляем координаты конца перпендикулярной линии
+        var perpendicularLength = w / 2;
+        var x1 = xEnd + perpendicularLength * Math.cos(drawLineAngle) - shift * Math.cos(arrowAngle); // top right point for visio
+        var y1 = yEnd + perpendicularLength * Math.sin(drawLineAngle) - shift * Math.sin(arrowAngle); // top right point for visio
+        var x2 = xEnd - perpendicularLength * Math.cos(drawLineAngle) - shift * Math.cos(arrowAngle);
+        var y2 = yEnd - perpendicularLength * Math.sin(drawLineAngle) - shift * Math.sin(arrowAngle);
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+        drawer._l(trans.TransformPointX(x2, y2), trans.TransformPointY(x2, y2));
+        drawer.ds();
+
+        drawer._e();
+    }
+
+    /**
+     * Draws center ON line end
+     * @param drawer
+     * @param xPrev
+     * @param yPrev
+     * @param xEnd
+     * @param yEnd
+     * @param shift - horizontal shift distance
+     * @param w
+     * @param len
+     * @param isArrowFilled
+     */
+    function drawCircle(drawer, xPrev, yPrev, xEnd, yEnd, shift, w, len, isArrowFilled) {
+        len *= 0.75;
+        w *= 0.75;
+
+        var _ex = xPrev - xEnd;
+        var _ey = yPrev - yEnd;
+        var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+        _ex /= _elen; // cos a
+        _ey /= _elen; // sin a
+
+        var _vx = _ey;
+        var _vy = -_ex;
+
+        var tmpx = xEnd + (len / 2 + shift) * _ex; // left circle point
+        var tmpy = yEnd + (len / 2 + shift) * _ey; // left circle point
+
+        var tmpx2 = xEnd - (len / 2 - shift) * _ex; // right circle point
+        var tmpy2 = yEnd - (len / 2 - shift) * _ey; // right circle point
+
+        // left top control point
+        var cx1 = tmpx + _vx * 3*w/4;
+        var cy1 = tmpy + _vy * 3*w/4;
+        // right top control point
+        var cx2 = tmpx2 + _vx * 3*w/4;
+        var cy2 = tmpy2 + _vy * 3*w/4;
+
+        // left bottom control point
+        var cx3 = tmpx - _vx * 3*w/4;
+        var cy3 = tmpy - _vy * 3*w/4;
+        // right bottom control point
+        var cx4 = tmpx2 - _vx * 3*w/4;
+        var cy4 = tmpy2 - _vy * 3*w/4;
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(tmpx, tmpy), trans.TransformPointY(tmpx, tmpy));
+        drawer._c(trans.TransformPointX(cx1, cy1), trans.TransformPointY(cx1, cy1),
+            trans.TransformPointX(cx2, cy2), trans.TransformPointY(cx2, cy2),
+            trans.TransformPointX(tmpx2, tmpy2), trans.TransformPointY(tmpx2, tmpy2));
+
+        drawer._c(trans.TransformPointX(cx4, cy4), trans.TransformPointY(cx4, cy4),
+            trans.TransformPointX(cx3, cy3), trans.TransformPointY(cx3, cy3),
+            trans.TransformPointX(tmpx, tmpy), trans.TransformPointY(tmpx, tmpy));
+
+        stokeOrFillPath(drawer, isArrowFilled);
+        drawer._e();
+    }
+
+    /**
+     * Draws BEFORE line end
+     * @param drawer
+     * @param xPrev
+     * @param yPrev
+     * @param xEnd
+     * @param yEnd
+     * @param shift
+     */
+    function drawRhomb(drawer, xPrev, yPrev, xEnd, yEnd, shift) {
+        let isArrowFilled = false;
+        let _ex = xPrev - xEnd;
+        let _ey = yPrev - yEnd;
+        const _elen = Math.sqrt(_ex * _ex + _ey * _ey);
+        _ex /= _elen; // cos a
+        _ey /= _elen; // sin a
+
+        let isRotated = true;
+        _ex = isRotated? _ex : 1; // cos a
+        _ey = isRotated? _ey : 0; // sin a
+
+        // a now is 90 - a + invert cos
+        const _vx = _ey;
+        const _vy = -_ex;
+
+        // (xEnd, yEnd) - right arrow point
+        xEnd = xEnd + shift * _ex;
+        yEnd = yEnd + shift * _ey;
+
+        let heightScale = 0.5;
+        let widthScale = 1;
+
+        // middle arrow point
+        const tmpx = xEnd + len * widthScale * _ex;
+        const tmpy = yEnd + len * widthScale * _ey;
+
+        // (x1, y1) - middle top arrow point
+        const x1 = tmpx + _vx * w * heightScale;
+        const y1 = tmpy + _vy * w * heightScale;
+
+        // (x2, y2) - middle bottom arrow point
+        const x2 = tmpx - _vx * w * heightScale;
+        const y2 = tmpy - _vy * w * heightScale;
+
+        // most left point
+        const x3 = tmpx + len * widthScale * _ex;
+        const y3 = tmpy + len * widthScale * _ey;
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+        drawer._l(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+        drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+        drawer._l(trans.TransformPointX(x2, y2), trans.TransformPointY(x2, y2));
+
+        drawer._z();
+
+        stokeOrFillPath(drawer, isArrowFilled);
+
+        drawer._e();
+    }
+
+    /**
+     * Draws arrow BEFORE line end
+     * @param drawer
+     * @param xPrev
+     * @param yPrev
+     * @param xEnd
+     * @param yEnd
+     * @param shift
+     * @param isFilled
+     * @param isOpen
+     * @param w
+     * @param len
+     */
+    function drawArrow(drawer, xPrev, yPrev, xEnd, yEnd, shift, isFilled, isOpen, w, len) {
+        if (Asc.editor.isPdfEditor() == true) {
+            drawer.CheckDash();
+        }
+
+        var _ex = xPrev - xEnd;
+        var _ey = yPrev - yEnd;
+        var _elen = Math.sqrt(_ex*_ex + _ey*_ey);
+        _ex /= _elen;
+        _ey /= _elen;
+
+        var _vx = _ey;
+        var _vy = -_ex;
+
+        xEnd += shift * _ex;
+        yEnd += shift * _ey;
+
+        // (xEnd, yEnd) - right arrow point
+        var tmpx = xEnd + len * _ex;
+        var tmpy = yEnd + len * _ey;
+
+        // (x1, y1) - top arrow point
+        var x1 = tmpx + _vx * w/2;
+        var y1 = tmpy + _vy * w/2;
+
+        // (x3, y3) - bottom arrow point
+        var x3 = tmpx - _vx * w/2;
+        var y3 = tmpy - _vy * w/2;
+
+        drawer._s();
+        drawer._m(trans.TransformPointX(x1, y1), trans.TransformPointY(x1, y1));
+        drawer._l(trans.TransformPointX(xEnd, yEnd), trans.TransformPointY(xEnd, yEnd));
+        drawer._l(trans.TransformPointX(x3, y3), trans.TransformPointY(x3, y3));
+        if (!isOpen) {
+            drawer._z();
+        }
+        stokeOrFillPath(drawer, isFilled);
+        drawer._e();
+    }
+}
+
+
+function CShapeDrawer()
+{
+    this.Shape = null;
+    this.Graphics = null;
+    this.UniFill = null;
+    this.Ln = null;
+    this.Transform = null;
+
+    this.bIsTexture = false;
+    this.bIsNoFillAttack = false;
+    this.bIsNoStrokeAttack = false;
+    this.bDrawSmartAttack = false;
+    this.FillUniColor = null;
+    this.StrokeUniColor = null;
+    this.StrokeWidth = 0;
+
+    this.min_x = 0xFFFF;
+    this.min_y = 0xFFFF;
+    this.max_x = -0xFFFF;
+    this.max_y = -0xFFFF;
+
+    this.OldLineJoin = null;
+    this.IsArrowsDrawing = false;
+    this.IsCurrentPathCanArrows = true;
+
+    this.bIsCheckBounds = false;
+
+    this.IsRectShape = false;
+}
+
+CShapeDrawer.prototype =
+{
+    Clear : function()
+    {
+        //this.Shape = null;
+        //this.Graphics = null;
+        this.UniFill = null;
+        this.Ln = null;
+        this.Transform = null;
+
+        this.bIsTexture = false;
+        this.bIsNoFillAttack = false;
+        this.bIsNoStrokeAttack = false;
+        this.FillUniColor = null;
+        this.StrokeUniColor = null;
+        this.StrokeWidth = 0;
+
+        this.min_x = 0xFFFF;
+        this.min_y = 0xFFFF;
+        this.max_x = -0xFFFF;
+        this.max_y = -0xFFFF;
+
+        this.OldLineJoin = null;
+        this.IsArrowsDrawing = false;
+        this.IsCurrentPathCanArrows = true;
+
+        this.bIsCheckBounds = false;
+
+        this.IsRectShape = false;
+    },
+
+    isPdf : function()
+    {
+        return this.Graphics.isPdf() || this.Graphics.isNativeDrawer();
+    },
+
+    CheckPoint : function(_x,_y)
+    {
+        // TODO: !!!
+        var x = _x;
+        var y = _y;
+
+        if (false && this.Graphics.MaxEpsLine !== undefined)
+        {
+            x = this.Graphics.Graphics.m_oFullTransform.TransformPointX(_x,_y);
+            y = this.Graphics.Graphics.m_oFullTransform.TransformPointY(_x,_y);
+        }
+
+        if (x < this.min_x)
+            this.min_x = x;
+        if (y < this.min_y)
+            this.min_y = y;
+        if (x > this.max_x)
+            this.max_x = x;
+        if (y > this.max_y)
+            this.max_y = y;
+    },
+
+    CheckDash : function()
+    {
+        if (Asc.editor.isPdfEditor()) {
+            let aDash;
+            if (this.Shape.GetDashPattern)
+                aDash = this.Shape.GetDashPattern();
+            else if (this.Shape.group && this.Shape.group.GetDashPattern)
+                aDash = this.Shape.group.GetDashPattern();
+            else if (this.Shape.IsDrawing && this.Shape.IsDrawing()) {
+                if (AscCommon.DashPatternPresets[this.Ln.prstDash]) {
+                    aDash = AscCommon.DashPatternPresets[this.Ln.prstDash].slice();
+                    for (var indexD = 0; indexD < aDash.length; indexD++)
+                        aDash[indexD] *= 2 * this.StrokeWidth;
+                }
+            }
+
+            if (aDash) {
+                this.Graphics.p_dash(aDash.map(function(measure) {
+                    return measure / 2;
+                }));
+            }
+        }
+        else if (this.Ln.prstDash != null && AscCommon.DashPatternPresets[this.Ln.prstDash])
+        {
+            var _arr = AscCommon.DashPatternPresets[this.Ln.prstDash].slice();
+            for (var indexD = 0; indexD < _arr.length; indexD++)
+                _arr[indexD] *= this.StrokeWidth;
+            this.Graphics.p_dash(_arr);
+        }
+        else if (this.isPdf())
+        {
+            this.Graphics.p_dash(null);
+        }
+    },
+
+    fromShape2 : function(shape, graphics, geom)
+    {
+        this.fromShape(shape, graphics);
+
+        if (!geom && !graphics.bDrawRectWithLines)
+        {
+            this.IsRectShape = true;
+        }
+        else
+        {
+            if (geom.preset == "rect" && !graphics.bDrawRectWithLines)
+                this.IsRectShape = true;
+        }
+    },
+
+    fromShape : function(shape, graphics)
+    {
+        this.IsRectShape = false;
+        this.Shape = shape;
+        this.Graphics = graphics;
+        this.UniFill = shape.brush;
+        this.Ln = shape.pen;
+        this.Transform = shape.TransformMatrix;
+
+        this.min_x = 0xFFFF;
+        this.min_y = 0xFFFF;
+        this.max_x = -0xFFFF;
+        this.max_y = -0xFFFF;
+
+        var bIsCheckBounds = false;
+
+        if (this.UniFill == null || this.UniFill.fill == null)
+            this.bIsNoFillAttack = true;
+        else
+        {
+            var _fill = this.UniFill.fill;
+            switch (_fill.type)
+            {
+                case c_oAscFill.FILL_TYPE_BLIP:
+                {
+                    this.bIsTexture = true;
+                    break;
+                }
+                case c_oAscFill.FILL_TYPE_SOLID:
+                {
+                    if(_fill.color)
+                    {
+                        this.FillUniColor = _fill.color.RGBA;
+                    }
+                    else
+                    {
+                        this.FillUniColor = new AscFormat.CUniColor().RGBA;
+                    }
+                    break;
+                }
+                case c_oAscFill.FILL_TYPE_GRAD:
+                {
+                    var _c = _fill.colors;
+                    if (_c.length == 0)
+                        this.FillUniColor = new AscFormat.CUniColor().RGBA;
+                    else
+                    {
+                        if(_fill.colors[0].color)
+                        {
+                            this.FillUniColor = _fill.colors[0].color.RGBA;
+                        }
+                        else
+                        {
+                            this.FillUniColor = new AscFormat.CUniColor().RGBA;
+                        }
+                    }
+
+                    bIsCheckBounds = true;
+
+                    break;
+                }
+                case c_oAscFill.FILL_TYPE_PATT:
+                {
+                    bIsCheckBounds = true;
+                    break;
+                }
+                case c_oAscFill.FILL_TYPE_NOFILL:
+                {
+                    this.bIsNoFillAttack = true;
+                    break;
+                }
+                default:
+                {
+                    this.bIsNoFillAttack = true;
+                    break;
+                }
+            }
+        }
+
+        if (this.Ln == null || this.Ln.Fill == null || this.Ln.Fill.fill == null)
+        {
+            this.bIsNoStrokeAttack = true;
+        }
+        else
+        {
+            var _fill = this.Ln.Fill.fill;
+            switch (_fill.type)
+            {
+                case c_oAscFill.FILL_TYPE_BLIP:
+                {
+                    this.StrokeUniColor = new AscFormat.CUniColor().RGBA;
+                    break;
+                }
+                case c_oAscFill.FILL_TYPE_SOLID:
+                {
+                    if(_fill.color)
+                    {
+                        this.StrokeUniColor = _fill.color.RGBA;
+                    }
+                    else
+                    {
+                        this.StrokeUniColor = new AscFormat.CUniColor().RGBA;
+                    }
+                    break;
+                }
+                case c_oAscFill.FILL_TYPE_GRAD:
+                {
+                    var _c = _fill.colors;
+                    if (_c == 0)
+                        this.StrokeUniColor = new AscFormat.CUniColor().RGBA;
+                    else
+                    {
+                        if(_fill.colors[0].color)
+                        {
+                            this.StrokeUniColor = _fill.colors[0].color.RGBA;
+                        }
+                        else
+                        {
+                            this.StrokeUniColor = new AscFormat.CUniColor().RGBA;
+                        }
+                    }
+
+                    break;
+                }
+                case c_oAscFill.FILL_TYPE_PATT:
+                {
+                    if(_fill.fgClr)
+                    {
+                        this.StrokeUniColor = _fill.fgClr.RGBA;
+                    }
+                    else
+                    {
+                        this.StrokeUniColor = new AscFormat.CUniColor().RGBA;
+                    }
+                    break;
+                }
+                case c_oAscFill.FILL_TYPE_NOFILL:
+                {
+                    this.bIsNoStrokeAttack = true;
+                    break;
+                }
+                default:
+                {
+                    this.bIsNoStrokeAttack = true;
+                    break;
+                }
+            }
+
+            this.StrokeWidth = (this.Ln.w == null) ? 12700 : parseInt(this.Ln.w);
+            this.StrokeWidth /= 36000.0;
+
+            this.p_width(1000 * this.StrokeWidth);
+            
+            this.CheckDash();
+
+            if (graphics.isBoundsChecker() && !this.bIsNoStrokeAttack)
+                graphics.LineWidth = this.StrokeWidth;
+
+
+
+            if (this.Graphics.m_oContext != null && this.Ln.Join != null && this.Ln.Join.type != null)
+                this.OldLineJoin = this.Graphics.m_oContext.lineJoin;
+        }
+
+        if (this.bIsTexture || bIsCheckBounds)
+        {
+            // сначала нужно определить границы
+            this.bIsCheckBounds = true;
+            this.check_bounds();
+            this.bIsCheckBounds = false;
+        }
+    },
+
+    draw : function(geom)
+    {
+        if (this.bIsNoStrokeAttack && this.bIsNoFillAttack)
+            return;
+
+        var bIsPatt = false;
+        if (this.UniFill != null && this.UniFill.fill != null &&
+            ((this.UniFill.fill.type == c_oAscFill.FILL_TYPE_PATT) || (this.UniFill.fill.type == c_oAscFill.FILL_TYPE_GRAD)))
+        {
+            bIsPatt = true;
+        }
+
+        if (this.isPdf() && (this.bIsTexture || bIsPatt))
+        {
+            this.Graphics.put_TextureBoundsEnabled(true);
+            this.Graphics.put_TextureBounds(this.min_x, this.min_y, this.max_x - this.min_x, this.max_y - this.min_y);
+        }
+
+        if(geom)
+        {
+            geom.draw(this);
+        }
+        else
+        {
+            this._s();
+            this._m(0, 0);
+            this._l(this.Shape.extX, 0);
+            this._l(this.Shape.extX, this.Shape.extY);
+            this._l(0, this.Shape.extY);
+            this._z();
+            this.drawFillStroke(true, "norm", true && !this.bIsNoStrokeAttack);
+            this._e();
+        }
+
+        if (this.isPdf() && (this.bIsTexture || bIsPatt))
+        {
+            this.Graphics.put_TextureBoundsEnabled(false);
+        }
+
+        if (this.Graphics.isBoundsChecker() && this.Graphics.AutoCheckLineWidth)
+        {
+            this.Graphics.CorrectBounds2();
+        }
+
+        this.Graphics.p_dash(null);
+    },
+
+    p_width : function(w)
+    {
+        this.Graphics.p_width(w);
+    },
+
+    _m : function(x, y)
+    {
+        if (this.bIsCheckBounds)
+        {
+            this.CheckPoint(x, y);
+            return;
+        }
+
+        this.Graphics._m(x, y);
+    },
+
+    _l : function(x, y)
+    {
+        if (this.bIsCheckBounds)
+        {
+            this.CheckPoint(x, y);
+            return;
+        }
+
+        this.Graphics._l(x, y);
+    },
+
+    _c : function(x1, y1, x2, y2, x3, y3)
+    {
+        if (this.bIsCheckBounds)
+        {
+            this.CheckPoint(x1, y1);
+            this.CheckPoint(x2, y2);
+            this.CheckPoint(x3, y3);
+            return;
+        }
+
+        this.Graphics._c(x1, y1, x2, y2, x3, y3);
+    },
+
+    /**
+     * @param x1 - cpx
+     * @param y1 - cpy
+     * @param x2 - end x
+     * @param y2 - end y
+     */
+    _c2 : function(x1, y1, x2, y2)
+    {
+        if (this.bIsCheckBounds)
+        {
+            this.CheckPoint(x1, y1);
+            this.CheckPoint(x2, y2);
+            return;
+        }
+
+        this.Graphics._c2(x1, y1, x2, y2);
+    },
+
+    /**
+     * @param {{x: Number, y: Number, z? :Number}} startPoint
+     * @param {{x: Number, y: Number, z? :Number}[]} controlPoints
+     * @param {{x: Number, y: Number, z? :Number}} endPoint
+     */
+    _cN : function(startPoint, controlPoints, endPoint)
+    {
+        if (this.bIsCheckBounds)
+        {
+            this.CheckPoint(startPoint.x, startPoint.y);
+            controlPoints.forEach(function (controlPoint) {
+                this.CheckPoint(controlPoint.x, controlPoint.y);
+            })
+            this.CheckPoint(endPoint.x, endPoint.y);
+            return;
+        }
+
+        this.Graphics._cN(startPoint, controlPoints, endPoint);
+    },
+
+    _z : function()
+    {
+        this.IsCurrentPathCanArrows = false;
+        if (this.bIsCheckBounds)
+            return;
+
+        this.Graphics._z();
+    },
+
+    _s : function()
+    {
+        this.IsCurrentPathCanArrows = true;
+        this.Graphics._s();
+    },
+    _e : function()
+    {
+        this.IsCurrentPathCanArrows = true;
+        this.Graphics._e();
+    },
+
+    drawTransitionTextures : function(oCanvas1, dAlpha1, oCanvas2, dAlpha2)
+    {
+        const dOldGlobalAlpha = this.Graphics.m_oContext.globalAlpha;
+        const dX = this.min_x;
+        const dY = this.min_y;
+        const dW = this.max_x - this.min_x;
+        const dH = this.max_y - this.min_y;
+        this.Graphics.m_oContext.globalAlpha = dAlpha1;
+        this.Graphics.drawImage(null, dX, dY, dW, dH, undefined, null, oCanvas1);
+        this.Graphics.m_oContext.globalAlpha = dAlpha2;
+        this.Graphics.drawImage(null, dX, dY, dW, dH, undefined, null, oCanvas2);
+        this.Graphics.m_oContext.globalAlpha = dOldGlobalAlpha;
+    },
+
+	drawArrows: function (bIsSaveToPdfMode) {
+		this.IsArrowsDrawing = true;
+		this.Graphics.p_dash(null);
+
+		const graphicsCtx = this.Graphics.isTrack() && !bIsSaveToPdfMode
+			? this.Graphics.Graphics
+			: this.Graphics;
+
+		const fullTransform = bIsSaveToPdfMode
+			? (this.isPdf() ? this.Graphics.GetTransform() : this.Graphics.m_oFullTransform)
+			: graphicsCtx.m_oFullTransform;
+		const inverseTransform = AscCommon.global_MatrixTransformer.Invert(fullTransform);
+
+		const point1 = { x: fullTransform.TransformPointX(0, 0), y: fullTransform.TransformPointY(0, 0) };
+		const point2 = { x: fullTransform.TransformPointX(1, 1), y: fullTransform.TransformPointY(1, 1) };
+		const transformScaleFactor = Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2)) / Math.sqrt(2);
+
+		const lineSize = bIsSaveToPdfMode
+			? (this.isPdf() ? this.Graphics.GetLineWidth() : graphicsCtx.m_oContext.lineWidth)
+			: graphicsCtx.m_oContext.lineWidth;
+
+		const penWidth = lineSize * transformScaleFactor;
+		const minArrowSize = bIsSaveToPdfMode
+			? 2.5 / AscCommon.g_dKoef_mm_to_pix
+			: null;
+
+		const arrCoef = bIsSaveToPdfMode
+			? 1
+			: this.isArrPix ? (1 / AscCommon.g_dKoef_mm_to_pix) : 1;
+
+		const geometry = this.Shape.getGeometry();
+		const unclosedPaths = geometry.pathLst.filter(function (path) {
+			return !path.isEmpty() && !path.isClosed();
+		});
+
+		if (this.Ln.headEnd != null) {
+			const arrowLength = this.Ln.headEnd.GetLen(penWidth, minArrowSize);
+			const arrowWidth = this.Ln.headEnd.GetWidth(penWidth, minArrowSize);
+
+			const firstUnclosedPath = unclosedPaths[0];
+			const subPaths = firstUnclosedPath && firstUnclosedPath.stroke ? firstUnclosedPath.getContinuousSubpaths() : [];
+			const unclosedSubPaths = subPaths.filter(function (path) {
+				return !path.isClosed(0);
+			});
+
+			for (let i = 0; i < unclosedSubPaths.length; i++) {
+				const path = unclosedSubPaths[i];
+				const headAngle = path.getHeadArrowAngle(arrowLength / transformScaleFactor);
+
+				if (AscFormat.isRealNumber(headAngle)) {
+					// Each continuous subpath starts with a moveTo command
+					// so we can use the first point of the path as the arrow tip point
+
+					const arrowEndPoint = {
+						x: fullTransform.TransformPointX(path.ArrPathCommand[0].X, path.ArrPathCommand[0].Y),
+						y: fullTransform.TransformPointY(path.ArrPathCommand[0].X, path.ArrPathCommand[0].Y)
+					};
+					const arrowStartPoint = {
+						x: fullTransform.TransformPointX(path.ArrPathCommand[0].X - Math.cos(headAngle * Math.PI / 180), path.ArrPathCommand[0].Y - Math.sin(headAngle * Math.PI / 180)),
+						y: fullTransform.TransformPointY(path.ArrPathCommand[0].X - Math.cos(headAngle * Math.PI / 180), path.ArrPathCommand[0].Y - Math.sin(headAngle * Math.PI / 180))
+					};
+
+					DrawLineEnd(
+						arrowEndPoint.x, arrowEndPoint.y,
+						arrowStartPoint.x, arrowStartPoint.y,
+						this.Ln.headEnd.type,
+						arrCoef * arrowWidth,
+						arrCoef * arrowLength,
+						this, inverseTransform
+					);
+				}
+			}
+		}
+
+		if (this.Ln.tailEnd != null) {
+			const arrowLength = this.Ln.tailEnd.GetLen(penWidth, minArrowSize);
+			const arrowWidth = this.Ln.tailEnd.GetWidth(penWidth, minArrowSize);
+
+			const lastUnclosedPath = unclosedPaths[unclosedPaths.length - 1];
+			const subPaths = lastUnclosedPath && lastUnclosedPath.stroke ? lastUnclosedPath.getContinuousSubpaths() : [];
+			const unclosedSubPaths = subPaths.filter(function (path) {
+				return !path.isClosed(0);
+			});
+
+			for (let i = 0; i < unclosedSubPaths.length; i++) {
+				const path = unclosedSubPaths[i];
+				const tailAngle = path.getTailArrowAngle(arrowLength / transformScaleFactor);
+
+				if (AscFormat.isRealNumber(tailAngle)) {
+
+					function getPathEndPoint(commands) {
+						for (let i = commands.length - 1; i >= 0; i--) {
+							const command = commands[i];
+							if (command.id === AscFormat.lineTo) {
+								return { x: command.X, y: command.Y };
+							}
+							if (command.id === AscFormat.bezier4) {
+								return { x: command.X2, y: command.Y2 };
+							}
+						}
+						return null;
+					}
+
+					const pathEndPoint = getPathEndPoint(path.ArrPathCommand);
+					if (!pathEndPoint) {
+						continue;
+					}
+
+					const arrowEndPoint = {
+						x: fullTransform.TransformPointX(pathEndPoint.x, pathEndPoint.y),
+						y: fullTransform.TransformPointY(pathEndPoint.x, pathEndPoint.y)
+					};
+					const arrowStartPoint = {
+						x: fullTransform.TransformPointX(pathEndPoint.x - Math.cos(tailAngle * Math.PI / 180), pathEndPoint.y - Math.sin(tailAngle * Math.PI / 180)),
+						y: fullTransform.TransformPointY(pathEndPoint.x - Math.cos(tailAngle * Math.PI / 180), pathEndPoint.y - Math.sin(tailAngle * Math.PI / 180))
+					};
+
+					DrawLineEnd(
+						arrowEndPoint.x, arrowEndPoint.y,
+						arrowStartPoint.x, arrowStartPoint.y,
+						this.Ln.tailEnd.type,
+						arrCoef * arrowWidth,
+						arrCoef * arrowLength,
+						this, inverseTransform
+					);
+				}
+			}
+		}
+
+		this.IsArrowsDrawing = false;
+		this.CheckDash();
+	},
+
+	drawBlipFill: function () {
+		const graphics = this.Graphics.isTrack() ? this.Graphics.Graphics : this.Graphics;
+		if (!graphics) return;
+		const imageName = this.UniFill.fill.RasterImageId;
+		const imageUrl = AscCommon.getFullImageSrc2(imageName);
+		const imageData = Asc.editor.ImageLoader.map_image_index[imageUrl];
+
+		const isImageLoaded = imageData != undefined && imageData.Image != null && imageData.Status == AscFonts.ImageLoadStatus.Complete;
+		if (!isImageLoaded) return;
+
+		graphics.save();
+		graphics.clip();
+
+		const isTile = AscCommon.isRealObject(this.UniFill.fill.tile);
+		const isTileSupported = !(AscCommon.AscBrowser.isIE && imageName && imageName.lastIndexOf('.svg') == imageName.length - 4);
+
+		if (isTile && isTileSupported) {
+			this.drawBlipFillTile(imageData);
+		} else if (this.UniFill.IsTransitionTextures) {
+			this.drawTransitionTextures(this.UniFill.canvas1, this.UniFill.alpha1, this.UniFill.canvas2, this.UniFill.alpha2);
+		} else {
+			this.drawBlipFillStretch(imageData);
+		}
+
+		graphics.restore();
+	},
+
+	drawBlipFillTile: function (imageData) {
+		const graphics = this.Graphics.isTrack() ? this.Graphics.Graphics : this.Graphics;
+		if (!graphics) return;
+
+		const transform = this.Shape.getTransformMatrix
+			? this.Shape.getTransformMatrix()
+			: new AscCommon.CMatrix();
+		const invertedTransform = AscCommon.global_MatrixTransformer.Invert(transform);
+
+		const tile = this.UniFill.fill.tile;
+		const rotWithShape = this.UniFill.fill.rotWithShape || this.UniFill.fill.rotWithShape === null;
+
+		// Scaling
+        const imageDPI = 96; // Image DPI is not supported yet (so we use a fixed value of 96 DPI)
+        const canvasDPI = 96;
+		const scaleCoefX = AscCommon.g_dKoef_pix_to_mm * (canvasDPI / imageDPI);
+		const scaleCoefY = AscCommon.g_dKoef_pix_to_mm * (canvasDPI / imageDPI);
+
+		const scaleX = tile.sx ? (tile.sx / 1000) / 100 : 1;
+		const scaleY = tile.sy ? (tile.sy / 1000) / 100 : 1;
+
+		// Offsets (aligning and direct offsets)
+		function getAlignment(key) {
+			switch (key) {
+				case AscCommon.c_oAscRectAlignType.tl: return [0, 0];
+				case AscCommon.c_oAscRectAlignType.t: return [0.5, 0];
+				case AscCommon.c_oAscRectAlignType.tr: return [1, 0];
+				case AscCommon.c_oAscRectAlignType.l: return [0, 0.5];
+				case AscCommon.c_oAscRectAlignType.ctr: return [0.5, 0.5];
+				case AscCommon.c_oAscRectAlignType.r: return [1, 0.5];
+				case AscCommon.c_oAscRectAlignType.bl: return [0, 1];
+				case AscCommon.c_oAscRectAlignType.b: return [0.5, 1];
+				case AscCommon.c_oAscRectAlignType.br: return [1, 1];
+				default: return [0, 0];
+			}
+		}
+
+		const align = AscFormat.isRealNumber(tile.algn) && tile.algn >= 0 && tile.algn <= 8
+			? tile.algn
+			: AscCommon.c_oAscRectAlignType.tl; // AscCommon.c_oAscRectAlignType
+
+		let alignOffsetX, alignOffsetY;
+		if (rotWithShape) {
+			const shapeWidth = this.max_x - this.min_x;
+			const shapeHeight = this.max_y - this.min_y;
+			const imageWidth = imageData.Image.width * scaleX * scaleCoefX;
+			const imageHeight = imageData.Image.height * scaleY * scaleCoefY;
+
+			alignOffsetX = getAlignment(align)[0] * (shapeWidth - imageWidth);
+			alignOffsetY = getAlignment(align)[1] * (shapeHeight - imageHeight);
+
+		} else {
+			const shapeBounds = this.Shape.getBounds();
+
+			const shapeWidth = shapeBounds.w;
+			const shapeHeight = shapeBounds.h;
+			const imageWidth = imageData.Image.width * scaleX * scaleCoefX;
+			const imageHeight = imageData.Image.height * scaleY * scaleCoefY;
+
+			alignOffsetX = shapeBounds.x + getAlignment(align)[0] * (shapeWidth - imageWidth);
+			alignOffsetY = shapeBounds.y + getAlignment(align)[1] * (shapeHeight - imageHeight);
+		}
+
+		const offsetX = tile.tx ? tile.tx * AscCommonWord.g_dKoef_emu_to_mm : 0;
+		const offsetY = tile.ty ? tile.ty * AscCommonWord.g_dKoef_emu_to_mm : 0;
+
+		// Mirroring
+		const flipH = tile.flip === AscFormat.CBlipFillTile.flipTypes.x || tile.flip === AscFormat.CBlipFillTile.flipTypes.xy;
+		const flipV = tile.flip === AscFormat.CBlipFillTile.flipTypes.y || tile.flip === AscFormat.CBlipFillTile.flipTypes.xy;
+
+		// Opacity
+		const isTransparent = this.UniFill.transparent != null && this.UniFill.transparent != 255;
+		const useTransparency = this.Graphics.isSupportTextDraw() && isTransparent;
+		const alpha = useTransparency ? this.UniFill.transparent / 255 : 1;
+
+		graphics.drawBlipFillTile(
+			rotWithShape ? null : invertedTransform,
+			imageData.src,
+			alpha,
+			scaleX * scaleCoefX,
+			scaleY * scaleCoefY,
+			offsetX + alignOffsetX,
+			offsetY + alignOffsetY,
+			flipH, flipV,
+			this.UniFill.fill.canvas
+		);
+
+		graphics.m_bPenColorInit = false;
+		graphics.m_bBrushColorInit = false;
+	},
+
+	drawBlipFillStretch: function (imageData) {
+		const graphics = this.Graphics.isTrack() ? this.Graphics.Graphics : this.Graphics;
+		if (!graphics) return;
+
+		const transform = this.Shape.getTransformMatrix
+			? this.Shape.getTransformMatrix()
+			: new AscCommon.CMatrix();
+		const invertedTransform = AscCommon.global_MatrixTransformer.Invert(transform);
+
+		const rotWithShape = this.UniFill.fill.rotWithShape || this.UniFill.fill.rotWithShape === null;
+
+		// Margins
+		const fillRect = AscCommon.isRealObject(this.UniFill.fill.stretch) && AscCommon.isRealObject(this.UniFill.fill.stretch.fillRect)
+			? this.UniFill.fill.stretch.fillRect
+			: new AscFormat.CFillRect(0, 0, 100, 100);
+
+		let dstRect;
+		if (rotWithShape) {
+			const shapeWidth = this.max_x - this.min_x;
+			const shapeHeight = this.max_y - this.min_y;
+
+			dstRect = {
+				l: this.min_x + shapeWidth * fillRect.l / 100,
+				t: this.min_y + shapeHeight * fillRect.t / 100,
+				r: this.max_x - shapeWidth * (100 - fillRect.r) / 100,
+				b: this.max_y - shapeHeight * (100 - fillRect.b) / 100,
+			};
+
+		} else {
+			const shapeBounds = this.Shape.getBounds();
+
+			const shapeWidth = shapeBounds.w;
+			const shapeHeight = shapeBounds.h;
+
+			dstRect = {
+				l: shapeBounds.x + shapeWidth * (fillRect.l / 100),
+				t: shapeBounds.y + shapeHeight * (fillRect.t / 100),
+				r: shapeBounds.x + shapeWidth - shapeWidth * (100 - fillRect.r) / 100,
+				b: shapeBounds.y + shapeHeight - shapeHeight * (100 - fillRect.b) / 100,
+			};
+		}
+
+		// Opacity
+		const isTransparent = this.UniFill.transparent != null && this.UniFill.transparent != 255;
+		const useTransparency = this.IsRectShape ? true : graphics.isSupportTextDraw() && !graphics.isTrack();
+		const alpha = (isTransparent && useTransparency) ? this.UniFill.transparent / 255 : 1;
+
+		// this.UniFill.fill.srcRect === this.Shape.brush.fill.srcRect === this.Shape.blipFill.srcRect
+		const srcRect = this.UniFill.fill.srcRect;
+
+		graphics.drawBlipFillStretch(
+			rotWithShape ? null : invertedTransform,
+			imageData.src,
+			alpha,
+			dstRect.l, dstRect.t, dstRect.r - dstRect.l, dstRect.b - dstRect.t,
+			srcRect,
+			this.UniFill.fill.canvas
+		);
+	},
+
+    df: function (mode) {
+        if (mode == "none" || this.bIsNoFillAttack)
+            return;
+
+        if (this.Graphics.isTrack())
+            this.Graphics.m_oOverlay.ClearAll = true;
+
+        if (this.Graphics.isBoundsChecker() === true)
+            return;
+
+        var bIsIntegerGridTRUE = false;
+        if (this.bIsTexture) {
+            if (this.Graphics.m_bIntegerGrid === true) {
+                this.Graphics.SetIntegerGrid(false);
+                bIsIntegerGridTRUE = true;
+            }
+    
+            if (this.isPdf()) {
+                const image = getFullImageSrc2(this.UniFill.fill.RasterImageId);
+                const type = this.UniFill.fill.tile != null && this.Graphics.m_oContext !== undefined ? 1 : 0;
+                this.Graphics.put_brushTexture(image, type);
+            } else {
+                this.drawBlipFill();
+            }
+
+            if (bIsIntegerGridTRUE) {
+                this.Graphics.SetIntegerGrid(true);
+            }
+            return;
+        }
+
+        if (this.UniFill != null && this.UniFill.fill != null)
+        {
+            var _fill = this.UniFill.fill;
+            if (_fill.type == c_oAscFill.FILL_TYPE_PATT)
+            {
+                if (this.Graphics.m_bIntegerGrid === true)
+                {
+                    this.Graphics.SetIntegerGrid(false);
+                    bIsIntegerGridTRUE = true;
+                }
+
+                var _is_ctx = false;
+                if (!this.Graphics.isSupportTextDraw() || undefined === this.Graphics.m_oContext || (null == this.UniFill.transparent) || (this.UniFill.transparent == 255))
+                {
+                    _is_ctx = false;
+                }
+                else
+                {
+                    _is_ctx = true;
+                }
+
+                var _gr = this.Graphics.isTrack() ? this.Graphics.Graphics : this.Graphics;
+                var _ctx = _gr.m_oContext;
+
+                var _patt_name = AscCommon.global_hatch_names[_fill.ftype];
+                if (undefined == _patt_name)
+                    _patt_name = "cross";
+
+                var _fc = _fill.fgClr && _fill.fgClr.RGBA || {R: 0, G: 0, B: 0, A: 255};
+                var _bc = _fill.bgClr && _fill.bgClr.RGBA || {R: 255, G: 255, B: 255, A: 255};
+
+                var __fa = (null === this.UniFill.transparent) ? _fc.A : 255;
+                var __ba = (null === this.UniFill.transparent) ? _bc.A : 255;
+
+                var _test_pattern = AscCommon.GetHatchBrush(_patt_name, _fc.R, _fc.G, _fc.B, __fa, _bc.R, _bc.G, _bc.B, __ba);
+                var patt = _ctx.createPattern(_test_pattern.Canvas, "repeat");
+
+                _ctx.save();
+
+                const editorInfo = this.getEditorInfo();
+                var koefX = editorInfo.scale;
+                var koefY = editorInfo.scale;
+                if (this.Graphics.IsThumbnail)
+                {
+                    koefX = 1;
+                    koefY = 1;
+                }
+
+                // TODO: !!!
+                _ctx.translate(this.min_x, this.min_y);
+
+                if (this.Graphics.MaxEpsLine === undefined)
+                {
+                    _ctx.scale(koefX * this.Graphics.TextureFillTransformScaleX, koefY * this.Graphics.TextureFillTransformScaleY);
+                }
+                else
+                {
+                    _ctx.scale(koefX * this.Graphics.Graphics.TextureFillTransformScaleX, koefY * this.Graphics.Graphics.TextureFillTransformScaleY);
+                }
+
+                if (_is_ctx === true)
+                {
+                    var _old_global_alpha = _ctx.globalAlpha;
+
+                    if (null != this.UniFill.transparent)
+                        _ctx.globalAlpha = this.UniFill.transparent / 255;
+
+                    _ctx.fillStyle = patt;
+                    _ctx.fill();
+                    _ctx.globalAlpha = _old_global_alpha;
+                }
+                else
+                {
+                    _ctx.fillStyle = patt;
+                    _ctx.fill();
+                }
+
+                _ctx.restore();
+
+                _gr.m_bPenColorInit = false;
+                _gr.m_bBrushColorInit = false;
+
+                if (bIsIntegerGridTRUE)
+                {
+                    this.Graphics.SetIntegerGrid(true);
+                }
+                return;
+            }
+            else if (_fill.type == c_oAscFill.FILL_TYPE_GRAD)
+            {
+                if (this.Graphics.m_bIntegerGrid === true)
+                {
+                    this.Graphics.SetIntegerGrid(false);
+                    bIsIntegerGridTRUE = true;
+                }
+
+                var _is_ctx = false;
+                if (!this.Graphics.isSupportTextDraw() || undefined === this.Graphics.m_oContext || (null == this.UniFill.transparent) || (this.UniFill.transparent == 255))
+                {
+                    _is_ctx = false;
+                }
+                else
+                {
+                    _is_ctx = true;
+                }
+
+                var _gr = this.Graphics.isTrack() ? this.Graphics.Graphics : this.Graphics;
+                var _ctx = _gr.m_oContext;
+
+                var gradObj = null;
+                if (_fill.lin)
+                {
+                    var _angle = _fill.lin.angle;
+                    if (_fill.rotateWithShape === false)
+                    {
+                        var matrix_transform = this.Graphics.isTrack() ? this.Graphics.Graphics.m_oTransform : this.Graphics.m_oTransform;
+                        if (matrix_transform)
+                        {
+                            //_angle -= (60000 * this.Graphics.m_oTransform.GetRotation());
+                            _angle = AscCommon.GradientGetAngleNoRotate(_angle, matrix_transform);
+                        }
+                    }
+
+                    var points = this.getGradientPoints(this.min_x, this.min_y, this.max_x, this.max_y, _angle, _fill.lin.scale);
+                    gradObj = _ctx.createLinearGradient(points.x0, points.y0, points.x1, points.y1);
+                }
+                else if (_fill.path)
+                {
+                    var _cx = (this.min_x + this.max_x) / 2;
+                    var _cy = (this.min_y + this.max_y) / 2;
+                    var _r = Math.max(this.max_x - this.min_x, this.max_y - this.min_y) / 2;
+                    gradObj = _ctx.createRadialGradient(_cx, _cy, 1, _cx, _cy, _r);
+                }
+                else
+                {
+                    //gradObj = _ctx.createLinearGradient(this.min_x, this.min_y, this.max_x, this.min_y);
+                    var points = this.getGradientPoints(this.min_x, this.min_y, this.max_x, this.max_y, 0, false);
+                    gradObj = _ctx.createLinearGradient(points.x0, points.y0, points.x1, points.y1);
+                }
+
+                const nTransparent = this.UniFill.transparent;
+                let bUseGlobalAlpha = (null !== nTransparent && undefined !== nTransparent);
+                const aColors = _fill.colors;
+                const nClrCount = aColors.length;
+                if(_fill.path && AscCommon.AscBrowser.isMozilla && bUseGlobalAlpha)
+                {
+                    bUseGlobalAlpha = false;
+                    const dTransparent = nTransparent / 255.0;
+                    for (let nClr = 0; nClr < nClrCount; nClr++)
+                    {
+                        let oClr = aColors[nClr];
+                        gradObj.addColorStop(oClr.pos / 100000, oClr.color.getCSSWithTransparent(dTransparent));
+                    }
+                }
+                else
+                {
+                    for (let nClr = 0; nClr < nClrCount; nClr++)
+                    {
+                        let oClr = aColors[nClr];
+                        gradObj.addColorStop(oClr.pos / 100000, oClr.color.getCSSColor(nTransparent));
+                    }
+                }
+
+                _ctx.fillStyle = gradObj;
+
+                if (bUseGlobalAlpha)
+                {
+                    var _old_global_alpha = this.Graphics.m_oContext.globalAlpha;
+                    _ctx.globalAlpha = this.UniFill.transparent / 255;
+                    _ctx.fill();
+                    _ctx.globalAlpha = _old_global_alpha;
+                }
+                else
+                {
+                    _ctx.fill();
+                }
+
+                _gr.m_bPenColorInit = false;
+                _gr.m_bBrushColorInit = false;
+
+                if (bIsIntegerGridTRUE)
+                {
+                    this.Graphics.SetIntegerGrid(true);
+                }
+                return;
+            }
+        }
+
+        var rgba = this.FillUniColor;
+        if (mode == "darken")
+        {
+            var _color1 = new CShapeColor(rgba.R, rgba.G, rgba.B);
+            var rgb = _color1.darken();
+            rgba = { R: rgb.r, G: rgb.g, B: rgb.b, A: rgba.A };
+        }
+        else if (mode == "darkenLess")
+        {
+            var _color1 = new CShapeColor(rgba.R, rgba.G, rgba.B);
+            var rgb = _color1.darkenLess();
+            rgba = { R: rgb.r, G: rgb.g, B: rgb.b, A: rgba.A };
+        }
+        else if (mode == "lighten")
+        {
+            var _color1 = new CShapeColor(rgba.R, rgba.G, rgba.B);
+            var rgb = _color1.lighten();
+            rgba = { R: rgb.r, G: rgb.g, B: rgb.b, A: rgba.A };
+        }
+        else if (mode == "lightenLess")
+        {
+            var _color1 = new CShapeColor(rgba.R, rgba.G, rgba.B);
+            var rgb = _color1.lightenLess();
+            rgba = { R: rgb.r, G: rgb.g, B: rgb.b, A: rgba.A };
+        }
+        if(rgba)
+        {
+            if (this.UniFill != null && this.UniFill.transparent != null)
+                rgba.A = this.UniFill.transparent;
+            this.Graphics.b_color1(rgba.R, rgba.G, rgba.B, rgba.A);
+        }
+        this.Graphics.df();
+    },
+
+    isArrowPresent: function()
+    {
+        if(this.IsCurrentPathCanArrows && this.Ln && this.Ln.isArrowPresent() && !this.IsArrowsDrawing)
+            return true;
+        return false;
+    },
+
+    ds : function()
+    {
+        if (this.bIsNoStrokeAttack)
+            return;
+
+        if (this.Graphics.isTrack())
+            this.Graphics.m_oOverlay.ClearAll = true;
+
+        if (null != this.OldLineJoin && !this.IsArrowsDrawing)
+        {
+            switch (this.Ln.Join.type)
+            {
+                case AscFormat.LineJoinType.Round:
+                {
+                    this.Graphics.m_oContext.lineJoin = "round";
+                    break;
+                }
+                case AscFormat.LineJoinType.Bevel:
+                {
+                    this.Graphics.m_oContext.lineJoin = "bevel";
+                    break;
+                }
+                case AscFormat.LineJoinType.Empty:
+                {
+                    this.Graphics.m_oContext.lineJoin = "miter";
+                    break;
+                }
+                case AscFormat.LineJoinType.Miter:
+                {
+                    this.Graphics.m_oContext.lineJoin = "miter";
+                    break;
+                }
+            }
+        }
+
+        var isArrowsPresent = this.isArrowPresent();
+
+        var rgba = this.StrokeUniColor;
+        let nAlpha = 0xFF;
+        if(!isArrowsPresent && !this.IsArrowsDrawing || Asc.editor.isPdfEditor() || this.Shape.isShadowSp)
+        {
+            if (this.Ln && this.Ln.Fill != null && this.Ln.Fill.transparent != null)
+                nAlpha = this.Ln.Fill.transparent;
+        }
+
+        this.Graphics.p_color(rgba.R, rgba.G, rgba.B, nAlpha);
+
+        if (this.IsRectShape && this.Graphics.AddSmartRect !== undefined)
+        {
+            if (undefined !== this.Shape.extX)
+                this.Graphics.AddSmartRect(0, 0, this.Shape.extX, this.Shape.extY, this.StrokeWidth);
+            else
+                this.Graphics.ds();
+        }
+        else
+        {
+            this.Graphics.ds();
+        }
+
+        if (null != this.OldLineJoin && !this.IsArrowsDrawing)
+        {
+            this.Graphics.m_oContext.lineJoin = this.OldLineJoin;
+        }
+
+		if (isArrowsPresent) {
+			const bIsSaveToPdfMode = false;
+			this.drawArrows(bIsSaveToPdfMode);
+		}
+	},
+
+    drawFillStroke : function(bIsFill, fill_mode, bIsStroke)
+    {
+        if (this.Graphics.isTrack())
+            this.Graphics.m_oOverlay.ClearAll = true;
+
+        if(this.Graphics.isBoundsChecker())
+            return;
+        if (!this.isPdf())
+        {
+            if (bIsFill)
+                this.df(fill_mode);
+            if (bIsStroke)
+                this.ds();
+        }
+        else
+        {
+            if (this.bIsNoStrokeAttack)
+                bIsStroke = false;
+
+			var isArrowsPresent = this.isArrowPresent();
+
+            if (bIsStroke)
+            {
+                if (null != this.OldLineJoin && !this.IsArrowsDrawing)
+                {
+                    this.Graphics.put_PenLineJoin(AscFormat.ConvertJoinAggType(this.Ln.Join.type));
+                }
+
+                var rgba = this.StrokeUniColor;
+                let nAlpha = 0xFF;
+                if(!isArrowsPresent && !this.IsArrowsDrawing)
+                {
+                    if (this.Ln && this.Ln.Fill != null && this.Ln.Fill.transparent != null)
+                        nAlpha = this.Ln.Fill.transparent;
+                }
+
+                this.Graphics.p_color(rgba.R, rgba.G, rgba.B, nAlpha);
+
+            }
+
+            if (fill_mode == "none" || this.bIsNoFillAttack)
+                bIsFill = false;
+
+            var bIsPattern = false;
+
+            if (bIsFill)
+            {
+                if (this.bIsTexture)
+                {
+					const rotWithShape = this.UniFill.fill.rotWithShape || this.UniFill.fill.rotWithShape === null;
+                    if (null == this.UniFill.fill.tile)
+                    {
+                        if (null == this.UniFill.fill.srcRect)
+                        {
+                            if (this.UniFill.fill.RasterImageId && this.UniFill.fill.RasterImageId.indexOf(".svg") != 0)
+                            {
+                                this.Graphics.put_brushTexture(getFullImageSrc2(this.UniFill.fill.RasterImageId), 0);
+                            }
+                            else
+                            {
+                                if (this.UniFill.fill.canvas)
+                                {
+                                    this.Graphics.put_brushTexture(this.UniFill.fill.canvas.toDataURL("image/png"), 0);
+                                }
+                                else
+                                {
+                                    this.Graphics.put_brushTexture(getFullImageSrc2(this.UniFill.fill.RasterImageId), 0);
+                                }
+                            }
+                        }
+                        else
+                        {
+	                        this.Graphics.put_brushTexture(getFullImageSrc2(this.UniFill.fill.RasterImageId), 0);
+	                        const fillRect = getFillRect(this.min_x, this.min_y, (this.max_x - this.min_x), (this.max_y - this.min_y), this.UniFill.fill.srcRect);
+	                        this.Graphics.put_TextureBounds(fillRect.x, fillRect.y, fillRect.w, fillRect.h);
+                        }
+
+						const fillRect = AscCommon.isRealObject(this.UniFill.fill.stretch) &&
+							AscCommon.isRealObject(this.UniFill.fill.stretch.fillRect)
+							? this.UniFill.fill.stretch.fillRect
+							: null;
+
+                        if (null != fillRect)
+                        {
+                            let x, y, r, b;
+                            if (rotWithShape)
+                            {
+                                x = this.min_x + (this.max_x - this.min_x) * fillRect.l / 100;
+                                y = this.min_y + (this.max_y - this.min_y) * fillRect.t / 100;
+                                r = this.max_x - (this.max_x - this.min_x) * (100 - fillRect.r) / 100;
+                                b = this.max_y - (this.max_y - this.min_y) * (100 - fillRect.b) / 100;
+                            }
+                            else
+                            {
+                                const shapeBounds = this.Shape.getBounds();
+
+                                x = shapeBounds.x + shapeBounds.w * (fillRect.l / 100);
+                                y = shapeBounds.y + shapeBounds.h * (fillRect.t / 100);
+                                r = shapeBounds.x + shapeBounds.w - shapeBounds.w * (100 - fillRect.r) / 100;
+                                b = shapeBounds.y + shapeBounds.h - shapeBounds.h * (100 - fillRect.b) / 100;
+                            }
+                            this.Graphics.put_TextureBounds(x, y, r - x, b - y);
+                        }
+                    }
+                    else
+                    {
+                        const type = this.UniFill.fill.tile.flip + 1;
+                        let imageUrl;
+                        if (this.UniFill.fill.canvas)
+                        {
+                            imageUrl = this.UniFill.fill.canvas.toDataURL("image/png");
+                        }
+                        else
+                        {
+                            imageUrl = getFullImageSrc2(this.UniFill.fill.RasterImageId);
+                        }
+
+                        this.Graphics.put_brushTexture(imageUrl, type);
+                        const imageSize = getSourceImageSize(imageUrl);
+
+                        const sx = this.UniFill.fill.tile.sx ? (this.UniFill.fill.tile.sx / 1000) / 100 : 1;
+                        const sy = this.UniFill.fill.tile.sy ? (this.UniFill.fill.tile.sy / 1000) / 100 : 1;
+
+                        function getAlignment(key) {
+                            switch (key) {
+                                case AscCommon.c_oAscRectAlignType.tl: return [0, 0];
+                                case AscCommon.c_oAscRectAlignType.t: return [0.5, 0];
+                                case AscCommon.c_oAscRectAlignType.tr: return [1, 0];
+                                case AscCommon.c_oAscRectAlignType.l: return [0, 0.5];
+                                case AscCommon.c_oAscRectAlignType.ctr: return [0.5, 0.5];
+                                case AscCommon.c_oAscRectAlignType.r: return [1, 0.5];
+                                case AscCommon.c_oAscRectAlignType.bl: return [0, 1];
+                                case AscCommon.c_oAscRectAlignType.b: return [0.5, 1];
+                                case AscCommon.c_oAscRectAlignType.br: return [1, 1];
+                                default: return [0, 0];
+                            }
+                        }
+
+                        const align = AscFormat.isRealNumber(this.UniFill.fill.tile.algn) && this.UniFill.fill.tile.algn >= 0 && this.UniFill.fill.tile.algn <= 8
+                            ? this.UniFill.fill.tile.algn
+                            : AscCommon.c_oAscRectAlignType.tl;
+
+                        let alignOffsetX, alignOffsetY;
+                        if (rotWithShape)
+                        {
+                            alignOffsetX = getAlignment(align)[0] * (this.max_x - this.min_x - imageSize.width * sx * AscCommon.g_dKoef_pix_to_mm)
+                            alignOffsetY = getAlignment(align)[1] * (this.max_y - this.min_y - imageSize.height * sy * AscCommon.g_dKoef_pix_to_mm)
+                        }
+                        else
+                        {
+                            const shapeBounds = this.Shape.getBounds();
+
+                            alignOffsetX = shapeBounds.x + getAlignment(align)[0] * (shapeBounds.w - imageSize.width * sx * AscCommon.g_dKoef_pix_to_mm);
+                            alignOffsetY = shapeBounds.y + getAlignment(align)[1] * (shapeBounds.h - imageSize.height * sy * AscCommon.g_dKoef_pix_to_mm);
+                        }
+
+                        const tx = this.UniFill.fill.tile.tx ? this.UniFill.fill.tile.tx * AscCommonWord.g_dKoef_emu_to_mm : 0;
+                        const ty = this.UniFill.fill.tile.ty ? this.UniFill.fill.tile.ty * AscCommonWord.g_dKoef_emu_to_mm : 0;
+                        this.Graphics.put_PathOffset(tx + alignOffsetX, ty + alignOffsetY);
+                        this.Graphics.put_PathScale(sx, sy);
+                    }
+                    this.Graphics.put_BrushTextureAlpha(this.UniFill.transparent);
+                    if (!rotWithShape)
+                        this.Graphics.ResetRotation();
+                }
+                else
+                {
+                    var _fill = this.UniFill.fill;
+                    if (_fill.type == c_oAscFill.FILL_TYPE_PATT)
+                    {
+                        var _patt_name = AscCommon.global_hatch_names[_fill.ftype];
+                        if (undefined == _patt_name)
+                            _patt_name = "cross";
+
+                        var _fc = _fill.fgClr && _fill.fgClr.RGBA || {R: 0, G: 0, B: 0, A: 255};
+                        var _bc = _fill.bgClr && _fill.bgClr.RGBA || {R: 255, G: 255, B: 255, A: 255};
+
+                        var __fa = (null === this.UniFill.transparent) ? _fc.A : 255;
+                        var __ba = (null === this.UniFill.transparent) ? _bc.A : 255;
+
+                        var _pattern = AscCommon.GetHatchBrush(_patt_name, _fc.R, _fc.G, _fc.B, __fa, _bc.R, _bc.G, _bc.B, __ba);
+
+                        var _url64 = "";
+                        try
+                        {
+                            _url64 = _pattern.toDataURL();
+                        }
+                        catch (err)
+                        {
+                            _url64 = "";
+                        }
+
+                        this.Graphics.put_brushTexture(_url64, 1);
+
+                        if (null != this.UniFill.transparent)
+                            this.Graphics.put_BrushTextureAlpha(this.UniFill.transparent);
+                        else
+                            this.Graphics.put_BrushTextureAlpha(255);
+
+                        bIsPattern = true;
+                    }
+                    else if (_fill.type == c_oAscFill.FILL_TYPE_GRAD)
+                    {
+                        var points = null;
+                        if (_fill.lin)
+                        {
+                            var _angle = _fill.lin.angle;
+                            if (_fill.rotateWithShape === false && this.Graphics.m_oTransform)
+                            {
+                                //_angle -= (60000 * this.Graphics.m_oTransform.GetRotation());
+                                _angle = AscCommon.GradientGetAngleNoRotate(_angle, this.Graphics.m_oTransform);
+                            }
+
+                            points = this.getGradientPoints(this.min_x, this.min_y, this.max_x, this.max_y, _angle, _fill.lin.scale);
+                        }
+                        else if (_fill.path)
+                        {
+                            var _cx = (this.min_x + this.max_x) / 2;
+                            var _cy = (this.min_y + this.max_y) / 2;
+                            var _r = Math.max(this.max_x - this.min_x, this.max_y - this.min_y) / 2;
+
+                            points = { x0 : _cx, y0 : _cy, x1 : _cx, y1 : _cy, r0 : 1, r1 : _r };
+                        }
+                        else
+                        {
+                            points = this.getGradientPoints(this.min_x, this.min_y, this.max_x, this.max_y, 0, false);
+                        }
+
+                        this.Graphics.put_BrushGradient(_fill, points, this.UniFill.transparent);
+                    }
+                    else
+                    {
+                        var rgba = this.FillUniColor;
+                        if (fill_mode == "darken")
+                        {
+                            var _color1 = new CShapeColor(rgba.R, rgba.G, rgba.B);
+                            var rgb = _color1.darken();
+                            rgba = { R: rgb.r, G: rgb.g, B: rgb.b, A: rgba.A };
+                        }
+                        else if (fill_mode == "darkenLess")
+                        {
+                            var _color1 = new CShapeColor(rgba.R, rgba.G, rgba.B);
+                            var rgb = _color1.darkenLess();
+                            rgba = { R: rgb.r, G: rgb.g, B: rgb.b, A: rgba.A };
+                        }
+                        else if (fill_mode == "lighten")
+                        {
+                            var _color1 = new CShapeColor(rgba.R, rgba.G, rgba.B);
+                            var rgb = _color1.lighten();
+                            rgba = { R: rgb.r, G: rgb.g, B: rgb.b, A: rgba.A };
+                        }
+                        else if (fill_mode == "lightenLess")
+                        {
+                            var _color1 = new CShapeColor(rgba.R, rgba.G, rgba.B);
+                            var rgb = _color1.lightenLess();
+                            rgba = { R: rgb.r, G: rgb.g, B: rgb.b, A: rgba.A };
+                        }
+                        if (rgba)
+                        {
+                            if (this.UniFill != null && this.UniFill.transparent != null)
+                                rgba.A = this.UniFill.transparent;
+                            this.Graphics.b_color1(rgba.R, rgba.G, rgba.B, rgba.A);
+                        }
+                    }
+                }
+            }
+
+            if (bIsFill && bIsStroke)
+            {
+                if (this.bIsTexture || bIsPattern)
+                {
+                    this.Graphics.drawpath(256);
+                    this.Graphics.drawpath(1);
+                }
+                else
+                {
+                    this.Graphics.drawpath(256 + 1);
+                }
+            }
+            else if (bIsFill)
+            {
+                this.Graphics.drawpath(256);
+            }
+            else if (bIsStroke)
+            {
+                this.Graphics.drawpath(1);
+            }
+            else if (false)
+            {
+                // такого быть не должно по идее
+                this.Graphics.b_color1(0, 0, 0, 0);
+                this.Graphics.drawpath(256);
+            }
+
+			if (isArrowsPresent) {
+				const bIsSaveToPdfMode = true;
+				this.drawArrows(bIsSaveToPdfMode);
+			}
+        }
+    },
+
+    drawStrokeFillStyle : function()
+    {
+        if (!this.isPdf())
+        {
+            var gr = this.Graphics.isTrack() ? this.Graphics.Graphics : this.Graphics;
+
+            var tmp = gr.m_oBrush.Color1;
+            var p_c = gr.m_oPen.Color;
+            gr.b_color1(p_c.R, p_c.G, p_c.B, p_c.A);
+            gr.df();
+            gr.b_color1(tmp.R, tmp.G, tmp.B, tmp.A);
+        }
+        else
+        {
+            var tmp = this.Graphics.GetBrush().Color1;
+            var p_c = this.Graphics.GetPen().Color;
+            this.Graphics.b_color1(p_c.R, p_c.G, p_c.B, p_c.A);
+            this.Graphics.df();
+            this.Graphics.b_color1(tmp.R, tmp.G, tmp.B, tmp.A);
+        }
+    },
+
+    check_bounds : function()
+    {
+        this.Shape.check_bounds(this);
+    },
+
+    // common funcs
+    getNormalPoint : function(x0, y0, angle, x1, y1)
+    {
+        return AscCommon.getNormalPoint(x0, y0, angle, x1, y1);
+    },
+
+    getGradientPoints : function(min_x, min_y, max_x, max_y, _angle, scale)
+    {
+        return AscCommon.getGradientPoints(min_x, min_y, max_x, max_y, _angle, scale);
+    },
+
+    DrawPresentationComment : function(type, x, y, w, h)
+    {
+    },
+
+    getEditorInfo: function()
+    {
+        var _ret = {};
+        _ret.editor = Asc.editor || window.editor;
+        switch (_ret.editor.editorId)
+        {
+            case AscCommon.c_oEditorId.Word:
+            case AscCommon.c_oEditorId.Presentation:
+            {
+                _ret.scale = _ret.editor.WordControl.m_nZoomValue / 100;
+                break;
+            }
+            case AscCommon.c_oEditorId.Spreadsheet:
+            {
+                _ret.scale = _ret.editor.asc_getZoom();
+                break;
+            }
+            default:
+                break;
+        }
+        return _ret;
+    }
+};
+
+function ShapeToImageConverter(shape, pageIndex, sImageFormat)
+{
+    AscCommon.IsShapeToImageConverter = true;
+    var _bounds_cheker = new AscFormat.CSlideBoundsChecker();
+
+    var dKoef = AscCommon.g_dKoef_mm_to_pix;
+    var w_mm = 210;
+    var h_mm = 297;
+    var w_px = (w_mm * dKoef) >> 0;
+    var h_px = (h_mm * dKoef) >> 0;
+
+    _bounds_cheker.init(w_px, h_px, w_mm, h_mm);
+    _bounds_cheker.transform(1,0,0,1,0,0);
+
+    _bounds_cheker.AutoCheckLineWidth = true;
+	_bounds_cheker.CheckLineWidth(shape);
+    shape.draw(_bounds_cheker, /*pageIndex*/0);
+	_bounds_cheker.CorrectBounds2();
+
+    var _need_pix_width     = _bounds_cheker.Bounds.max_x - _bounds_cheker.Bounds.min_x + 1;
+    var _need_pix_height    = _bounds_cheker.Bounds.max_y - _bounds_cheker.Bounds.min_y + 1;
+
+    if (_need_pix_width <= 0 || _need_pix_height <= 0)
+        return null;
+
+    /*
+    if (shape.pen)
+    {
+        var _w_pen = (shape.pen.w == null) ? 12700 : parseInt(shape.pen.w);
+        _w_pen /= 36000.0;
+        _w_pen *= g_dKoef_mm_to_pix;
+
+        _need_pix_width += (2 * _w_pen);
+        _need_pix_height += (2 * _w_pen);
+
+        _bounds_cheker.Bounds.min_x -= _w_pen;
+        _bounds_cheker.Bounds.min_y -= _w_pen;
+    }*/
+
+	var _canvas = null;
+	if (window["NATIVE_EDITOR_ENJINE"] === true && window["IS_NATIVE_EDITOR"] !== true)
+	{
+		_need_pix_width = _need_pix_width >> 0;
+		_need_pix_height = _need_pix_height >> 0;
+		_canvas = new CNativeGraphics();
+		_canvas.width  = _need_pix_width;
+		_canvas.height = _need_pix_height;
+		_canvas.create(window["native"], _need_pix_width, _need_pix_height, _need_pix_width / dKoef, _need_pix_height / dKoef);
+		_canvas.CoordTransformOffset(-_bounds_cheker.Bounds.min_x, -_bounds_cheker.Bounds.min_y);
+		_canvas.transform(1, 0, 0, 1, 0, 0);
+		shape.draw(_canvas, 0);
+	}
+	else
+	{
+		_canvas = document.createElement("canvas");
+		_canvas.width = _need_pix_width >> 0;
+		_canvas.height = _need_pix_height >> 0;
+		var _ctx = _canvas.getContext("2d");
+		var g = new AscCommon.CGraphics;
+		g.init(_ctx, w_px, h_px, w_mm, h_mm);
+		g.m_oFontManager = AscCommon.g_fontManager;
+		g.m_oCoordTransform.tx = -_bounds_cheker.Bounds.min_x;
+		g.m_oCoordTransform.ty = -_bounds_cheker.Bounds.min_y;
+		g.transform(1, 0, 0, 1, 0, 0);
+		shape.draw(g, 0);
+	}
+
+    if (AscCommon.g_fontManager) {
+        AscCommon.g_fontManager.m_pFont = null;
+    }
+    if (AscCommon.g_fontManager2) {
+        AscCommon.g_fontManager2.m_pFont = null;
+    }
+    AscCommon.IsShapeToImageConverter = false;
+
+    var _ret = { ImageNative : _canvas, ImageUrl : "" };
+    try
+    {
+        const sFormat = sImageFormat || "image/png";
+        _ret.ImageUrl = _canvas.toDataURL(sFormat);
+    }
+    catch (err)
+    {
+        if (shape.brush != null && shape.brush.fill && shape.brush.fill.RasterImageId)
+            _ret.ImageUrl = getFullImageSrc2(shape.brush.fill.RasterImageId);
+        else
+            _ret.ImageUrl = "";
+    }
+    if (_canvas.isNativeGraphics === true)
+        _canvas.Destroy();
+    return _ret;
+}
+
+//------------------------------------------------------------export----------------------------------------------------
+window['AscCommon'] = window['AscCommon'] || {};
+window['AscCommon'].CShapeDrawer = CShapeDrawer;
+window['AscCommon'].ShapeToImageConverter = ShapeToImageConverter;
+window['AscCommon'].IsShapeToImageConverter = false;
+window['AscCommon'].DrawLineEnd = DrawLineEnd;
+})(window);
+

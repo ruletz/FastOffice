@@ -1,0 +1,12 @@
+- first toolbar removed first icons moved to second toolbar aligned t right, title centered between view and these icons
+- editing menu removed
+- collaboration removed
+- plugins removed
+- protection removed
+- collaboration removed
+- text remove from sidebar  leaving only icons
+- templates from sidebar removed
+- cloud option removed
+- rust engine
+- all languages made optional and removed beyond PT-PT and ENG
+- loading panel removed

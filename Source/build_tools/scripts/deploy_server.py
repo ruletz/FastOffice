@@ -1,0 +1,242 @@
+#!/usr/bin/env python
+
+import config
+import base
+
+import re
+import shutil
+import glob
+from tempfile import mkstemp
+
+def make():
+  base_dir = base.get_script_dir() + "/../out"
+  git_dir = base.get_script_dir() + "/../.."
+  core_dir = git_dir + "/core"
+  plugins_dir = git_dir + "/sdkjs-plugins"
+  branding = config.branding()
+
+  platforms = config.option("platform").split()
+  for native_platform in platforms:
+    if not native_platform in config.platforms:
+      continue
+
+    if (-1 != native_platform.find("_xp")):
+      print("Server module not supported on Windows XP")
+      continue
+
+    if (-1 != native_platform.find("ios")):
+      print("Server module not supported on iOS")
+      continue
+
+    if (-1 != native_platform.find("android")):
+      print("Server module not supported on Android")
+      continue
+
+    root_dir = base_dir + ("/" + native_platform + "/" + branding + "/documentserver")
+    root_dir_snap = root_dir + '-snap/var/www/onlyoffice/documentserver'
+    root_dir_snap_example = root_dir_snap + '-example'
+    if (base.is_dir(root_dir)):
+      base.delete_dir(root_dir)
+    base.create_dir(root_dir)
+
+    build_server_dir = root_dir + '/server'
+    server_dir = base.get_script_dir() + "/../../server"
+    server_admin_panel_dir = base.get_script_dir() + "/../../server-admin-panel"
+
+    base.create_dir(build_server_dir + '/DocService')
+
+    base.copy_dir(server_dir + '/Common/config', build_server_dir + '/Common/config')
+
+    base.create_dir(build_server_dir + '/DocService')
+    base.copy_exe(server_dir + "/DocService", build_server_dir + '/DocService', "docservice")
+
+    base.create_dir(build_server_dir + '/FileConverter')
+    base.copy_exe(server_dir + "/FileConverter", build_server_dir + '/FileConverter', "converter")
+
+    base.create_dir(build_server_dir + '/Metrics')
+    base.copy_exe(server_dir + "/Metrics", build_server_dir + '/Metrics', "metrics")
+    base.copy_dir(server_dir + '/Metrics/config', build_server_dir + '/Metrics/config')
+    base.create_dir(build_server_dir + '/Metrics/node_modules/modern-syslog/build/Release')
+    base.copy_file(server_dir + "/Metrics/node_modules/modern-syslog/build/Release/core.node", build_server_dir + "/Metrics/node_modules/modern-syslog/build/Release/core.node")
+
+    if "server-admin-panel" in base.get_server_addons() and base.is_exist(server_admin_panel_dir):
+      # AdminPanel server part
+      base.create_dir(build_server_dir + '/AdminPanel/server')
+      base.copy_exe(server_admin_panel_dir + "/server", build_server_dir + '/AdminPanel/server', "adminpanel")
+
+      # AdminPanel client part
+      base.create_dir(build_server_dir + '/AdminPanel/client/build')
+      base.copy_dir(server_admin_panel_dir + '/client/build', build_server_dir + '/AdminPanel/client/build')
+
+    qt_dir = base.qt_setup(native_platform)
+    platform = native_platform
+
+    core_build_dir = core_dir + "/build"
+    if ("" != config.option("branding")):
+      core_build_dir += ("/" + config.option("branding"))
+
+    platform_postfix = platform + base.qt_dst_postfix()
+
+    converter_dir = root_dir + "/server/FileConverter/bin"
+    base.create_dir(converter_dir)
+
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "kernel")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "kernel_network")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "UnicodeConverter")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "graphics")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "PdfFile")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "DjVuFile")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "XpsFile")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "OFDFile")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "HtmlFile2")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "doctrenderer")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "Fb2File")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "EpubFile")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "IWorkFile")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "HWPFile")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "DocxRenderer")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "StarMathConverter")
+    base.copy_lib(core_build_dir + "/lib/" + platform_postfix, converter_dir, "ooxmlsignature")
+    base.copy_file(git_dir + "/sdkjs/pdf/src/engine/cmap.bin", converter_dir + "/cmap.bin")
+    base.copy_exe(core_build_dir + "/bin/" + platform_postfix, converter_dir, "x2t")
+
+    #if (native_platform == "linux_64"):
+    #  base.generate_check_linux_system(git_dir + "/build_tools", converter_dir)
+
+    base.generate_doctrenderer_config(converter_dir + "/DoctRenderer.config", "../../../", "server", "", "../../../dictionaries")
+
+    # icu
+    base.deploy_icu(core_dir, converter_dir, platform)
+
+    base.copy_v8_files(core_dir, converter_dir, platform)
+
+    # builder
+    base.copy_exe(core_build_dir + "/bin/" + platform_postfix, converter_dir, "docbuilder")
+    base.copy_dir(git_dir + "/document-templates/new/en-US", converter_dir + "/empty")
+
+    # correct mac frameworks
+    if (0 == platform.find("mac")):
+      base.for_each_framework(converter_dir, "mac", callbacks=[base.generate_plist], max_depth=1)
+
+    # js
+    js_dir = root_dir
+    base.copy_dir(base_dir + "/js/" + branding + "/builder/sdkjs", js_dir + "/sdkjs")
+    base.copy_dir(base_dir + "/js/" + branding + "/builder/web-apps", js_dir + "/web-apps")
+    for file in glob.glob(js_dir + "/web-apps/apps/*/*/*.js.map") \
+              + glob.glob(js_dir + "/web-apps/apps/*/mobile/dist/js/*.js.map"):
+      base.delete_file(file)
+
+    base.create_x2t_js_cache(converter_dir, "server", platform)
+
+    # add embed worker code
+    base.cmd_in_dir(git_dir + "/sdkjs/common/embed", "python", ["make.py", js_dir + "/web-apps/apps/api/documents/api.js"])
+
+    # plugins
+    base.create_dir(js_dir + "/sdkjs-plugins")
+    base.copy_marketplace_plugin(js_dir + "/sdkjs-plugins", False, True)
+    if ("1" == config.option("preinstalled-plugins")):
+      base.copy_sdkjs_plugins(js_dir + "/sdkjs-plugins", False, True)
+      base.copy_sdkjs_plugins_server(js_dir + "/sdkjs-plugins", False, True)
+    else:
+      base.generate_sdkjs_plugin_list(js_dir + "/sdkjs-plugins/plugin-list-default.json")
+    base.create_dir(js_dir + "/sdkjs-plugins/v1")
+    base.download("https://onlyoffice.github.io/sdkjs-plugins/v1/plugins.js", js_dir + "/sdkjs-plugins/v1/plugins.js")
+    base.download("https://onlyoffice.github.io/sdkjs-plugins/v1/plugins-ui.js", js_dir + "/sdkjs-plugins/v1/plugins-ui.js")
+    base.download("https://onlyoffice.github.io/sdkjs-plugins/v1/plugins.css", js_dir + "/sdkjs-plugins/v1/plugins.css")
+    base.support_old_versions_plugins(js_dir + "/sdkjs-plugins")
+
+    # tools
+    tools_dir = root_dir + "/server/tools"
+    base.create_dir(tools_dir)
+    base.copy_exe(core_build_dir + "/bin/" + platform_postfix, tools_dir, "allfontsgen")
+    base.copy_exe(core_build_dir + "/bin/" + platform_postfix, tools_dir, "allthemesgen")
+    if ("1" != config.option("preinstalled-plugins")):
+      base.copy_exe(core_build_dir + "/bin/" + platform_postfix, tools_dir, "pluginsmanager")
+
+    branding_dir = server_dir + "/branding"
+    if("" != config.option("branding") and "onlyoffice" != config.option("branding")):
+      branding_dir = git_dir + '/' + config.option("branding") + '/server'
+
+    #dictionaries
+    base.copy_dictionaries(server_dir + "/../dictionaries", root_dir + "/dictionaries")
+
+    if (0 == platform.find("win")):
+      exec_ext = '.exe'
+    else:
+      exec_ext = ''
+
+    #schema
+    schema_files = server_dir + '/schema'
+    schema = build_server_dir + '/schema'
+    base.create_dir(schema)
+    base.copy_dir(schema_files, schema)
+
+    #core-fonts
+    core_fonts_files = server_dir + '/../core-fonts'
+    core_fonts = build_server_dir + '/../core-fonts'
+    base.create_dir(core_fonts)
+    base.copy_dir_content(core_fonts_files, core_fonts, "", ".git")
+
+    #document-templates
+    document_templates_files = server_dir + '/../document-templates'
+    document_templates = build_server_dir + '/../document-templates'
+    base.copy_dir(document_templates_files + '/new', document_templates + '/new')
+    base.copy_dir(document_templates_files + '/sample', document_templates + '/sample')
+
+    #document-formats
+    document_formats_files = server_dir + '/../document-formats'
+    document_formats = build_server_dir + '/../document-formats'
+    base.create_dir(document_formats)
+    base.copy_file(document_formats_files + '/onlyoffice-docs-formats.json', document_formats + '/onlyoffice-docs-formats.json')
+
+    #license
+    license_file1 = server_dir + '/LICENSE.txt'
+    license_file2 = server_dir + '/3rd-Party.txt'
+    license_dir = server_dir + '/license'
+    license = build_server_dir + '/license'
+    base.copy_file(license_file1, build_server_dir)
+    base.copy_file(license_file2, build_server_dir)
+    base.copy_dir(license_dir, license)
+    base.copy_dir(server_dir + '/dictionaries', build_server_dir + '/dictionaries')
+
+    #branding
+    welcome_files = branding_dir + '/welcome'
+    welcome = build_server_dir + '/welcome'
+    base.create_dir(welcome)
+    base.copy_dir(welcome_files, welcome)
+
+    info_files = branding_dir + '/info'
+    info = build_server_dir + '/info'
+    base.create_dir(info)
+    base.copy_dir(info_files, info)
+
+    # example
+    build_example_dir = root_dir + '-example'
+    bin_example_dir = base.get_script_dir() + "/../../document-server-integration/web/documentserver-example/nodejs"
+
+    base.create_dir(build_example_dir)
+    base.copy_exe(bin_example_dir, build_example_dir, "example")
+    base.copy_dir(bin_example_dir + "/config", build_example_dir + "/config")
+
+    # snap
+    if (0 == platform.find("linux")):
+      if (base.is_dir(root_dir_snap)):
+        base.delete_dir(root_dir_snap)
+      base.create_dir(root_dir_snap)
+      base.copy_dir(root_dir, root_dir_snap)
+      base.copy_dir(server_dir + '/DocService/node_modules', root_dir_snap + '/server/DocService/node_modules')
+      base.copy_dir(server_dir + '/DocService/sources', root_dir_snap + '/server/DocService/sources')
+      base.copy_dir(server_dir + '/DocService/public', root_dir_snap + '/server/DocService/public')
+      base.delete_file(root_dir_snap + '/server/DocService/docservice')
+      base.copy_dir(server_dir + '/FileConverter/node_modules', root_dir_snap + '/server/FileConverter/node_modules')
+      base.copy_dir(server_dir + '/FileConverter/sources', root_dir_snap + '/server/FileConverter/sources')
+      base.delete_file(root_dir_snap + '/server/FileConverter/converter')
+      base.copy_dir(server_dir + '/Common/node_modules', root_dir_snap + '/server/Common/node_modules')
+      base.copy_dir(server_dir + '/Common/sources', root_dir_snap + '/server/Common/sources')
+      if (base.is_dir(root_dir_snap_example)):
+        base.delete_dir(root_dir_snap_example)
+      base.create_dir(root_dir_snap_example)
+      base.copy_dir(bin_example_dir + '/..', root_dir_snap_example)
+      base.delete_file(root_dir_snap + '/example/nodejs/example')
+
+  return

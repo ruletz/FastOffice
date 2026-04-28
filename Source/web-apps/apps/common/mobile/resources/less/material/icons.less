@@ -1,0 +1,54 @@
+// @common-image-path - defined in webpack config
+
+.device-android {
+    i.icon {
+        &.icon_mask {
+            background-color: @text-normal;
+        }
+        &.icon-logo {
+            width: 100px;
+            height: 20px;
+            background: ~"url(@{common-image-path}/header/logo-android.svg) no-repeat center";
+            background-size: contain;
+        }
+    }
+    .dropdown-list {
+        i.icon {
+            &.icon-radio {
+                width: 24px;
+                height: 24px;
+                .encoded-svg-mask('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M9 16L4 11L3 12L9 18L20 7L19 6L9 16Z" /></svg>', @brandColor);
+            }
+        }
+    }
+    .icon-svg {
+        &.icon-svg__mask {
+            fill: @text-normal;
+            vertical-align: middle;
+        }
+    }
+    .navbar {
+        .icon-svg {
+            fill: @toolbar-icons;
+
+            &.white {
+                fill: @fill-white;
+            }
+            &.inactive {
+                fill: @text-tertiary;
+            }
+            &.active {
+                fill: @brandColor;
+            }
+            &.close {
+                fill: @brandColor;
+            }
+        }
+
+        i.icon {
+            &.icon-back {
+                color: @toolbar-icons;
+            }
+        }
+    }
+}

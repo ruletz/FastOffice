@@ -1,0 +1,89 @@
+.statusbar {
+
+    .status-label {
+        position: relative;
+    }
+
+    #status-label-pages, #status-label-zoom {
+        cursor: pointer;
+    }
+
+    #status-label-zoom {
+        text-align: center;
+    }
+
+    #btn-zoom-topage, #btn-zoom-towidth {
+        .margin-right-8();
+    }
+
+    .status-group {
+        white-space: nowrap;
+        &.dropup {
+            position: static;
+        }
+
+        .status-label.margin-top-large {
+            margin-top: 6px;
+        }
+
+        button.margin-top-small,
+        .margin-top-small > button,
+        .margin-top-small > .btn-group {
+            margin-top: calc(@statusbar-height-ie - @x-small-btn-size-ie);
+            margin-top: calc(@statusbar-height - @x-small-btn-size);
+        }
+
+        #btn-zoom-up {
+            .margin-right-10();
+        }
+    }
+
+    .separator {
+        margin: 0 6px;
+
+        &.short {
+            height: @statusbar-height-ie;
+            height: @statusbar-height;
+        }
+
+        &.space {
+            margin: 0px 2px;
+            border: none;
+        }
+    }
+
+    .cnt-zoom {
+        display: inline-block;
+        vertical-align: middle;
+        .dropdown-menu {
+            min-width: 80px;
+            .margin-left(-4px);
+
+            li {
+                > a {
+                    text-align: center;
+                    padding-left: 15px;
+                    padding-right: 15px;
+                }
+            }
+        }
+    }
+
+    #status-goto-box {
+        padding: 10px;
+        .margin-left(40px);
+        margin-bottom: 2px;
+        min-width: 130px;
+
+        > label {
+            display: inline-block;
+            .margin-right-10();
+            line-height: 22px;
+        }
+
+        > input[type=text] {
+            width: 50px;
+            display: inline-block;
+        }
+    }
+}

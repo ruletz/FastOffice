@@ -1,0 +1,36 @@
+# Binaries and large files
+*.dll
+*.exe
+*.pak
+*.dat
+*.bin
+*.lnk
+*.docx
+*.db
+
+# OnlyOffice specific large directories
+app/
+app_backup_safe/
+app_backup_stable/
+app_broken/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+deep_opt_log.txt
+optimize_log.txt
+speed_log.txt
+server_err.txt
+
+# Temporary/Backup files
+*.tmp
+*.bak
+"New Documento de Texto.txt"
+
+# OS generated files
+.DS_Store
+Thumbs.db

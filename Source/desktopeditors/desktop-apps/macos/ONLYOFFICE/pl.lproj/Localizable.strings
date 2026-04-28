@@ -1,0 +1,231 @@
+/* No comment provided by engineer. */
+"%@ Help" = "%@ Pomoc";
+
+/* No comment provided by engineer. */
+"About %@" = "O %@";
+
+/* No comment provided by engineer. */
+"Acknowledgments" = "Podziękowania";
+
+/* No comment provided by engineer. */
+"Before signing the document, it must be saved." = "Dokument należy zapisać przed jego podpisaniem.";
+
+/* No comment provided by engineer. */
+"Cancel" = "Anuluj";
+
+/* No comment provided by engineer. */
+"Cannot open file of Digital Signature" = "Nie można otworzyć pliku Podpisu Cyfrowego";
+
+/* No comment provided by engineer. */
+"Cannot open file of Private Key" = "Nie można otworzyć pliku Klucza Prywatnego";
+
+/* No comment provided by engineer. */
+"Cannot open folder of the file location." = "Nie można otworzyć folderu lokalizacji pliku.";
+
+/* No comment provided by engineer. */
+"Comma-Separated Values" = "Wartości rozdzielone przecinkiem (*.csv)";
+
+/* No comment provided by engineer. */
+"Create portal" = "Stwórz portal";
+
+/* No comment provided by engineer. */
+"Delete and Quit" = "Usuń i Zamknij";
+
+/* No comment provided by engineer. */
+"DjVu File" = "Dokument cyfrowy (*.djvu)";
+
+/* No comment provided by engineer. */
+"Do you want to save the changes made to the document \"%@\"?" = "Czy chcesz zapisać zmiany dokonane w dokumencie \"%@\"?";
+
+/* No comment provided by engineer. */
+"Document %ld.docx" = "Dokument %ld.docx";
+
+/* No comment provided by engineer. */
+"Document %ld.pdf" = "Dokument %ld.pdf";
+
+/* No comment provided by engineer. */
+"Document template" = "Szablon dokumentu Word Open XML (*.dotx)";
+
+/* No comment provided by engineer. */
+"Don't Save" = "Nie zapisuj";
+
+/* No comment provided by engineer. */
+"Excel 97-2003 Spreadsheet" = "Arkusz kalkulacyjny Excel 97-2003 (*.xls)";
+
+/* No comment provided by engineer. */
+"Excel 2007 Spreadsheet" = "Arkusz kalkulacyjny Open Office XML (*.xlsx)";
+
+/* No comment provided by engineer. */
+"FictionBook File" = "Plik FictionBook 2 (*.fb2)";
+
+/* No comment provided by engineer. */
+"File \"%@\" can not be open or not exist." = "Plik „% @” nie może być otworzony lub nie istnieje.";
+
+/* No comment provided by engineer. */
+"File can not be open." = "Nie można otworzyć pliku.";
+
+/* No comment provided by engineer. */
+"File Format:" = "Format Pliku:";
+
+/* No comment provided by engineer. */
+"Hide %@" = "Ukryj %@";
+
+/* No comment provided by engineer. */
+"If you don't review your documents, all your changeses will be lost." = "Jeśli nie sprawdzisz swoich dokumentów, wszystkie zmiany zostaną utracone.";
+
+/* No comment provided by engineer. */
+"If you have already purchased %@, you should find your activation key in an email confirmation." = "Jeśli zakupiłeś już %@, Twój klucz aktywacyjny powinien znajdować się w e-mailu potwierdzającym.";
+
+/* No comment provided by engineer. */
+"License Agreement" = "Umowa licencyjna";
+
+/* No comment provided by engineer. */
+"Mobipocket e-book" = "E-Book Mobipocket (*.mobi)";
+
+/* No comment provided by engineer. */
+"new-document" = "Nowy dokument";
+
+/* No comment provided by engineer. */
+"new-pdfform" = "Nowy PDF";
+
+/* No comment provided by engineer. */
+"new-presentation" = "Nowa prezentacja";
+
+/* No comment provided by engineer. */
+"new-spreadsheet" = "Nowy arkusz kalkulacyjny";
+
+/* No comment provided by engineer. */
+"No" = "Nie";
+
+/* No comment provided by engineer. */
+"OK" = "OK";
+
+/* No comment provided by engineer. */
+"ONLYOFFICE can not open the Digital Signature file. Try opening another file." = "ONLYOFFICE nie może otworzyć pliku Podpisu Cyfrowego. Spróbuj otworzyć inny plik.";
+
+/* No comment provided by engineer. */
+"ONLYOFFICE can not open the Private Key. Try opening another file." = "ONLYOFFICE nie może otworzyć Kucza Prywatnego. Spróbuj otworzyć inny plik.";
+
+/* No comment provided by engineer. */
+"OpenDocument Document Template" = "Szablon dokumentu OpenDocument (*.ott)";
+
+/* No comment provided by engineer. */
+"OpenDocument Presentation Template" = "Szablon prezentacji OpenDocument (*.otp)";
+
+/* No comment provided by engineer. */
+"OpenDocument Spreadsheet Template" = "Szablon arkusza kalkulacyjnego OpenDocument (*.ots)";
+
+/* No comment provided by engineer. */
+"Opening" = "Otwieranie";
+
+/* No comment provided by engineer. */
+"OpenOffice Document" = "Plik tekstowy OpenDocument (*.odt)";
+
+/* No comment provided by engineer. */
+"OpenOffice Presentation" = "Prezentacja OpenDocument (*.odp)";
+
+/* No comment provided by engineer. */
+"OpenOffice Spreadsheet" = "Arkusz Kalkulacyjny OpenDocument (*.ods)";
+
+/* No comment provided by engineer. */
+"PDF File" = "Przenośny document (*.pdf)";
+
+/* No comment provided by engineer. */
+"PDF/A File" = "Przenośny document /A (*.pdf)";
+
+/* No comment provided by engineer. */
+"Plain Text" = "Zwykły Tekst (*.txt)";
+
+/* No comment provided by engineer. */
+"PowerPoint 97-2003 Presentation" = "Prezentacja PowerPoint 97-2003 (*.ppt)";
+
+/* No comment provided by engineer. */
+"PowerPoint 2007 Presentation" = "Prezentacja Open Office XML (*.pptx)";
+
+/* No comment provided by engineer. */
+"PowerPoint Slide Show" = "Pokaz slajdów Open Office XML (*.ppsx)";
+
+/* No comment provided by engineer. */
+"Preparing..." = "Przygotowywanie…";
+
+/* No comment provided by engineer. */
+"Presentation %ld.pptx" = "Prezentacja %ld.pptx";
+
+/* No comment provided by engineer. */
+"Presentation template" = "Szablon prezentacji PowerPoint Open XML (*.potx)";
+
+/* No comment provided by engineer. */
+"Presenter View" = "Widok Prezentera";
+
+/* No comment provided by engineer. */
+"Quit %@" = "Zakończ %@";
+
+/* No comment provided by engineer. */
+"Review Changes..." = "Sprawdź Zmiany...";
+
+/* No comment provided by engineer. */
+"Rich Text Document" = "Plik w formacie Rich Text (*.rtf)";
+
+/* No comment provided by engineer. */
+"Save" = "Zapisz";
+
+/* No comment provided by engineer. */
+"Save the document?" = "Czy zapisać dokument?";
+
+/* No comment provided by engineer. */
+"Signature Details" = "Szczegóły sygnatury";
+
+/* No comment provided by engineer. */
+"Spreadsheet %ld.xlsx" = "Arkusz kalkulacyjny %ld.xlsx";
+
+/* No comment provided by engineer. */
+"Spreadsheet template" = "Szablon arkusza kalkulacyjnego Excel Open XML (*.xltx)";
+
+/* No comment provided by engineer. */
+"Thank you for evaluating %@!" = "Dziękujemy za ocenę %@!";
+
+/* No comment provided by engineer. */
+"The document \"%@\" must be built. Continue?" = "Dokument \"%@\" musi zostać utworzony. Kontynuować?";
+
+/* No comment provided by engineer. */
+"To open the file location, it must be saved." = "Aby otworzyć lokalizację pliku, należy go zapisać.";
+
+/* No comment provided by engineer. */
+"Unconfirmed" = "Niepotwierdzone";
+
+/* No comment provided by engineer. */
+"Untitled" = "Bez Nazwy";
+
+/* No comment provided by engineer. */
+"Web Page" = "Strona Internetowa";
+
+/* No comment provided by engineer. */
+"With access to pro features" = "Z dostępem do funkcji pro";
+
+/* No comment provided by engineer. */
+"Word 97-2003 Document" = "Dokument Word 97-2003 (*.doc)";
+
+/* No comment provided by engineer. */
+"Word 2007 Document" = "Dokument Open Office XML (*.docx)";
+
+/* No comment provided by engineer. */
+"XML Paper Specification" = "Dokument OpenXPS (*.xps)";
+
+/* No comment provided by engineer. */
+"Yes" = "Tak";
+
+/* No comment provided by engineer. */
+"You have %ld %@ documents with unconfirmed changes. Do you want to review these changes before quitting?" = "Posiadasz %1$ld %2$@ dokumenty z niepotwierdzonymi zmianami. Czy chcesz sprawdzić te zmiany przed zamknięciem?";
+
+/* No comment provided by engineer. */
+"You have successfully activated %@." = "Pomyślnie aktywowano % @.";
+
+/* No comment provided by engineer. */
+"Your changes will be lost if you don’t save them." = "Twoje zmiany zostaną utracone, jeśli ich nie zapiszesz.";
+
+/* No comment provided by engineer. */
+"Your subscription has expired.\n\nThe program works in the non-activated mode.\n\nNow you can prolong or upgrade your subscription with a discount." = "Twoja subskrypcja wygasła.\n\nProgram działa w trybie nieaktywowanym.\n\nTylko teraz możesz przedłużyć lub zaktualizować swoją subskrypcję ze specjalną zniżką.";
+
+/* No comment provided by engineer. */
+"Your subscription is about to expire\n(%d days left).\n\nWe have a special offer for you." = "Twoja subskrypcja wkrótce wygaśnie\n(pozostało %d dni)\n\nMamy dla Ciebie specjalną ofertę.";
+

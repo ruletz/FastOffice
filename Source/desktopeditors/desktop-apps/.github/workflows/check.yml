@@ -1,0 +1,50 @@
+name: Spellcheck changelogs
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '**'
+    paths:
+      - 'macos/ONLYOFFICE/update/updates/ONLYOFFICE/changes/**'
+      - '.aspell.*.pws'
+
+jobs:
+  spellchecker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup aspell
+        run: |
+          sudo apt-get -y update && \
+          sudo apt-get -y install aspell aspell-en aspell-ru
+      - name: Run spellchecker for english changelogs
+        if: always()
+        run: |
+          for d in macos/ONLYOFFICE/update/updates/ONLYOFFICE/changes/*/ ; do
+            if [ -f ${d}changes.html ]; then
+              echo "Checking ${d}changes.html"
+              SPELLCHECK_OUT=$(cat ${d}changes.html \
+                | aspell --lang=en --encoding=utf-8 \
+                  --mode=html --personal=./.aspell.en.pws list)
+              if [ $(echo -n $SPELLCHECK_OUT | wc -c) -ne 0 ]; then
+                echo $SPELLCHECK_OUT && RC=1
+              fi
+            fi
+          done
+          exit ${RC:-0}
+      - name: Run spellchecker for russian changelogs
+        if: always()
+        run: |
+          for d in macos/ONLYOFFICE/update/updates/ONLYOFFICE/changes/*/ ; do
+            if [ -f ${d}changes.ru.html ]; then
+              echo "Checking ${d}changes.ru.html"
+              SPELLCHECK_OUT=$(cat ${d}changes.ru.html \
+                | aspell --lang=ru --encoding=utf-8 \
+                  --mode=html --personal=./.aspell.ru.pws list)
+              if [ $(echo -n $SPELLCHECK_OUT | wc -c) -ne 0 ]; then
+                echo $SPELLCHECK_OUT && RC=1
+              fi
+            fi
+          done
+          exit ${RC:-0}

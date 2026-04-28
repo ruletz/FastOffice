@@ -1,0 +1,63 @@
+.extended-color-dlg {
+    .box {
+        & > div {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .hsb-colorpicker {
+            display: inline;
+            width:225px;
+            height:200px;
+        }
+
+        label {
+            font-weight: normal;
+            .font-size-medium();
+            margin-bottom: 0;
+            vertical-align: middle;
+
+            &.color-label {
+                text-align: center;
+                width: 100%;
+            }
+
+            &.input-label {
+                width: 12px;
+            }
+        }
+
+        .color-field-wrapper {
+            border-radius: 2px;
+            border: @scaled-one-px-value-ie solid @border-regular-control-ie;
+            border: @scaled-one-px-value solid @border-regular-control;
+            padding: 1px;
+        }
+
+        .color-cnt {
+            width: 63px;
+            height: 20px;
+            background-color: transparent;
+            &.top {
+                border-bottom: none;
+            }
+            &.bottom {
+                border-top: none;
+            }
+        }
+
+        .color-transparent {
+            border: @scaled-one-px-value-ie solid @border-color-shading-ie;
+            border: @scaled-one-px-value solid @border-color-shading;
+
+            &:before {
+                height: 64px;
+                transform: translate(29px, -22px) rotate(73deg);
+
+                .rtl & {
+                    transform: translate(-29px, -22px) rotate(73deg);
+                }
+            }
+        }
+    }
+}

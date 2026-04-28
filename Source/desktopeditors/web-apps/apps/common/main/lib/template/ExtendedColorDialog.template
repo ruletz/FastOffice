@@ -1,0 +1,30 @@
+<div class="box">
+    <div id="id-hsb-colorpicker">
+    </div>
+    <div class="color-info" style="">
+        <div class="margin-left-15">
+            <label class="color-label"><%= txtNew %></label>
+            <div class="color-field-wrapper">
+                <div id="field-new-color" class="color-cnt top"></div>
+                <div id="field-start-color" class="color-cnt bottom"></div>
+            </div>
+            <label class="color-label"><%= txtCurrent %></label>
+        </div>
+        <div style="padding:10px 0 2px 0;">
+            <label class="input-label">R</label>
+            <div id="extended-spin-r" class="display-inline-block-middle"></div>
+        </div>
+        <div style="padding:2px 0;">
+            <label class="input-label">G</label>
+            <div id="extended-spin-g" class="display-inline-block-middle"></div>
+        </div>
+        <div style="padding:2px 0;">
+            <label class="input-label">B</label>
+            <div id="extended-spin-b" class="display-inline-block-middle"></div>
+        </div>
+        <div style="padding:10px 0 0 0;">
+            <label class="input-label" style="width:12px;">#</label>
+            <input id="extended-text-color" type="text" role="textbox" style="width:67px;display:inline-block;" class="vertical-align-middle">
+        </div>
+    </div>
+</div>

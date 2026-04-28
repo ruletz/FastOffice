@@ -1,0 +1,17 @@
+out/
+makefiles/
+.qmake.stash
+config
+**/__pycache__
+*.pyc
+*.*~
+**~
+*.DS_Store
+.idea
+scripts/license_checker/reports
+tests/puppeteer/node_modules
+tests/puppeteer/work_directory
+tests/puppeteer/package.json
+tests/puppeteer/package-lock.json
+scripts/sdkjs_common/jsdoc/node_modules
+scripts/sdkjs_common/jsdoc/package-lock.json

@@ -1,0 +1,79 @@
+#pragma code_page(65001)
+#include "src/resource.h"
+
+IDI_ICON1       ICON    DISCARDABLE APP_ICON_PATH
+IDI_ICON2       ICON    DISCARDABLE "./res/icons/ppt.ico"
+IDI_ICON3       ICON    DISCARDABLE "./res/icons/pps.ico"
+IDI_ICON4       ICON    DISCARDABLE "./res/icons/odp.ico"
+IDI_ICON5       ICON    DISCARDABLE "./res/icons/djvu.ico"
+IDI_ICON6       ICON    DISCARDABLE "./res/icons/pdf.ico"
+IDI_ICON7       ICON    DISCARDABLE "./res/icons/xps.ico"
+IDI_ICON8       ICON    DISCARDABLE "./res/icons/docx.ico"
+IDI_ICON9       ICON    DISCARDABLE "./res/icons/ppsx.ico"
+IDI_ICON10      ICON    DISCARDABLE "./res/icons/pptx.ico"
+IDI_ICON11      ICON    DISCARDABLE "./res/icons/xlsx.ico"
+IDI_ICON12      ICON    DISCARDABLE "./res/icons/doc.ico"
+IDI_ICON13      ICON    DISCARDABLE "./res/icons/oform.ico"
+IDI_ICON14      ICON    DISCARDABLE "./res/icons/docxf.ico"
+IDI_ICON15      ICON    DISCARDABLE "./res/icons/word.ico"
+IDI_ICON16      ICON    DISCARDABLE "./res/icons/cell.ico"
+IDI_ICON17      ICON    DISCARDABLE "./res/icons/slide.ico"
+IDI_ICON18      ICON    DISCARDABLE "./res/icons/form.ico"
+IDI_ICON19      ICON    DISCARDABLE "./res/icons/odt.ico"
+IDI_ICON20      ICON    DISCARDABLE "./res/icons/rtf.ico"
+IDI_ICON21      ICON    DISCARDABLE "./res/icons/txt.ico"
+IDI_ICON22      ICON    DISCARDABLE "./res/icons/html.ico"
+IDI_ICON23      ICON    DISCARDABLE "./res/icons/xls.ico"
+IDI_ICON24      ICON    DISCARDABLE "./res/icons/ods.ico"
+IDI_ICON25      ICON    DISCARDABLE "./res/icons/csv.ico"
+IDI_ICON26      ICON    DISCARDABLE "./res/icons/uninstall.ico"
+IDI_ICON27      ICON    DISCARDABLE "./res/icons/pot.ico"
+IDI_ICON28      ICON    DISCARDABLE "./res/icons/pptm.ico"
+IDI_ICON29      ICON    DISCARDABLE "./res/icons/epub.ico"
+IDI_ICON30      ICON    DISCARDABLE "./res/icons/fb2.ico"
+IDI_ICON31      ICON    DISCARDABLE "./res/icons/dotx.ico"
+IDI_ICON32      ICON    DISCARDABLE "./res/icons/oxps.ico"
+IDI_ICON33      ICON    DISCARDABLE "./res/icons/xlsb.ico"
+IDI_ICON34      ICON    DISCARDABLE "./res/icons/menu.ico"
+IDI_ICON35      ICON    DISCARDABLE "./res/icons/fods.ico"
+IDI_ICON36      ICON    DISCARDABLE "./res/icons/fodt.ico"
+IDI_ICON37      ICON    DISCARDABLE "./res/icons/vsdx.ico"
+IDI_ICON38      ICON    DISCARDABLE "./res/icons/xlsm.ico"
+IDI_ICON39      ICON    DISCARDABLE "./res/icons/pages.ico"
+IDI_ICON40      ICON    DISCARDABLE "./res/icons/numbers.ico"
+IDI_ICON41      ICON    DISCARDABLE "./res/icons/key.ico"
+
+#include <windows.h>
+#include "src/version.h"
+
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "./res/manifest/projicons.exe.manifest"
+
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     VER_FILEVERSION
+PRODUCTVERSION  VER_PRODUCTVERSION
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK VER_LANG_AND_CHARSET_STR
+        BEGIN
+            VALUE "CompanyName",        VER_COMPANYNAME_STR
+            VALUE "FileDescription",    VER_FILEDESCRIPTION_STR
+            VALUE "FileVersion",        VER_FILEVERSION_STR
+            VALUE "InternalName",       VER_INTERNALNAME_STR
+            VALUE "LegalCopyright",     VER_LEGALCOPYRIGHT_STR
+            VALUE "LegalTrademarks1",   VER_LEGALTRADEMARKS1_STR
+            VALUE "LegalTrademarks2",   VER_LEGALTRADEMARKS2_STR
+            VALUE "OriginalFilename",   VER_ORIGINALFILENAME_STR
+            VALUE "ProductName",        VER_PRODUCTNAME_STR
+            VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", VER_LANG_ID, VER_CHARSET_ID
+    END
+END
+
+#include "res/langs/translation.rc"

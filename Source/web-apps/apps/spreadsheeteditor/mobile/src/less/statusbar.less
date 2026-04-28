@@ -1,0 +1,86 @@
+@statusbar-height: 30px;
+@fontColor: #000;
+
+.statusbar {
+    .hairline(top, @background-menu-divider);
+    height: @statusbar-height;
+    min-height: @statusbar-height;
+    background-color: @background-tertiary;
+    display: flex;
+
+    transition: top 400ms;
+    .box-tab {
+        display: flex;
+    }
+
+    .tab {
+        border: 0 none;
+        border-radius: 0;
+        font-size: 18px;
+        line-height: inherit;
+        min-width: 48px;
+
+        display: inline-block;
+        // padding: 0 10px;
+        text-align: center;
+        height: 100%;
+        position: relative;
+        
+        &.active {
+            background-color: @background-secondary;
+            font-weight: 600;
+            a {
+                box-shadow: 0px 2px 0 #49795d inset;
+            }
+        }
+
+        .hairline(right, @background-menu-divider);
+    }
+
+    .statusbar--box-tabs {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        
+        &::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+        > ul {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            white-space: nowrap;
+            // position: absolute;
+            // left: 0;
+            // top: 0;
+            > li {
+                a {
+                    font-size: 12px;
+                    padding: 0 10px 0;
+                    line-height: @statusbar-height;
+                    color: @text-normal;
+                    height: 100%;
+                    display: block;
+                }
+            }
+        }
+    }
+
+    .tab {
+        .icon-svg {
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+        }
+    }
+    
+    &.rtl {
+        direction: rtl;
+    }
+
+    &.ltr {
+        direction: ltr;
+    }
+}

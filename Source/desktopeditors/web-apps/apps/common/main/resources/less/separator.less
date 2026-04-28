@@ -1,0 +1,32 @@
+/**
+ *  description of styles for the '.separator' element
+ *
+ *  Created 1/22/14
+ *
+*/
+
+.separator {
+    display: inline-block;
+    position: inherit;
+    border-left: @scaled-one-px-value-ie solid @border-divider-ie;
+    border-left: @scaled-one-px-value solid @border-divider;
+    vertical-align: top;
+    padding: 0;
+    width: 0;
+
+    .rtl & {
+        border-left: none;
+        border-right: @scaled-one-px-value-ie solid @border-divider-ie;
+        border-right: @scaled-one-px-value solid @border-divider;
+    }
+
+    &.horizontal {
+        height: 0;
+        display: block;
+
+        border-left: none;
+        border-right: none;
+        border-top: @scaled-one-px-value-ie solid @border-divider-ie;
+        border-top: @scaled-one-px-value solid @border-divider;
+    }
+}

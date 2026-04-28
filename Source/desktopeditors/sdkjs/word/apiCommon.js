@@ -1,0 +1,3556 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2024
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+
+"use strict";
+
+(function (window, undefined)
+{
+// ---------------------------------------------------------------
+// CBackground
+// Value : тип заливки(прозрачная или нет),
+// Color : { r : 0, g : 0, b : 0 }
+	function CBackground(obj)
+	{
+		if (obj)
+		{
+			this.Value = (undefined != obj.Value) ? obj.Value : null;
+
+			if (obj.GetSimpleColor)
+			{
+				// TODO: Поддерживаем пока только Asc.c_oAscShd.Clear и Asc.c_oAscShd.Nil
+				if (undefined !== obj.Value && Asc.c_oAscShd.Nil !== this.Value)
+					this.Value = Asc.c_oAscShd.Clear;
+
+				if (Asc.c_oAscShd.Clear === obj.Value
+					&& obj.Unifill
+					&& obj.Unifill.fill
+					&& obj.Unifill.fill.type === window['Asc'].c_oAscFill.FILL_TYPE_SOLID
+					&& obj.Unifill.fill.color)
+				{
+					this.Color = AscCommon.CreateAscColor(obj.Unifill.fill.color);
+				}
+				else
+				{
+					var oColor = obj.GetSimpleColor();
+					this.Color = AscCommon.CreateAscColorCustom(oColor.r, oColor.g, oColor.b, oColor.Auto);
+				}
+			}
+			else
+			{
+				if (obj.Unifill && obj.Unifill.fill && obj.Unifill.fill.type === window['Asc'].c_oAscFill.FILL_TYPE_SOLID && obj.Unifill.fill.color)
+				{
+					this.Color = AscCommon.CreateAscColor(obj.Unifill.fill.color);
+				}
+				else
+				{
+					this.Color = (undefined != obj.Color && null != obj.Color) ? AscCommon.CreateAscColorCustom(obj.Color.r, obj.Color.g, obj.Color.b) : null;
+				}
+			}
+		}
+		else
+		{
+			this.Color = AscCommon.CreateAscColorCustom(0, 0, 0);
+			this.Value = 1;
+		}
+	}
+
+	CBackground.prototype.get_Color = function ()
+	{
+		return this.Color;
+	};
+	CBackground.prototype.put_Color = function (v)
+	{
+		this.Color = (v) ? v : null;
+	};
+	CBackground.prototype.get_Value = function ()
+	{
+		return this.Value;
+	};
+	CBackground.prototype.put_Value = function (v)
+	{
+		this.Value = v;
+	};
+
+	window['Asc']['CBackground'] = window['Asc'].CBackground = CBackground;
+	CBackground.prototype['get_Color'] = CBackground.prototype.get_Color;
+	CBackground.prototype['put_Color'] = CBackground.prototype.put_Color;
+	CBackground.prototype['get_Value'] = CBackground.prototype.get_Value;
+	CBackground.prototype['put_Value'] = CBackground.prototype.put_Value;
+
+// ---------------------------------------------------------------
+	function CTablePositionH(obj)
+	{
+		if (obj)
+		{
+			this.RelativeFrom = ( undefined === obj.RelativeFrom ) ? Asc.c_oAscHAnchor.Margin : obj.RelativeFrom;
+			this.UseAlign = ( undefined === obj.UseAlign     ) ? false : obj.UseAlign;
+			this.Align = ( undefined === obj.Align        ) ? undefined : obj.Align;
+			this.Value = ( undefined === obj.Value        ) ? 0 : obj.Value;
+		}
+		else
+		{
+			this.RelativeFrom = Asc.c_oAscHAnchor.Column;
+			this.UseAlign = false;
+			this.Align = undefined;
+			this.Value = 0;
+		}
+	}
+
+	CTablePositionH.prototype.get_RelativeFrom = function ()
+	{
+		return this.RelativeFrom;
+	};
+	CTablePositionH.prototype.put_RelativeFrom = function (v)
+	{
+		this.RelativeFrom = v;
+	};
+	CTablePositionH.prototype.get_UseAlign = function ()
+	{
+		return this.UseAlign;
+	};
+	CTablePositionH.prototype.put_UseAlign = function (v)
+	{
+		this.UseAlign = v;
+	};
+	CTablePositionH.prototype.get_Align = function ()
+	{
+		return this.Align;
+	};
+	CTablePositionH.prototype.put_Align = function (v)
+	{
+		this.Align = v;
+	};
+	CTablePositionH.prototype.get_Value = function ()
+	{
+		return this.Value;
+	};
+	CTablePositionH.prototype.put_Value = function (v)
+	{
+		this.Value = v;
+	};
+
+	function CTablePositionV(obj)
+	{
+		if (obj)
+		{
+			this.RelativeFrom = ( undefined === obj.RelativeFrom ) ? Asc.c_oAscVAnchor.Text : obj.RelativeFrom;
+			this.UseAlign = ( undefined === obj.UseAlign     ) ? false : obj.UseAlign;
+			this.Align = ( undefined === obj.Align        ) ? undefined : obj.Align;
+			this.Value = ( undefined === obj.Value        ) ? 0 : obj.Value;
+		}
+		else
+		{
+			this.RelativeFrom = Asc.c_oAscVAnchor.Text;
+			this.UseAlign = false;
+			this.Align = undefined;
+			this.Value = 0;
+		}
+	}
+
+	CTablePositionV.prototype.get_RelativeFrom = function ()
+	{
+		return this.RelativeFrom;
+	};
+	CTablePositionV.prototype.put_RelativeFrom = function (v)
+	{
+		this.RelativeFrom = v;
+	};
+	CTablePositionV.prototype.get_UseAlign = function ()
+	{
+		return this.UseAlign;
+	};
+	CTablePositionV.prototype.put_UseAlign = function (v)
+	{
+		this.UseAlign = v;
+	};
+	CTablePositionV.prototype.get_Align = function ()
+	{
+		return this.Align;
+	};
+	CTablePositionV.prototype.put_Align = function (v)
+	{
+		this.Align = v;
+	};
+	CTablePositionV.prototype.get_Value = function ()
+	{
+		return this.Value;
+	};
+	CTablePositionV.prototype.put_Value = function (v)
+	{
+		this.Value = v;
+	};
+
+	window['Asc']['CTablePositionH'] = window['Asc'].CTablePositionH = CTablePositionH;
+	CTablePositionH.prototype['get_RelativeFrom'] = CTablePositionH.prototype.get_RelativeFrom;
+	CTablePositionH.prototype['put_RelativeFrom'] = CTablePositionH.prototype.put_RelativeFrom;
+	CTablePositionH.prototype['get_UseAlign'] = CTablePositionH.prototype.get_UseAlign;
+	CTablePositionH.prototype['put_UseAlign'] = CTablePositionH.prototype.put_UseAlign;
+	CTablePositionH.prototype['get_Align'] = CTablePositionH.prototype.get_Align;
+	CTablePositionH.prototype['put_Align'] = CTablePositionH.prototype.put_Align;
+	CTablePositionH.prototype['get_Value'] = CTablePositionH.prototype.get_Value;
+	CTablePositionH.prototype['put_Value'] = CTablePositionH.prototype.put_Value;
+	window['Asc']['CTablePositionV'] = window['Asc'].CTablePositionV = CTablePositionV;
+	CTablePositionV.prototype['get_RelativeFrom'] = CTablePositionV.prototype.get_RelativeFrom;
+	CTablePositionV.prototype['put_RelativeFrom'] = CTablePositionV.prototype.put_RelativeFrom;
+	CTablePositionV.prototype['get_UseAlign'] = CTablePositionV.prototype.get_UseAlign;
+	CTablePositionV.prototype['put_UseAlign'] = CTablePositionV.prototype.put_UseAlign;
+	CTablePositionV.prototype['get_Align'] = CTablePositionV.prototype.get_Align;
+	CTablePositionV.prototype['put_Align'] = CTablePositionV.prototype.put_Align;
+	CTablePositionV.prototype['get_Value'] = CTablePositionV.prototype.get_Value;
+	CTablePositionV.prototype['put_Value'] = CTablePositionV.prototype.put_Value;
+
+	/*
+	 {
+	 TableWidth   : null - галочка убрана, либо заданное значение в мм
+	 TableSpacing : null - галочка убрана, либо заданное значение в мм
+
+	 TableDefaultMargins :  // маргины для всей таблицы(значение по умолчанию)
+	 {
+	 Left   : 1.9,
+	 Right  : 1.9,
+	 Top    : 0,
+	 Bottom : 0
+	 }
+
+	 CellMargins :
+	 {
+	 Left   : 1.9, (null - неопределенное значение)
+	 Right  : 1.9, (null - неопределенное значение)
+	 Top    : 0,   (null - неопределенное значение)
+	 Bottom : 0,   (null - неопределенное значение)
+	 Flag   : 0 - У всех выделенных ячеек значение берется из TableDefaultMargins
+	 1 - У выделенных ячеек есть ячейки с дефолтовыми значениями, и есть со своими собственными
+	 2 - У всех ячеек свои собственные значения
+	 }
+
+	 TableAlignment : 0, 1, 2 (слева, по центру, справа)
+	 TableIndent : значение в мм,
+	 TableWrappingStyle : 0, 1 (inline, flow)
+	 TablePaddings:
+	 {
+	 Left   : 3.2,
+	 Right  : 3.2,
+	 Top    : 0,
+	 Bottom : 0
+	 }
+
+	 TableBorders : // границы таблицы
+	 {
+	 Bottom :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 Left :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 Right :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 Top :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 InsideH :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 InsideV :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 }
+	 }
+
+	 CellBorders : // границы выделенных ячеек
+	 {
+	 ForSelectedCells : true,
+
+	 Bottom :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 Left :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 Right :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 Top :
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 InsideH : // данного элемента может не быть, если у выделенных ячеек
+	 // нет горизонтальных внутренних границ
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 },
+
+	 InsideV : // данного элемента может не быть, если у выделенных ячеек
+	 // нет вертикальных внутренних границ
+	 {
+	 Color : { r : 0, g : 0, b : 0 },
+	 Value : border_Single,
+	 Size  : 0.5 * g_dKoef_pt_to_mm
+	 Space :
+	 }
+	 }
+
+	 TableBackground :
+	 {
+	 Value : тип заливки(прозрачная или нет),
+	 Color : { r : 0, g : 0, b : 0 }
+	 }
+	 CellsBackground : null если заливка не определена для выделенных ячеек
+	 {
+	 Value : тип заливки(прозрачная или нет),
+	 Color : { r : 0, g : 0, b : 0 }
+	 }
+
+	 Position:
+	 {
+	 X:0,
+	 Y:0
+	 }
+	 }
+	 */
+	function CTableProp(tblProp)
+	{
+		if (tblProp)
+		{
+			this.CanBeFlow = (undefined != tblProp.CanBeFlow ? tblProp.CanBeFlow : false );
+			this.CellSelect = (undefined != tblProp.CellSelect ? tblProp.CellSelect : false );
+			this.CellSelect = (undefined != tblProp.CellSelect) ? tblProp.CellSelect : false;
+			this.TableWidth = (undefined != tblProp.TableWidth) ? tblProp.TableWidth : null;
+			this.TableSpacing = (undefined != tblProp.TableSpacing) ? tblProp.TableSpacing : null;
+			this.TableDefaultMargins = (undefined != tblProp.TableDefaultMargins && null != tblProp.TableDefaultMargins) ? new Asc.asc_CPaddings(tblProp.TableDefaultMargins) : null;
+
+			this.CellMargins = (undefined != tblProp.CellMargins && null != tblProp.CellMargins) ? new CMargins(tblProp.CellMargins) : null;
+
+			this.TableAlignment = (undefined != tblProp.TableAlignment) ? tblProp.TableAlignment : null;
+			this.TableIndent = (undefined != tblProp.TableIndent) ? tblProp.TableIndent : null;
+			this.TableWrappingStyle = (undefined != tblProp.TableWrappingStyle) ? tblProp.TableWrappingStyle : null;
+
+			this.TablePaddings = (undefined != tblProp.TablePaddings && null != tblProp.TablePaddings) ? new Asc.asc_CPaddings(tblProp.TablePaddings) : null;
+
+			this.TableBorders = (undefined != tblProp.TableBorders && null != tblProp.TableBorders) ? new CBorders(tblProp.TableBorders) : null;
+			this.CellBorders = (undefined != tblProp.CellBorders && null != tblProp.CellBorders) ? new CBorders(tblProp.CellBorders) : null;
+			this.TableBackground = (undefined != tblProp.TableBackground && null != tblProp.TableBackground) ? new CBackground(tblProp.TableBackground) : null;
+			this.CellsBackground = (undefined != tblProp.CellsBackground && null != tblProp.CellsBackground) ? new CBackground(tblProp.CellsBackground) : null;
+			this.Position = (undefined != tblProp.Position && null != tblProp.Position) ? new Asc.CPosition(tblProp.Position) : null;
+			this.PositionH = ( undefined != tblProp.PositionH && null != tblProp.PositionH ) ? new CTablePositionH(tblProp.PositionH) : undefined;
+			this.PositionV = ( undefined != tblProp.PositionV && null != tblProp.PositionV ) ? new CTablePositionV(tblProp.PositionV) : undefined;
+			this.Internal_Position = ( undefined != tblProp.Internal_Position ) ? tblProp.Internal_Position : undefined;
+
+			this.ForSelectedCells = (undefined != tblProp.ForSelectedCells) ? tblProp.ForSelectedCells : true;
+			this.TableStyle = (undefined != tblProp.TableStyle) ? tblProp.TableStyle : null;
+			this.TableLook = (undefined != tblProp.TableLook) ? tblProp.TableLook.Copy() : null;
+			this.RowsInHeader = (undefined !== tblProp.RowsInHeader) ? tblProp.RowsInHeader : false;
+			this.CellsVAlign = (undefined != tblProp.CellsVAlign) ? tblProp.CellsVAlign : c_oAscVertAlignJc.Top;
+			this.AllowOverlap = (undefined != tblProp.AllowOverlap) ? tblProp.AllowOverlap : undefined;
+			this.TableLayout = tblProp.TableLayout;
+			this.CellsTextDirection = tblProp.CellsTextDirection;
+			this.CellsNoWrap = tblProp.CellsNoWrap;
+			this.CellsWidth = tblProp.CellsWidth;
+			this.CellsWidthNotEqual = tblProp.CellsWidthNotEqual;
+			this.Locked = (undefined != tblProp.Locked) ? tblProp.Locked : false;
+			this.PercentFullWidth = tblProp.PercentFullWidth;
+			this.TableDescription = tblProp.TableDescription;
+			this.TableCaption = tblProp.TableCaption;
+			this.TableName = tblProp.TableName;
+
+			this.ColumnWidth = tblProp.ColumnWidth;
+			this.RowHeight   = tblProp.RowHeight;
+
+			this.FrameWidth = tblProp.FrameWidth;
+			this.FrameHeight = tblProp.FrameHeight;
+			this.FrameX = tblProp.FrameX;
+			this.FrameY = tblProp.FrameY;
+			this.FrameLockAspect = tblProp.FrameLockAspect;
+		}
+		else
+		{
+			//Все свойства класса CTableProp должны быть undefined если они не изменялись
+			//this.CanBeFlow = false;
+			this.CellSelect = false; //обязательное свойство
+			/*this.TableWidth = null;
+			 this.TableSpacing = null;
+			 this.TableDefaultMargins = new Asc.asc_CPaddings ();
+
+			 this.CellMargins = new CMargins ();
+
+			 this.TableAlignment = 0;
+			 this.TableIndent = 0;
+			 this.TableWrappingStyle = c_oAscWrapStyle.Inline;
+
+			 this.TablePaddings = new Asc.asc_CPaddings ();
+
+			 this.TableBorders = new CBorders ();
+			 this.CellBorders = new CBorders ();
+			 this.TableBackground = new CBackground ();
+			 this.CellsBackground = new CBackground ();;
+			 this.Position = new CPosition ();
+			 this.ForSelectedCells = true;*/
+
+			this.Locked = false;
+		}
+	}
+
+	CTableProp.prototype.get_Width = function ()
+	{
+		return this.TableWidth;
+	};
+	CTableProp.prototype.put_Width = function (v)
+	{
+		this.TableWidth = v;
+	};
+	CTableProp.prototype.get_FrameWidth = function ()
+	{
+		return this.FrameWidth;
+	};
+	CTableProp.prototype.put_FrameWidth = function (v)
+	{
+		this.FrameWidth = v;
+	};
+	CTableProp.prototype.get_FrameHeight = function ()
+	{
+		return this.FrameHeight;
+	};
+	CTableProp.prototype.put_FrameHeight = function (v)
+	{
+		this.FrameHeight = v;
+	};
+	CTableProp.prototype.get_FrameX = function ()
+	{
+		return this.FrameX;
+	};
+	CTableProp.prototype.put_FrameX = function (v)
+	{
+		this.FrameX = v;
+	};
+	CTableProp.prototype.get_FrameY = function ()
+	{
+		return this.FrameY;
+	};
+	CTableProp.prototype.put_FrameY = function (v)
+	{
+		this.FrameY = v;
+	};
+	CTableProp.prototype.get_FrameLockAspect = function ()
+	{
+		return this.FrameLockAspect;
+	};
+	CTableProp.prototype.put_FrameLockAspect = function (v)
+	{
+		this.FrameLockAspect = v;
+	};
+	CTableProp.prototype.get_Spacing = function ()
+	{
+		return this.TableSpacing;
+	};
+	CTableProp.prototype.put_Spacing = function (v)
+	{
+		this.TableSpacing = v;
+	};
+	CTableProp.prototype.get_DefaultMargins = function ()
+	{
+		return this.TableDefaultMargins;
+	};
+	CTableProp.prototype.put_DefaultMargins = function (v)
+	{
+		this.TableDefaultMargins = v;
+	};
+	CTableProp.prototype.get_CellMargins = function ()
+	{
+		return this.CellMargins;
+	};
+	CTableProp.prototype.put_CellMargins = function (v)
+	{
+		this.CellMargins = v;
+	};
+	CTableProp.prototype.get_TableAlignment = function ()
+	{
+		return this.TableAlignment;
+	};
+	CTableProp.prototype.put_TableAlignment = function (v)
+	{
+		this.TableAlignment = v;
+	};
+	CTableProp.prototype.get_TableIndent = function ()
+	{
+		return this.TableIndent;
+	};
+	CTableProp.prototype.put_TableIndent = function (v)
+	{
+		this.TableIndent = v;
+	};
+	CTableProp.prototype.get_TableWrap = function ()
+	{
+		return this.TableWrappingStyle;
+	};
+	CTableProp.prototype.put_TableWrap = function (v)
+	{
+		this.TableWrappingStyle = v;
+	};
+	CTableProp.prototype.get_TablePaddings = function ()
+	{
+		return this.TablePaddings;
+	};
+	CTableProp.prototype.put_TablePaddings = function (v)
+	{
+		this.TablePaddings = v;
+	};
+	CTableProp.prototype.get_TableBorders = function ()
+	{
+		return this.TableBorders;
+	};
+	CTableProp.prototype.put_TableBorders = function (v)
+	{
+		this.TableBorders = v;
+	};
+	CTableProp.prototype.get_CellBorders = function ()
+	{
+		return this.CellBorders;
+	};
+	CTableProp.prototype.put_CellBorders = function (v)
+	{
+		this.CellBorders = v;
+	};
+	CTableProp.prototype.get_TableBackground = function ()
+	{
+		return this.TableBackground;
+	};
+	CTableProp.prototype.put_TableBackground = function (v)
+	{
+		this.TableBackground = v;
+	};
+	CTableProp.prototype.get_CellsBackground = function ()
+	{
+		return this.CellsBackground;
+	};
+	CTableProp.prototype.put_CellsBackground = function (v)
+	{
+		this.CellsBackground = v;
+	};
+	CTableProp.prototype.get_Position = function ()
+	{
+		return this.Position;
+	};
+	CTableProp.prototype.put_Position = function (v)
+	{
+		this.Position = v;
+	};
+	CTableProp.prototype.get_PositionH = function ()
+	{
+		return this.PositionH;
+	};
+	CTableProp.prototype.put_PositionH = function (v)
+	{
+		this.PositionH = v;
+	};
+	CTableProp.prototype.get_PositionV = function ()
+	{
+		return this.PositionV;
+	};
+	CTableProp.prototype.put_PositionV = function (v)
+	{
+		this.PositionV = v;
+	};
+	CTableProp.prototype.get_Value_X = function (RelativeFrom)
+	{
+		if (undefined != this.Internal_Position) return this.Internal_Position.Calculate_X_Value(RelativeFrom);
+		return 0;
+	};
+	CTableProp.prototype.get_Value_Y = function (RelativeFrom)
+	{
+		if (undefined != this.Internal_Position) return this.Internal_Position.Calculate_Y_Value(RelativeFrom);
+		return 0;
+	};
+	CTableProp.prototype.get_ForSelectedCells = function ()
+	{
+		return this.ForSelectedCells;
+	};
+	CTableProp.prototype.put_ForSelectedCells = function (v)
+	{
+		this.ForSelectedCells = v;
+	};
+	CTableProp.prototype.put_CellSelect = function (v)
+	{
+		this.CellSelect = v;
+	};
+	CTableProp.prototype.get_CellSelect = function ()
+	{
+		return this.CellSelect
+	};
+	CTableProp.prototype.get_CanBeFlow = function ()
+	{
+		return this.CanBeFlow;
+	};
+	CTableProp.prototype.get_RowsInHeader = function ()
+	{
+		return this.RowsInHeader;
+	};
+	CTableProp.prototype.put_RowsInHeader = function (v)
+	{
+		this.RowsInHeader = v;
+	};
+	CTableProp.prototype.get_Locked = function ()
+	{
+		return this.Locked;
+	};
+	CTableProp.prototype.get_CellsVAlign = function ()
+	{
+		return this.CellsVAlign;
+	};
+	CTableProp.prototype.put_CellsVAlign = function (v)
+	{
+		this.CellsVAlign = v;
+	};
+	CTableProp.prototype.get_TableLook = function ()
+	{
+		return this.TableLook;
+	};
+	CTableProp.prototype.put_TableLook = function (v)
+	{
+		this.TableLook = v;
+	};
+	CTableProp.prototype.get_TableStyle = function ()
+	{
+		return this.TableStyle;
+	};
+	CTableProp.prototype.put_TableStyle = function (v)
+	{
+		this.TableStyle = v;
+	};
+	CTableProp.prototype.get_AllowOverlap = function ()
+	{
+		return this.AllowOverlap;
+	};
+	CTableProp.prototype.put_AllowOverlap = function (v)
+	{
+		this.AllowOverlap = v;
+	};
+	CTableProp.prototype.get_TableLayout = function ()
+	{
+		return this.TableLayout;
+	};
+	CTableProp.prototype.put_TableLayout = function (v)
+	{
+		this.TableLayout = v;
+	};
+	CTableProp.prototype.get_CellsTextDirection = function ()
+	{
+		return this.CellsTextDirection;
+	};
+	CTableProp.prototype.put_CellsTextDirection = function (v)
+	{
+		this.CellsTextDirection = v;
+	};
+	CTableProp.prototype.get_CellsNoWrap = function ()
+	{
+		return this.CellsNoWrap;
+	};
+	CTableProp.prototype.put_CellsNoWrap = function (v)
+	{
+		this.CellsNoWrap = v;
+	};
+	CTableProp.prototype.get_CellsWidth = function ()
+	{
+		return this.CellsWidth;
+	};
+	CTableProp.prototype.put_CellsWidth = function (v)
+	{
+		this.CellsWidth = v;
+	};
+	CTableProp.prototype.get_PercentFullWidth = function ()
+	{
+		return this.PercentFullWidth;
+	};
+	CTableProp.prototype.get_CellsWidthNotEqual = function ()
+	{
+		return this.CellsWidthNotEqual;
+	};
+	CTableProp.prototype.get_TableDescription = function ()
+	{
+		return this.TableDescription;
+	};
+	CTableProp.prototype.put_TableDescription = function (v)
+	{
+		this.TableDescription = v;
+	};
+	CTableProp.prototype.get_TableCaption = function ()
+	{
+		return this.TableCaption;
+	};
+	CTableProp.prototype.put_TableCaption = function (v)
+	{
+		this.TableCaption = v;
+	};
+	CTableProp.prototype.get_TableName = function ()
+	{
+		return this.TableName;
+	};
+	CTableProp.prototype.put_TableName = function (v)
+	{
+		this.TableName = v;
+	};
+	CTableProp.prototype.get_ColumnWidth = function()
+	{
+		return this.ColumnWidth;
+	};
+	CTableProp.prototype.put_ColumnWidth = function(v)
+	{
+		this.ColumnWidth = v;
+	};
+	CTableProp.prototype.get_RowHeight = function()
+	{
+		return this.RowHeight;
+	};
+	CTableProp.prototype.put_RowHeight = function(v)
+	{
+		this.RowHeight = v;
+	};
+
+	window['Asc']['CTableProp'] = window['Asc'].CTableProp = CTableProp;
+	CTableProp.prototype['get_Width'] = CTableProp.prototype.get_Width;
+	CTableProp.prototype['put_Width'] = CTableProp.prototype.put_Width;
+	CTableProp.prototype['get_Spacing'] = CTableProp.prototype.get_Spacing;
+	CTableProp.prototype['put_Spacing'] = CTableProp.prototype.put_Spacing;
+	CTableProp.prototype['get_DefaultMargins'] = CTableProp.prototype.get_DefaultMargins;
+	CTableProp.prototype['put_DefaultMargins'] = CTableProp.prototype.put_DefaultMargins;
+	CTableProp.prototype['get_CellMargins'] = CTableProp.prototype.get_CellMargins;
+	CTableProp.prototype['put_CellMargins'] = CTableProp.prototype.put_CellMargins;
+	CTableProp.prototype['get_TableAlignment'] = CTableProp.prototype.get_TableAlignment;
+	CTableProp.prototype['put_TableAlignment'] = CTableProp.prototype.put_TableAlignment;
+	CTableProp.prototype['get_TableIndent'] = CTableProp.prototype.get_TableIndent;
+	CTableProp.prototype['put_TableIndent'] = CTableProp.prototype.put_TableIndent;
+	CTableProp.prototype['get_TableWrap'] = CTableProp.prototype.get_TableWrap;
+	CTableProp.prototype['put_TableWrap'] = CTableProp.prototype.put_TableWrap;
+	CTableProp.prototype['get_TablePaddings'] = CTableProp.prototype.get_TablePaddings;
+	CTableProp.prototype['put_TablePaddings'] = CTableProp.prototype.put_TablePaddings;
+	CTableProp.prototype['get_TableBorders'] = CTableProp.prototype.get_TableBorders;
+	CTableProp.prototype['put_TableBorders'] = CTableProp.prototype.put_TableBorders;
+	CTableProp.prototype['get_CellBorders'] = CTableProp.prototype.get_CellBorders;
+	CTableProp.prototype['put_CellBorders'] = CTableProp.prototype.put_CellBorders;
+	CTableProp.prototype['get_TableBackground'] = CTableProp.prototype.get_TableBackground;
+	CTableProp.prototype['put_TableBackground'] = CTableProp.prototype.put_TableBackground;
+	CTableProp.prototype['get_CellsBackground'] = CTableProp.prototype.get_CellsBackground;
+	CTableProp.prototype['put_CellsBackground'] = CTableProp.prototype.put_CellsBackground;
+	CTableProp.prototype['get_Position'] = CTableProp.prototype.get_Position;
+	CTableProp.prototype['put_Position'] = CTableProp.prototype.put_Position;
+	CTableProp.prototype['get_PositionH'] = CTableProp.prototype.get_PositionH;
+	CTableProp.prototype['put_PositionH'] = CTableProp.prototype.put_PositionH;
+	CTableProp.prototype['get_PositionV'] = CTableProp.prototype.get_PositionV;
+	CTableProp.prototype['put_PositionV'] = CTableProp.prototype.put_PositionV;
+	CTableProp.prototype['get_Value_X'] = CTableProp.prototype.get_Value_X;
+	CTableProp.prototype['get_Value_Y'] = CTableProp.prototype.get_Value_Y;
+	CTableProp.prototype['get_ForSelectedCells'] = CTableProp.prototype.get_ForSelectedCells;
+	CTableProp.prototype['put_ForSelectedCells'] = CTableProp.prototype.put_ForSelectedCells;
+	CTableProp.prototype['put_CellSelect'] = CTableProp.prototype.put_CellSelect;
+	CTableProp.prototype['get_CellSelect'] = CTableProp.prototype.get_CellSelect;
+	CTableProp.prototype['get_CanBeFlow'] = CTableProp.prototype.get_CanBeFlow;
+	CTableProp.prototype['get_RowsInHeader'] = CTableProp.prototype.get_RowsInHeader;
+	CTableProp.prototype['put_RowsInHeader'] = CTableProp.prototype.put_RowsInHeader;
+	CTableProp.prototype['get_Locked'] = CTableProp.prototype.get_Locked;
+	CTableProp.prototype['get_CellsVAlign'] = CTableProp.prototype.get_CellsVAlign;
+	CTableProp.prototype['put_CellsVAlign'] = CTableProp.prototype.put_CellsVAlign;
+	CTableProp.prototype['get_TableLook'] = CTableProp.prototype.get_TableLook;
+	CTableProp.prototype['put_TableLook'] = CTableProp.prototype.put_TableLook;
+	CTableProp.prototype['get_TableStyle'] = CTableProp.prototype.get_TableStyle;
+	CTableProp.prototype['put_TableStyle'] = CTableProp.prototype.put_TableStyle;
+	CTableProp.prototype['get_AllowOverlap'] = CTableProp.prototype.get_AllowOverlap;
+	CTableProp.prototype['put_AllowOverlap'] = CTableProp.prototype.put_AllowOverlap;
+	CTableProp.prototype['get_TableLayout'] = CTableProp.prototype.get_TableLayout;
+	CTableProp.prototype['put_TableLayout'] = CTableProp.prototype.put_TableLayout;
+	CTableProp.prototype['get_CellsTextDirection'] = CTableProp.prototype.get_CellsTextDirection;
+	CTableProp.prototype['put_CellsTextDirection'] = CTableProp.prototype.put_CellsTextDirection;
+	CTableProp.prototype['get_CellsNoWrap'] = CTableProp.prototype.get_CellsNoWrap;
+	CTableProp.prototype['put_CellsNoWrap'] = CTableProp.prototype.put_CellsNoWrap;
+	CTableProp.prototype['get_CellsWidth'] = CTableProp.prototype.get_CellsWidth;
+	CTableProp.prototype['put_CellsWidth'] = CTableProp.prototype.put_CellsWidth;
+	CTableProp.prototype['get_PercentFullWidth'] = CTableProp.prototype.get_PercentFullWidth;
+	CTableProp.prototype['get_CellsWidthNotEqual'] = CTableProp.prototype.get_CellsWidthNotEqual;
+	CTableProp.prototype['get_TableDescription'] = CTableProp.prototype.get_TableDescription;
+	CTableProp.prototype['put_TableDescription'] = CTableProp.prototype.put_TableDescription;
+	CTableProp.prototype['get_TableCaption'] = CTableProp.prototype.get_TableCaption;
+	CTableProp.prototype['put_TableCaption'] = CTableProp.prototype.put_TableCaption;
+	CTableProp.prototype['get_TableName'] = CTableProp.prototype.get_TableName;
+	CTableProp.prototype['put_TableName'] = CTableProp.prototype.put_TableName;
+	CTableProp.prototype['get_ColumnWidth'] = CTableProp.prototype.get_ColumnWidth;
+	CTableProp.prototype['put_ColumnWidth'] = CTableProp.prototype.put_ColumnWidth;
+	CTableProp.prototype['get_RowHeight'] = CTableProp.prototype.get_RowHeight;
+	CTableProp.prototype['put_RowHeight'] = CTableProp.prototype.put_RowHeight;
+	CTableProp.prototype['get_FrameWidth'] = CTableProp.prototype.get_FrameWidth;
+	CTableProp.prototype['put_FrameWidth'] = CTableProp.prototype.put_FrameWidth;
+	CTableProp.prototype['get_FrameHeight'] = CTableProp.prototype.get_FrameHeight;
+	CTableProp.prototype['put_FrameHeight'] = CTableProp.prototype.put_FrameHeight;
+	CTableProp.prototype['get_FrameX'] = CTableProp.prototype.get_FrameX;
+	CTableProp.prototype['put_FrameX'] = CTableProp.prototype.put_FrameX;
+	CTableProp.prototype['get_FrameY'] = CTableProp.prototype.get_FrameY;
+	CTableProp.prototype['put_FrameY'] = CTableProp.prototype.put_FrameY;
+	CTableProp.prototype['get_FrameLockAspect'] = CTableProp.prototype.get_FrameLockAspect;
+	CTableProp.prototype['put_FrameLockAspect'] = CTableProp.prototype.put_FrameLockAspect;
+
+// ---------------------------------------------------------------
+	function CBorders(obj)
+	{
+		if (obj)
+		{
+			this.Left = (undefined != obj.Left && null != obj.Left) ? new Asc.asc_CTextBorder(obj.Left) : null;
+			this.Top = (undefined != obj.Top && null != obj.Top) ? new Asc.asc_CTextBorder(obj.Top) : null;
+			this.Right = (undefined != obj.Right && null != obj.Right) ? new Asc.asc_CTextBorder(obj.Right) : null;
+			this.Bottom = (undefined != obj.Bottom && null != obj.Bottom) ? new Asc.asc_CTextBorder(obj.Bottom) : null;
+			this.InsideH = (undefined != obj.InsideH && null != obj.InsideH) ? new Asc.asc_CTextBorder(obj.InsideH) : null;
+			this.InsideV = (undefined != obj.InsideV && null != obj.InsideV) ? new Asc.asc_CTextBorder(obj.InsideV) : null;
+		}
+		//Все свойства класса CBorders должны быть undefined если они не изменялись
+		/*else
+		 {
+		 this.Left = null;
+		 this.Top = null;
+		 this.Right = null;
+		 this.Bottom = null;
+		 this.InsideH = null;
+		 this.InsideV = null;
+		 }*/
+	}
+
+	CBorders.prototype.get_Left = function ()
+	{
+		return this.Left;
+	};
+	CBorders.prototype.put_Left = function (v)
+	{
+		this.Left = (v) ? new Asc.asc_CTextBorder(v) : null;
+	};
+	CBorders.prototype.get_Top = function ()
+	{
+		return this.Top;
+	};
+	CBorders.prototype.put_Top = function (v)
+	{
+		this.Top = (v) ? new Asc.asc_CTextBorder(v) : null;
+	};
+	CBorders.prototype.get_Right = function ()
+	{
+		return this.Right;
+	};
+	CBorders.prototype.put_Right = function (v)
+	{
+		this.Right = (v) ? new Asc.asc_CTextBorder(v) : null;
+	};
+	CBorders.prototype.get_Bottom = function ()
+	{
+		return this.Bottom;
+	};
+	CBorders.prototype.put_Bottom = function (v)
+	{
+		this.Bottom = (v) ? new Asc.asc_CTextBorder(v) : null;
+	};
+	CBorders.prototype.get_InsideH = function ()
+	{
+		return this.InsideH;
+	};
+	CBorders.prototype.put_InsideH = function (v)
+	{
+		this.InsideH = (v) ? new Asc.asc_CTextBorder(v) : null;
+	};
+	CBorders.prototype.get_InsideV = function ()
+	{
+		return this.InsideV;
+	};
+	CBorders.prototype.put_InsideV = function (v)
+	{
+		this.InsideV = (v) ? new Asc.asc_CTextBorder(v) : null;
+	};
+
+	function CMargins(obj)
+	{
+		if (obj)
+		{
+			this.Left = (undefined != obj.Left) ? obj.Left : null;
+			this.Right = (undefined != obj.Right) ? obj.Right : null;
+			this.Top = (undefined != obj.Top) ? obj.Top : null;
+			this.Bottom = (undefined != obj.Bottom) ? obj.Bottom : null;
+			this.Flag = (undefined != obj.Flag) ? obj.Flag : null;
+		}
+		else
+		{
+			this.Left = null;
+			this.Right = null;
+			this.Top = null;
+			this.Bottom = null;
+			this.Flag = null;
+		}
+	}
+
+	CMargins.prototype.get_Left = function ()
+	{
+		return this.Left;
+	};
+	CMargins.prototype.put_Left = function (v)
+	{
+		this.Left = v;
+	};
+	CMargins.prototype.get_Right = function ()
+	{
+		return this.Right;
+	};
+	CMargins.prototype.put_Right = function (v)
+	{
+		this.Right = v;
+	};
+	CMargins.prototype.get_Top = function ()
+	{
+		return this.Top;
+	};
+	CMargins.prototype.put_Top = function (v)
+	{
+		this.Top = v;
+	};
+	CMargins.prototype.get_Bottom = function ()
+	{
+		return this.Bottom;
+	};
+	CMargins.prototype.put_Bottom = function (v)
+	{
+		this.Bottom = v;
+	};
+	CMargins.prototype.get_Flag = function ()
+	{
+		return this.Flag;
+	};
+	CMargins.prototype.put_Flag = function (v)
+	{
+		this.Flag = v;
+	};
+
+	window['Asc']['CBorders'] = window['Asc'].CBorders = CBorders;
+	CBorders.prototype['get_Left'] = CBorders.prototype.get_Left;
+	CBorders.prototype['put_Left'] = CBorders.prototype.put_Left;
+	CBorders.prototype['get_Top'] = CBorders.prototype.get_Top;
+	CBorders.prototype['put_Top'] = CBorders.prototype.put_Top;
+	CBorders.prototype['get_Right'] = CBorders.prototype.get_Right;
+	CBorders.prototype['put_Right'] = CBorders.prototype.put_Right;
+	CBorders.prototype['get_Bottom'] = CBorders.prototype.get_Bottom;
+	CBorders.prototype['put_Bottom'] = CBorders.prototype.put_Bottom;
+	CBorders.prototype['get_InsideH'] = CBorders.prototype.get_InsideH;
+	CBorders.prototype['put_InsideH'] = CBorders.prototype.put_InsideH;
+	CBorders.prototype['get_InsideV'] = CBorders.prototype.get_InsideV;
+	CBorders.prototype['put_InsideV'] = CBorders.prototype.put_InsideV;
+	window['Asc']['CMargins'] = window['Asc'].CMargins = CMargins;
+	CMargins.prototype['get_Left'] = CMargins.prototype.get_Left;
+	CMargins.prototype['put_Left'] = CMargins.prototype.put_Left;
+	CMargins.prototype['get_Right'] = CMargins.prototype.get_Right;
+	CMargins.prototype['put_Right'] = CMargins.prototype.put_Right;
+	CMargins.prototype['get_Top'] = CMargins.prototype.get_Top;
+	CMargins.prototype['put_Top'] = CMargins.prototype.put_Top;
+	CMargins.prototype['get_Bottom'] = CMargins.prototype.get_Bottom;
+	CMargins.prototype['put_Bottom'] = CMargins.prototype.put_Bottom;
+	CMargins.prototype['get_Flag'] = CMargins.prototype.get_Flag;
+	CMargins.prototype['put_Flag'] = CMargins.prototype.put_Flag;
+
+// ---------------------------------------------------------------
+	function CParagraphPropEx(obj)
+	{
+		if (obj)
+		{
+			this.ContextualSpacing = (undefined != obj.ContextualSpacing) ? obj.ContextualSpacing : null;
+			this.Ind = (undefined != obj.Ind && null != obj.Ind) ? new Asc.asc_CParagraphInd(obj.Ind) : null;
+			this.Jc = (undefined != obj.Jc) ? obj.Jc : null;
+			this.KeepLines = (undefined != obj.KeepLines) ? obj.KeepLines : null;
+			this.KeepNext = (undefined != obj.KeepNext) ? obj.KeepNext : null;
+			this.PageBreakBefore = (undefined != obj.PageBreakBefore) ? obj.PageBreakBefore : null;
+			this.Spacing = (undefined != obj.Spacing && null != obj.Spacing) ? new AscCommon.asc_CParagraphSpacing(obj.Spacing) : null;
+			this.Shd = (undefined != obj.Shd && null != obj.Shd) ? new Asc.asc_CParagraphShd(obj.Shd) : null;
+			this.WidowControl = (undefined != obj.WidowControl) ? obj.WidowControl : null;                  // Запрет висячих строк
+			this.Tabs = obj.Tabs;
+			this.OutlineLvl = (undefined !== obj.OutlineLvl) ? obj.OutlineLvl : 0;
+		}
+		else
+		{
+			//ContextualSpacing : false,            // Удалять ли интервал между параграфами одинакового стиля
+			//
+			//    Ind :
+			//    {
+			//        Left      : 0,                    // Левый отступ
+			//        Right     : 0,                    // Правый отступ
+			//        FirstLine : 0                     // Первая строка
+			//    },
+			//
+			//    Jc : align_Left,                      // Прилегание параграфа
+			//
+			//    KeepLines : false,                    // переносить параграф на новую страницу,
+			//                                          // если на текущей он целиком не убирается
+			//    KeepNext  : false,                    // переносить параграф вместе со следующим параграфом
+			//
+			//    PageBreakBefore : false,              // начинать параграф с новой страницы
+			//    Spacing :
+			//    {
+			//        Line     : 1.15,                  // Расстояние между строками внутри абзаца
+			//        LineRule : linerule_Auto,         // Тип расстрояния между строками
+			//        Before   : 0,                     // Дополнительное расстояние до абзаца
+			//        After    : 10 * g_dKoef_pt_to_mm  // Дополнительное расстояние после абзаца
+			//    },
+			//
+			//    Shd :
+			//    {
+			//        Value : shd_Nil,
+			//        Color :
+			//        {
+			//            r : 255,
+			//            g : 255,
+			//            b : 255
+			//        }
+			//    },
+			//
+			//    WidowControl : true,                  // Запрет висячих строк
+			//
+			//    Tabs : []
+			this.ContextualSpacing = false;
+			this.Ind = new Asc.asc_CParagraphInd();
+			this.Jc = AscCommon.align_Left;
+			this.KeepLines = false;
+			this.KeepNext = false;
+			this.PageBreakBefore = false;
+			this.Spacing = new AscCommon.asc_CParagraphSpacing();
+			this.Shd = new Asc.asc_CParagraphShd();
+			this.WidowControl = true;                  // Запрет висячих строк
+			this.Tabs = null;
+			this.OutlineLvl = 0;
+		}
+	}
+
+	CParagraphPropEx.prototype.get_ContextualSpacing = function ()
+	{
+		return this.ContextualSpacing;
+	};
+	CParagraphPropEx.prototype.get_Ind = function ()
+	{
+		return this.Ind;
+	};
+	CParagraphPropEx.prototype.get_Jc = function ()
+	{
+		return this.Jc;
+	};
+	CParagraphPropEx.prototype.get_KeepLines = function ()
+	{
+		return this.KeepLines;
+	};
+	CParagraphPropEx.prototype.get_KeepNext = function ()
+	{
+		return this.KeepNext;
+	};
+	CParagraphPropEx.prototype.get_PageBreakBefore = function ()
+	{
+		return this.PageBreakBefore;
+	};
+	CParagraphPropEx.prototype.get_Spacing = function ()
+	{
+		return this.Spacing;
+	};
+	CParagraphPropEx.prototype.get_Shd = function ()
+	{
+		return this.Shd;
+	};
+	CParagraphPropEx.prototype.get_WidowControl = function ()
+	{
+		return this.WidowControl;
+	};
+	CParagraphPropEx.prototype.get_Tabs = function ()
+	{
+		return this.Tabs;
+	};
+	CParagraphPropEx.prototype.get_OutlineLvl = function()
+	{
+		return this.OutlineLvl;
+	};
+
+	function CTextProp(obj)
+	{
+		if (obj)
+		{
+			this.Bold = (undefined != obj.Bold) ? obj.Bold : null;
+			this.Italic = (undefined != obj.Italic) ? obj.Italic : null;
+			this.Underline = (undefined != obj.Underline) ? obj.Underline : null;
+			this.Strikeout = (undefined != obj.Strikeout) ? obj.Strikeout : null;
+			this.FontFamily = (undefined != obj.FontFamily && null != obj.FontFamily) ? new AscCommon.asc_CTextFontFamily(obj.FontFamily) : new AscCommon.asc_CTextFontFamily({Name : "", Index : -1});
+			this.FontSize = (undefined != obj.FontSize) ? obj.FontSize : null;
+			this.Color = (undefined != obj.Color && null != obj.Color) ? AscCommon.CreateAscColorCustom(obj.Color.r, obj.Color.g, obj.Color.b) : null;
+			this.VertAlign = (undefined != obj.VertAlign) ? obj.VertAlign : null;
+			this.HighLight = (undefined != obj.HighLight) ? obj.HighLight == AscCommonWord.highlight_None ? obj.HighLight : new AscCommon.CColor(obj.HighLight.r, obj.HighLight.g, obj.HighLight.b) : null;
+			this.DStrikeout = (undefined != obj.DStrikeout) ? obj.DStrikeout : null;
+			this.Spacing = (undefined != obj.Spacing) ? obj.Spacing : null;
+			this.Caps = (undefined != obj.Caps) ? obj.Caps : null;
+			this.SmallCaps = (undefined != obj.SmallCaps) ? obj.SmallCaps : null;
+			this.Lang = (undefined != obj.Lang) ? obj.Lang.Val : null;
+		}
+		else
+		{
+			//    Bold       : false,
+			//    Italic     : false,
+			//    Underline  : false,
+			//    Strikeout  : false,
+			//    FontFamily :
+			//    {
+			//        Name  : "Times New Roman",
+			//        Index : -1
+			//    },
+			//    FontSize   : 12,
+			//    Color      :
+			//    {
+			//        r : 0,
+			//        g : 0,
+			//        b : 0
+			//    },
+			//    VertAlign : vertalign_Baseline,
+			//    HighLight : highlight_None
+			this.Bold = false;
+			this.Italic = false;
+			this.Underline = false;
+			this.Strikeout = false;
+			this.FontFamily = new AscCommon.asc_CTextFontFamily();
+			this.FontSize = 12;
+			this.Color = AscCommon.CreateAscColorCustom(0, 0, 0);
+			this.VertAlign = AscCommon.vertalign_Baseline;
+			this.HighLight = AscCommonWord.highlight_None;
+			this.DStrikeout = false;
+			this.Spacing = 0;
+			this.Caps = false;
+			this.SmallCaps = false;
+			this.Lang = null;
+		}
+	}
+
+	CTextProp.prototype.get_Bold = function ()
+	{
+		return this.Bold;
+	};
+	CTextProp.prototype.get_Italic = function ()
+	{
+		return this.Italic;
+	};
+	CTextProp.prototype.get_Underline = function ()
+	{
+		return this.Underline;
+	};
+	CTextProp.prototype.get_Strikeout = function ()
+	{
+		return this.Strikeout;
+	};
+	CTextProp.prototype.get_FontFamily = function ()
+	{
+		return this.FontFamily;
+	};
+	CTextProp.prototype.get_FontSize = function ()
+	{
+		return this.FontSize;
+	};
+	CTextProp.prototype.get_Color = function ()
+	{
+		return this.Color;
+	};
+	CTextProp.prototype.get_VertAlign = function ()
+	{
+		return this.VertAlign;
+	};
+	CTextProp.prototype.get_HighLight = function ()
+	{
+		return this.HighLight;
+	};
+	CTextProp.prototype.get_Spacing = function ()
+	{
+		return this.Spacing;
+	};
+	CTextProp.prototype.get_DStrikeout = function ()
+	{
+		return this.DStrikeout;
+	};
+	CTextProp.prototype.get_Caps = function ()
+	{
+		return this.Caps;
+	};
+	CTextProp.prototype.get_SmallCaps = function ()
+	{
+		return this.SmallCaps;
+	};
+	CTextProp.prototype.get_Lang = function ()
+	{
+		return this.Lang;
+	};
+
+	CParagraphPropEx.prototype['get_ContextualSpacing'] = CParagraphPropEx.prototype.get_ContextualSpacing;
+	CParagraphPropEx.prototype['get_Ind'] = CParagraphPropEx.prototype.get_Ind;
+	CParagraphPropEx.prototype['get_Jc'] = CParagraphPropEx.prototype.get_Jc;
+	CParagraphPropEx.prototype['get_KeepLines'] = CParagraphPropEx.prototype.get_KeepLines;
+	CParagraphPropEx.prototype['get_KeepNext'] = CParagraphPropEx.prototype.get_KeepNext;
+	CParagraphPropEx.prototype['get_PageBreakBefore'] = CParagraphPropEx.prototype.get_PageBreakBefore;
+	CParagraphPropEx.prototype['get_Spacing'] = CParagraphPropEx.prototype.get_Spacing;
+	CParagraphPropEx.prototype['get_Shd'] = CParagraphPropEx.prototype.get_Shd;
+	CParagraphPropEx.prototype['get_WidowControl'] = CParagraphPropEx.prototype.get_WidowControl;
+	CParagraphPropEx.prototype['get_Tabs'] = CParagraphPropEx.prototype.get_Tabs;
+	CParagraphPropEx.prototype['get_OutlineLvl'] = CParagraphPropEx.prototype.get_OutlineLvl;
+	CTextProp.prototype['get_Bold'] = CTextProp.prototype.get_Bold;
+	CTextProp.prototype['get_Italic'] = CTextProp.prototype.get_Italic;
+	CTextProp.prototype['get_Underline'] = CTextProp.prototype.get_Underline;
+	CTextProp.prototype['get_Strikeout'] = CTextProp.prototype.get_Strikeout;
+	CTextProp.prototype['get_FontFamily'] = CTextProp.prototype.get_FontFamily;
+	CTextProp.prototype['get_FontSize'] = CTextProp.prototype.get_FontSize;
+	CTextProp.prototype['get_Color'] = CTextProp.prototype.get_Color;
+	CTextProp.prototype['get_VertAlign'] = CTextProp.prototype.get_VertAlign;
+	CTextProp.prototype['get_HighLight'] = CTextProp.prototype.get_HighLight;
+	CTextProp.prototype['get_Spacing'] = CTextProp.prototype.get_Spacing;
+	CTextProp.prototype['get_DStrikeout'] = CTextProp.prototype.get_DStrikeout;
+	CTextProp.prototype['get_Caps'] = CTextProp.prototype.get_Caps;
+	CTextProp.prototype['get_SmallCaps'] = CTextProp.prototype.get_SmallCaps;
+	CTextProp.prototype['get_Lang'] = CTextProp.prototype.get_Lang;
+
+	CTextProp.prototype['put_Bold'] = CTextProp.prototype.put_Bold = function(v){this.Bold = v;};
+	CTextProp.prototype['put_Italic'] = CTextProp.prototype.put_Italic = function(v){this.Italic = v;};
+	CTextProp.prototype['put_Underline'] = CTextProp.prototype.put_Underline = function(v){this.Underline = v;};
+	CTextProp.prototype['put_Strikeout'] = CTextProp.prototype.put_Strikeout = function(v){this.Strikeout = v;};
+	CTextProp.prototype['put_FontFamily'] = CTextProp.prototype.put_FontFamily = function(v){this.FontFamily = v;};
+	CTextProp.prototype['put_FontSize'] = CTextProp.prototype.put_FontSize = function(v){this.FontSize = v;};
+	CTextProp.prototype['put_Color'] = CTextProp.prototype.put_Color = function(v){this.Color = v;};
+	CTextProp.prototype['put_VertAlign'] = CTextProp.prototype.put_VertAlign = function(v){this.VertAlign = v;};
+	CTextProp.prototype['put_HighLight'] = CTextProp.prototype.put_HighLight = function(v){this.HighLight = v;};
+	CTextProp.prototype['put_Spacing'] = CTextProp.prototype.put_Spacing = function(v){this.Spacing = v;};
+	CTextProp.prototype['put_DStrikeout'] = CTextProp.prototype.put_DStrikeout = function(v){this.DStrikeout = v;};
+	CTextProp.prototype['put_Caps'] = CTextProp.prototype.put_Caps = function(v){this.Caps = v;};
+	CTextProp.prototype['put_SmallCaps'] = CTextProp.prototype.put_SmallCaps = function(v){this.SmallCaps = v;};
+	CTextProp.prototype['put_Lang'] = CTextProp.prototype.put_Lang = function(v){this.Lang = v;};
+
+
+	window['Asc']['CTextProp'] = window['Asc'].CTextProp = CTextProp;
+
+	/**
+	 * Paragraph and text properties objects container
+	 * @param paragraphProp
+	 * @param textProp
+	 * @constructor
+	 */
+	function CParagraphAndTextProp(paragraphProp, textProp)
+	{
+		this.ParaPr = (undefined != paragraphProp && null != paragraphProp) ? new CParagraphPropEx(paragraphProp) : null;
+		this.TextPr = (undefined != textProp && null != textProp) ? new CTextProp(textProp) : null;
+	}
+
+	/**
+	 * @returns {?CParagraphPropEx}
+	 */
+	CParagraphAndTextProp.prototype.get_ParaPr = function ()
+	{
+		return this.ParaPr;
+	};
+	/**
+	 * @returns {?CTextProp}
+	 */
+	CParagraphAndTextProp.prototype.get_TextPr = function ()
+	{
+		return this.TextPr;
+	};
+
+	window['Asc']['CParagraphAndTextProp'] = window['Asc'].CParagraphAndTextProp = CParagraphAndTextProp;
+	CParagraphAndTextProp.prototype['get_ParaPr'] = CParagraphAndTextProp.prototype.get_ParaPr;
+	CParagraphAndTextProp.prototype['get_TextPr'] = CParagraphAndTextProp.prototype.get_TextPr;
+// ---------------------------------------------------------------
+
+	/*
+	 структура заголовков, предварительно, выглядит так
+	 {
+	 headerText: "Header1",//заголовок
+	 pageNumber: 0, //содержит номер страницы, где находится искомая последовательность
+	 X: 0,//координаты по OX начала последовательности на данной страницы
+	 Y: 0,//координаты по OY начала последовательности на данной страницы
+	 level: 0//уровень заголовка
+	 }
+	 заголовки приходят либо в списке, либо последовательно.
+	 */
+
+	function CHeader(obj)
+	{
+		if (obj)
+		{
+			this.headerText = (undefined != obj.headerText) ? obj.headerText : null;	//заголовок
+			this.pageNumber = (undefined != obj.pageNumber) ? obj.pageNumber : null;	//содержит номер страницы, где находится искомая последовательность
+			this.X = (undefined != obj.X) ? obj.X : null;						//координаты по OX начала последовательности на данной страницы
+			this.Y = (undefined != obj.Y) ? obj.Y : null;						//координаты по OY начала последовательности на данной страницы
+			this.level = (undefined != obj.level) ? obj.level : null;				//позиция заголовка
+		}
+		else
+		{
+			this.headerText = null;				//заголовок
+			this.pageNumber = null;				//содержит номер страницы, где находится искомая последовательность
+			this.X = null;				//координаты по OX начала последовательности на данной страницы
+			this.Y = null;				//координаты по OY начала последовательности на данной страницы
+			this.level = null;				//позиция заголовка
+		}
+	}
+
+	CHeader.prototype.get_headerText = function ()
+	{
+		return this.headerText;
+	};
+	CHeader.prototype.get_pageNumber = function ()
+	{
+		return this.pageNumber;
+	};
+	CHeader.prototype.get_X = function ()
+	{
+		return this.X;
+	};
+	CHeader.prototype.get_Y = function ()
+	{
+		return this.Y;
+	};
+	CHeader.prototype.get_Level = function ()
+	{
+		return this.level;
+	};
+
+	window['Asc']['CHeader'] = window['Asc'].CHeader = CHeader;
+	CHeader.prototype['get_headerText'] = CHeader.prototype.get_headerText;
+	CHeader.prototype['get_pageNumber'] = CHeader.prototype.get_pageNumber;
+	CHeader.prototype['get_X'] = CHeader.prototype.get_X;
+	CHeader.prototype['get_Y'] = CHeader.prototype.get_Y;
+	CHeader.prototype['get_Level'] = CHeader.prototype.get_Level;
+
+	/**
+	 * Класс для работы с настройками таблицы содержимого
+	 * @constructor
+	 */
+	function CTableOfContentsPr()
+	{
+		this.Hyperlink    = true;
+		this.OutlineStart = 1;
+		this.OutlineEnd   = 9;
+		this.Styles       = [];
+		this.PageNumbers  = true;
+		this.RightTab     = true;
+
+		// Эти параметры задаются только из интерфейса
+		this.TabLeader    = undefined;
+
+		this.StylesType   = Asc.c_oAscTOCStylesType.Current;
+
+		this.ComplexField = null;
+		this.Caption = undefined;// undefined for TOC, null or string for TOF
+		this.IsIncludeLabelAndNumber = true;
+	}
+	CTableOfContentsPr.prototype.InitFromTOCInstruction = function(oComplexField)
+	{
+		if (!oComplexField)
+			return;
+
+		var oInstruction = oComplexField.GetInstruction();
+		if (!oInstruction)
+			return;
+
+		this.Hyperlink    = oInstruction.IsHyperlinks();
+		this.OutlineStart = oInstruction.GetHeadingRangeStart();
+		this.OutlineEnd   = oInstruction.GetHeadingRangeEnd();
+		this.Styles       = oInstruction.GetStylesArray();
+
+		this.PageNumbers  = !oInstruction.IsSkipPageRefLvl();
+		this.RightTab     = "" === oInstruction.GetSeparator();
+
+		var oBeginChar = oComplexField.GetBeginChar();
+		if (oBeginChar && oBeginChar.GetRun() && oBeginChar.GetRun().GetParagraph())
+		{
+			var oTabs = oBeginChar.GetRun().GetParagraph().GetParagraphTabs();
+
+			if (oTabs.Tabs.length > 0)
+			{
+				this.TabLeader = oTabs.Tabs[oTabs.Tabs.length - 1].Leader;
+			}
+		}
+
+		this.ComplexField = oComplexField;
+		if(oInstruction.IsTableOfFigures())
+		{
+			this.Caption = oInstruction.Caption || oInstruction.CaptionOnlyText;
+			if(!this.Caption)
+			{
+				this.Caption = null;
+			}
+			this.IsIncludeLabelAndNumber = (this.CaptionOnlyText === undefined);
+		}
+	};
+	CTableOfContentsPr.prototype.InitFromSdtTOC = function(oSdtTOC)
+	{
+		this.ComplexField = oSdtTOC;
+	};
+	CTableOfContentsPr.prototype.CheckStylesType = function(oStyles)
+	{
+		if (oStyles)
+		{
+			if(this.Caption !== undefined)
+			{
+				this.StylesType = oStyles.GetTOFStyleType();
+			}
+			else
+			{
+				this.StylesType = oStyles.GetTOCStylesType();
+			}
+		}
+	};
+	CTableOfContentsPr.prototype.get_Hyperlink = function()
+	{
+		return this.Hyperlink;
+	};
+	CTableOfContentsPr.prototype.put_Hyperlink = function(isHyperlink)
+	{
+		this.Hyperlink = isHyperlink;
+	};
+	CTableOfContentsPr.prototype.get_OutlineStart = function()
+	{
+		return this.OutlineStart;
+	};
+	CTableOfContentsPr.prototype.get_OutlineEnd = function()
+	{
+		return this.OutlineEnd;
+	};
+	CTableOfContentsPr.prototype.put_OutlineRange = function(nStart, nEnd)
+	{
+		this.OutlineStart = nStart;
+		this.OutlineEnd   = nEnd;
+	};
+	CTableOfContentsPr.prototype.get_StylesCount = function()
+	{
+		return this.Styles.length;
+	};
+	CTableOfContentsPr.prototype.get_StyleName = function(nIndex)
+	{
+		if (nIndex < 0 || nIndex >= this.Styles.length)
+			return "";
+
+		return this.Styles[nIndex].Name;
+	};
+	CTableOfContentsPr.prototype.get_StyleLevel = function(nIndex)
+	{
+		if (nIndex < 0 || nIndex >= this.Styles.length)
+			return -1;
+
+		return this.Styles[nIndex].Lvl;
+	};
+	CTableOfContentsPr.prototype.get_Styles = function()
+	{
+		return this.Styles;
+	};
+	CTableOfContentsPr.prototype.clear_Styles = function()
+	{
+		this.Styles = [];
+	};
+	CTableOfContentsPr.prototype.add_Style = function(sName, nLvl)
+	{
+		this.Styles.push({Name : sName, Lvl : nLvl});
+	};
+	CTableOfContentsPr.prototype.put_ShowPageNumbers = function(isShow)
+	{
+		this.PageNumbers = isShow;
+	};
+	CTableOfContentsPr.prototype.get_ShowPageNumbers = function()
+	{
+		return this.PageNumbers;
+	};
+	CTableOfContentsPr.prototype.put_RightAlignTab = function(isRightTab)
+	{
+		this.RightTab = isRightTab;
+	};
+	CTableOfContentsPr.prototype.get_RightAlignTab = function()
+	{
+		return this.RightTab;
+	};
+	CTableOfContentsPr.prototype.put_TabLeader = function(nTabLeader)
+	{
+		this.TabLeader = nTabLeader;
+	};
+	CTableOfContentsPr.prototype.get_TabLeader = function()
+	{
+		return this.TabLeader;
+	};
+	CTableOfContentsPr.prototype.get_StylesType = function()
+	{
+		return this.StylesType;
+	};
+	CTableOfContentsPr.prototype.put_StylesType = function(nType)
+	{
+		this.StylesType = nType;
+	};
+	CTableOfContentsPr.prototype.get_InternalClass = function()
+	{
+		return this.ComplexField;
+	};
+	CTableOfContentsPr.prototype.put_Caption = function(sCaption)
+	{
+		this.Caption = sCaption;
+	};
+	CTableOfContentsPr.prototype.get_Caption = function()
+	{
+		return this.Caption;
+	};
+	CTableOfContentsPr.prototype.get_CaptionForInstruction = function()
+	{
+		if(typeof this.Caption === "string")
+		{
+			var aSplit = this.Caption.split(" ");
+			var sResult = aSplit[0];
+			for(var nIdx = 1; nIdx < aSplit.length; ++nIdx)
+			{
+				sResult += ("_" + aSplit[nIdx]);
+			}
+			return sResult;
+		}
+		return this.Caption;
+	};
+	CTableOfContentsPr.prototype.put_IncludeLabelAndNumber = function(bInclude)
+	{
+		this.IsIncludeLabelAndNumber = bInclude;
+	};
+	CTableOfContentsPr.prototype.get_IncludeLabelAndNumber = function()
+	{
+		return this.IsIncludeLabelAndNumber;
+	};
+
+	window['Asc']['CTableOfContentsPr'] = window['Asc'].CTableOfContentsPr = CTableOfContentsPr;
+	CTableOfContentsPr.prototype['get_Hyperlink']             = CTableOfContentsPr.prototype.get_Hyperlink;
+	CTableOfContentsPr.prototype['put_Hyperlink']             = CTableOfContentsPr.prototype.put_Hyperlink;
+	CTableOfContentsPr.prototype['get_OutlineStart']          = CTableOfContentsPr.prototype.get_OutlineStart;
+	CTableOfContentsPr.prototype['get_OutlineEnd']            = CTableOfContentsPr.prototype.get_OutlineEnd;
+	CTableOfContentsPr.prototype['put_OutlineRange']          = CTableOfContentsPr.prototype.put_OutlineRange;
+	CTableOfContentsPr.prototype['get_StylesCount']           = CTableOfContentsPr.prototype.get_StylesCount;
+	CTableOfContentsPr.prototype['get_StyleName']             = CTableOfContentsPr.prototype.get_StyleName;
+	CTableOfContentsPr.prototype['get_StyleLevel']            = CTableOfContentsPr.prototype.get_StyleLevel;
+	CTableOfContentsPr.prototype['clear_Styles']              = CTableOfContentsPr.prototype.clear_Styles;
+	CTableOfContentsPr.prototype['add_Style']                 = CTableOfContentsPr.prototype.add_Style;
+	CTableOfContentsPr.prototype['put_ShowPageNumbers']       = CTableOfContentsPr.prototype.put_ShowPageNumbers;
+	CTableOfContentsPr.prototype['get_ShowPageNumbers']       = CTableOfContentsPr.prototype.get_ShowPageNumbers;
+	CTableOfContentsPr.prototype['put_RightAlignTab']         = CTableOfContentsPr.prototype.put_RightAlignTab;
+	CTableOfContentsPr.prototype['get_RightAlignTab']         = CTableOfContentsPr.prototype.get_RightAlignTab;
+	CTableOfContentsPr.prototype['get_TabLeader']             = CTableOfContentsPr.prototype.get_TabLeader;
+	CTableOfContentsPr.prototype['put_TabLeader']             = CTableOfContentsPr.prototype.put_TabLeader;
+	CTableOfContentsPr.prototype['get_StylesType']            = CTableOfContentsPr.prototype.get_StylesType;
+	CTableOfContentsPr.prototype['put_StylesType']            = CTableOfContentsPr.prototype.put_StylesType;
+	CTableOfContentsPr.prototype['get_InternalClass']         = CTableOfContentsPr.prototype.get_InternalClass;
+	CTableOfContentsPr.prototype['put_Caption']               = CTableOfContentsPr.prototype.put_Caption;
+	CTableOfContentsPr.prototype['get_Caption']               = CTableOfContentsPr.prototype.get_Caption;
+	CTableOfContentsPr.prototype['put_IncludeLabelAndNumber'] = CTableOfContentsPr.prototype.put_IncludeLabelAndNumber;
+	CTableOfContentsPr.prototype['get_IncludeLabelAndNumber'] = CTableOfContentsPr.prototype.get_IncludeLabelAndNumber;
+
+
+	/**
+	 * Класс для работы с настройками стиля
+	 * @constructor
+	 */
+	function CAscStyle()
+	{
+		this.Name = "";
+		this.Type = Asc.c_oAscStyleType.Paragraph;
+
+		this.qFormat    = undefined;
+		this.uiPriority = undefined;
+
+		this.StyleId  = "";
+	}
+	CAscStyle.prototype.get_Name = function()
+	{
+		return this.Name;
+	};
+	CAscStyle.prototype.put_Name = function(sName)
+	{
+		this.Name = sName;
+	};
+	CAscStyle.prototype.get_Type = function()
+	{
+		return this.Type;
+	};
+	CAscStyle.prototype.put_Type = function(nType)
+	{
+		this.Type = nType;
+	};
+	CAscStyle.prototype.get_QFormat = function()
+	{
+		return this.qFormat;
+	};
+	CAscStyle.prototype.put_QFormat = function(isQFormat)
+	{
+		this.qFormat = isQFormat;
+	};
+	CAscStyle.prototype.get_UIPriority = function()
+	{
+		return this.uiPriority;
+	};
+	CAscStyle.prototype.put_UIPriority = function(nPriority)
+	{
+		this.uiPriority = nPriority;
+	};
+	CAscStyle.prototype.get_StyleId = function()
+	{
+		return this.StyleId;
+	};
+	CAscStyle.prototype.get_TranslatedName = function()
+	{
+		if(typeof this.Name === "string" && this.Name.length > 0)
+		{
+			return AscCommon.translateManager.getValue(this.Name);
+		}
+		return this.Name;
+	};
+
+	window['Asc']['CAscStyle'] = window['Asc'].CAscStyle = CAscStyle;
+	CAscStyle.prototype['get_Name']           = CAscStyle.prototype.get_Name;
+	CAscStyle.prototype['put_Name']           = CAscStyle.prototype.put_Name;
+	CAscStyle.prototype['get_Type']           = CAscStyle.prototype.get_Type;
+	CAscStyle.prototype['put_Type']           = CAscStyle.prototype.put_Type;
+	CAscStyle.prototype['get_QFormat']        = CAscStyle.prototype.get_QFormat;
+	CAscStyle.prototype['put_QFormat']        = CAscStyle.prototype.put_QFormat;
+	CAscStyle.prototype['get_UIPriority']     = CAscStyle.prototype.get_UIPriority;
+	CAscStyle.prototype['put_UIPriority']     = CAscStyle.prototype.put_UIPriority;
+	CAscStyle.prototype['get_StyleId']        = CAscStyle.prototype.get_StyleId;
+	CAscStyle.prototype['get_TranslatedName'] = CAscStyle.prototype.get_TranslatedName;
+	
+	/**
+	 * Класс для работы с настройками нумерации
+	 * @constructor
+	 */
+	function CAscNumbering()
+	{
+		this.NumId = "";
+		this.Lvl   = new Array(9);
+		for (var nLvl = 0; nLvl < 9; ++nLvl)
+		{
+			this.Lvl[nLvl] = new CAscNumberingLvl(nLvl);
+		}
+	}
+	CAscNumbering.prototype.get_InternalId = function()
+	{
+		return this.NumId;
+	};
+	CAscNumbering.prototype.get_Lvl = function(nLvl)
+	{
+		if (nLvl < 0)
+			return this.Lvl[0];
+		else if (nLvl > 8)
+			return this.Lvl[8];
+		else if (!this.Lvl[nLvl])
+			return this.Lvl[0];
+
+		return this.Lvl[nLvl];
+	};
+	CAscNumbering.prototype.get_JSONNumbering = function(singleLevel)
+	{
+		return AscWord.CNumInfo.FromNum(this, singleLevel ? 0 : null).ToJson();
+	};
+	CAscNumbering.prototype.put_FromJSON = function(value)
+	{
+		let numInfo = AscWord.CNumInfo.Parse(value);
+		if (!numInfo)
+			return;
+		
+		numInfo.FillNum(this);
+	};
+	window['Asc']['CAscNumbering'] = window['Asc'].CAscNumbering = CAscNumbering;
+	CAscNumbering.prototype['get_InternalId']    = CAscNumbering.prototype.get_InternalId;
+	CAscNumbering.prototype['get_Lvl']           = CAscNumbering.prototype.get_Lvl;
+	CAscNumbering.prototype['get_JSONNumbering'] = CAscNumbering.prototype.get_JSONNumbering;
+	CAscNumbering.prototype['put_FromJSON']      = CAscNumbering.prototype.put_FromJSON;
+
+	/**
+	 * Класс для работы с текстом конкретного уровня нумерации
+	 * @constructor
+	 */
+	function CAscNumberingLvlText(Type, Value)
+	{
+		this.Type  = undefined !== Type ? Type : Asc.c_oAscNumberingLvlTextType.Text;
+		this.Value = undefined !== Value ? Value : "";
+	}
+	CAscNumberingLvlText.prototype.get_Type = function()
+	{
+		return this.Type;
+	};
+	CAscNumberingLvlText.prototype.put_Type = function(nType)
+	{
+		this.Type = nType;
+	};
+	CAscNumberingLvlText.prototype.get_Value = function()
+	{
+		return this.Value;
+	};
+	CAscNumberingLvlText.prototype.put_Value = function(vVal)
+	{
+		this.Value = vVal;
+	};
+	window['Asc']['CAscNumberingLvlText'] = window['Asc'].CAscNumberingLvlText = CAscNumberingLvlText;
+	CAscNumberingLvlText.prototype['get_Type']  = CAscNumberingLvlText.prototype.get_Type;
+	CAscNumberingLvlText.prototype['put_Type']  = CAscNumberingLvlText.prototype.put_Type;
+	CAscNumberingLvlText.prototype['get_Value'] = CAscNumberingLvlText.prototype.get_Value;
+	CAscNumberingLvlText.prototype['put_Value'] = CAscNumberingLvlText.prototype.put_Value;
+
+
+	/**
+	 * Класс для работы с настройками конкретного уровня нумерации
+	 * @constructor
+	 */
+	function CAscNumberingLvl(nLvlNum)
+	{
+		this.LvlNum  = nLvlNum;
+		this.Format  = Asc.c_oAscNumberingFormat.Bullet;
+		this.Text    = [];
+		this.TextPr  = new AscCommonWord.CTextPr();
+		this.ParaPr  = new AscCommonWord.CParaPr();
+		this.Start   = 1;
+		this.Restart = -1;
+		this.Suff    = Asc.c_oAscNumberingSuff.Tab;
+		this.Align   = AscCommon.align_Left;
+		this.PStyle  = undefined;
+		this.IsLgl   = undefined;
+	}
+	CAscNumberingLvl.prototype.checkTextPr = function ()
+	{
+		if (!this.TextPr)
+		{
+			this.TextPr  = new AscCommonWord.CTextPr();
+		}
+	};
+	CAscNumberingLvl.prototype.checkParaPr = function ()
+	{
+		if (!this.ParaPr)
+		{
+			this.ParaPr  = new AscCommonWord.CParaPr();
+		}
+	};
+	CAscNumberingLvl.prototype.put_Format = function (nFormat)
+	{
+		this.Format = nFormat;
+	};
+	CAscNumberingLvl.prototype.put_Text = function (arrText)
+	{
+		this.Text = arrText;
+	};
+	CAscNumberingLvl.prototype.put_Start = function (nStart)
+	{
+		this.Start = nStart;
+	};
+	CAscNumberingLvl.prototype.put_Restart = function (nRestart)
+	{
+		this.Restart = nRestart;
+	};
+	CAscNumberingLvl.prototype.put_Suff = function (nSuff)
+	{
+		this.Suff = nSuff;
+	};
+	CAscNumberingLvl.prototype.put_Align = function (nAlign)
+	{
+		this.Align = nAlign;
+	};
+	CAscNumberingLvl.prototype.put_PStyle = function (sStyleId)
+	{
+		this.PStyle = sStyleId;
+	};
+	CAscNumberingLvl.prototype.put_Color = function (oAscColor)
+	{
+		this.checkTextPr();
+		this.TextPr.put_Color(oAscColor);
+	};
+	CAscNumberingLvl.prototype.put_Bold = function (bBold)
+	{
+		this.checkTextPr();
+		this.TextPr.put_Bold(bBold);
+	};
+	CAscNumberingLvl.prototype.put_Italic = function (bItalic)
+	{
+		this.checkTextPr();
+		this.TextPr.put_Italic(bItalic);
+	};
+	CAscNumberingLvl.prototype.put_FontFamily = function (sName)
+	{
+		this.checkTextPr();
+		this.TextPr.put_FontFamily(sName);
+	};
+	CAscNumberingLvl.prototype.put_FontSize = function (nFontSize)
+	{
+		this.checkTextPr();
+		this.TextPr.put_FontSize(nFontSize);
+	};
+	CAscNumberingLvl.prototype.put_IndentSize = function (nIndentSize)
+	{
+		this.checkParaPr();
+		const nOldNumberPosition = this.get_NumberPosition();
+		this.ParaPr.put_Ind(undefined, nIndentSize, undefined);
+		this.put_NumberPosition(nOldNumberPosition);
+	};
+	CAscNumberingLvl.prototype.put_NumberPosition = function (nNumberPosition)
+	{
+		const nLeft = this.ParaPr.Ind.Left || 0;
+		this.ParaPr.put_Ind(nNumberPosition - nLeft, undefined, undefined);
+		const nStopTab = this.GetStopTab();
+		if (AscFormat.isRealNumber(nStopTab) && nStopTab < nNumberPosition)
+		{
+			this.put_StopTab(nNumberPosition);
+		}
+	};
+	CAscNumberingLvl.prototype.GetStopTab = function ()
+	{
+		const oParaPr = this.ParaPr;
+		if (oParaPr)
+		{
+			const oTabs = oParaPr.GetTabs();
+			if (oTabs)
+			{
+				if (oTabs && oTabs.GetCount() === 1)
+				{
+					return oTabs.Get(0).Pos;
+				}
+			}
+		}
+		return null;
+	};
+	CAscNumberingLvl.prototype.get_StopTab = CAscNumberingLvl.prototype.GetStopTab;
+
+	CAscNumberingLvl.prototype.SetStopTab = function (nValue)
+	{
+		let oParaPr = this.ParaPr;
+		if (!oParaPr)
+		{
+			oParaPr = new AscCommonWord.CParaPr();
+			this.ParaPr = oParaPr;
+		}
+		if (AscFormat.isRealNumber(nValue))
+		{
+			const oTabs = new AscCommonWord.CParaTabs();
+			oTabs.Add(new AscCommonWord.CParaTab(Asc.c_oAscTabType.Num, nValue));
+			oParaPr.Tabs = oTabs;
+		}
+		else
+		{
+			delete oParaPr.Tabs;
+		}
+	};
+	CAscNumberingLvl.prototype.put_StopTab = CAscNumberingLvl.prototype.SetStopTab;
+		CAscNumberingLvl.prototype.get_TextPr = function ()
+	{
+		return this.TextPr;
+	};
+	CAscNumberingLvl.prototype.GetTextPr = CAscNumberingLvl.prototype.get_TextPr;
+
+	CAscNumberingLvl.prototype.get_ParaPr = function ()
+	{
+		return this.ParaPr;
+	};
+	CAscNumberingLvl.prototype.get_Text = function ()
+	{
+		return this.Text;
+	};
+	CAscNumberingLvl.prototype.get_Start = function ()
+	{
+		return this.Start;
+	};
+	CAscNumberingLvl.prototype.get_Align = function ()
+	{
+		return this.Align;
+	};
+	CAscNumberingLvl.prototype.get_PStyle = function ()
+	{
+		return this.PStyle;
+	};
+	CAscNumberingLvl.prototype.get_OLang = function ()
+	{
+		return this.TextPr ? this.TextPr.get_Lang() : undefined;
+	};
+	CAscNumberingLvl.prototype.get_Color = function ()
+	{
+		return this.TextPr ? this.TextPr.get_Color() : undefined;
+	};
+	CAscNumberingLvl.prototype.get_Bold = function ()
+	{
+		return this.TextPr ? this.TextPr.get_Bold() : undefined;
+	};
+	CAscNumberingLvl.prototype.get_Italic = function ()
+	{
+		return this.TextPr ? this.TextPr.get_Italic() : undefined;
+	};
+	CAscNumberingLvl.prototype.get_FontFamily = function ()
+	{
+		return this.TextPr ? this.TextPr.get_FontFamily() : undefined;
+	};
+	CAscNumberingLvl.prototype.get_FontSize = function ()
+	{
+		return this.TextPr ? this.TextPr.get_FontSize() : undefined;
+	};
+	CAscNumberingLvl.prototype.get_IndentSize = function ()
+	{
+		return this.ParaPr && this.ParaPr.Ind ? this.ParaPr.Ind.Left : 0;
+	};
+	CAscNumberingLvl.prototype.GetIndentSize = CAscNumberingLvl.prototype.get_IndentSize;
+
+	CAscNumberingLvl.prototype.get_NumberPosition = function ()
+	{
+		const nLeft = this.get_IndentSize();
+		if (AscFormat.isRealNumber(this.ParaPr.Ind.FirstLine))
+		{
+			return nLeft + this.ParaPr.Ind.FirstLine;
+		}
+		return nLeft;
+	};
+	CAscNumberingLvl.prototype.GetNumberPosition = CAscNumberingLvl.prototype.get_NumberPosition;
+
+	CAscNumberingLvl.prototype.get_LvlNum = function ()
+	{
+		return this.LvlNum;
+	};
+	CAscNumberingLvl.prototype.get_Format = function ()
+	{
+		return this.Format;
+	};
+	CAscNumberingLvl.prototype.get_Restart = function ()
+	{
+		return this.Restart;
+	};
+	CAscNumberingLvl.prototype.get_Suff = function ()
+	{
+		return this.Suff;
+	};
+	CAscNumberingLvl.prototype.get_IsLgl = function()
+	{
+		return this.IsLgl;
+	};
+	CAscNumberingLvl.prototype.put_IsLgl = function(v)
+	{
+		this.IsLgl = v;
+	};
+	window['Asc']['CAscNumberingLvl']                 = window['Asc'].CAscNumberingLvl = CAscNumberingLvl;
+	CAscNumberingLvl.prototype['get_LvlNum']          = CAscNumberingLvl.prototype.get_LvlNum;
+	CAscNumberingLvl.prototype['get_Format']          = CAscNumberingLvl.prototype.get_Format;
+	CAscNumberingLvl.prototype['put_Format']          = CAscNumberingLvl.prototype.put_Format;
+	CAscNumberingLvl.prototype['get_Text']            = CAscNumberingLvl.prototype.get_Text;
+	CAscNumberingLvl.prototype['put_Text']            = CAscNumberingLvl.prototype.put_Text;
+	CAscNumberingLvl.prototype['get_TextPr']          = CAscNumberingLvl.prototype.get_TextPr;
+	CAscNumberingLvl.prototype['get_ParaPr']          = CAscNumberingLvl.prototype.get_ParaPr;
+	CAscNumberingLvl.prototype['get_Start']           = CAscNumberingLvl.prototype.get_Start;
+	CAscNumberingLvl.prototype['put_Start']           = CAscNumberingLvl.prototype.put_Start;
+	CAscNumberingLvl.prototype['get_Restart']         = CAscNumberingLvl.prototype.get_Restart;
+	CAscNumberingLvl.prototype['put_Restart']         = CAscNumberingLvl.prototype.put_Restart;
+	CAscNumberingLvl.prototype['get_Suff']            = CAscNumberingLvl.prototype.get_Suff;
+	CAscNumberingLvl.prototype['put_Suff']            = CAscNumberingLvl.prototype.put_Suff;
+	CAscNumberingLvl.prototype['get_Align']           = CAscNumberingLvl.prototype.get_Align;
+	CAscNumberingLvl.prototype['put_Align']           = CAscNumberingLvl.prototype.put_Align;
+	CAscNumberingLvl.prototype['get_PStyle']          = CAscNumberingLvl.prototype.get_PStyle;
+	CAscNumberingLvl.prototype['put_PStyle']          = CAscNumberingLvl.prototype.put_PStyle;
+	CAscNumberingLvl.prototype['get_OLang']           = CAscNumberingLvl.prototype.get_OLang;
+	CAscNumberingLvl.prototype['put_OLang']           = CAscNumberingLvl.prototype.put_OLang;
+	CAscNumberingLvl.prototype['get_Color']           = CAscNumberingLvl.prototype.get_Color;
+	CAscNumberingLvl.prototype['put_Color']           = CAscNumberingLvl.prototype.put_Color;
+	CAscNumberingLvl.prototype['get_Bold']            = CAscNumberingLvl.prototype.get_Bold;
+	CAscNumberingLvl.prototype['put_Bold']            = CAscNumberingLvl.prototype.put_Bold;
+	CAscNumberingLvl.prototype['get_Italic']          = CAscNumberingLvl.prototype.get_Italic;
+	CAscNumberingLvl.prototype['put_Italic']          = CAscNumberingLvl.prototype.put_Italic;
+	CAscNumberingLvl.prototype['get_FontFamily']      = CAscNumberingLvl.prototype.get_FontFamily;
+	CAscNumberingLvl.prototype['put_FontFamily']      = CAscNumberingLvl.prototype.put_FontFamily;
+	CAscNumberingLvl.prototype['get_FontSize']        = CAscNumberingLvl.prototype.get_FontSize;
+	CAscNumberingLvl.prototype['put_FontSize']        = CAscNumberingLvl.prototype.put_FontSize;
+	CAscNumberingLvl.prototype['get_IndentSize']      = CAscNumberingLvl.prototype.get_IndentSize;
+	CAscNumberingLvl.prototype['put_IndentSize']      = CAscNumberingLvl.prototype.put_IndentSize;
+	CAscNumberingLvl.prototype['get_NumberPosition']  = CAscNumberingLvl.prototype.get_NumberPosition;
+	CAscNumberingLvl.prototype['put_NumberPosition']  = CAscNumberingLvl.prototype.put_NumberPosition;
+	CAscNumberingLvl.prototype['put_StopTab']         = CAscNumberingLvl.prototype.put_StopTab;
+	CAscNumberingLvl.prototype['get_StopTab']         = CAscNumberingLvl.prototype.get_StopTab;
+	CAscNumberingLvl.prototype['get_IsLgl']           = CAscNumberingLvl.prototype.get_IsLgl;
+	CAscNumberingLvl.prototype['put_IsLgl']           = CAscNumberingLvl.prototype.put_IsLgl;
+
+	function CAscWatermarkProperties()
+	{
+		this.Type = Asc.c_oAscWatermarkType.None;
+
+		this.Text = null;
+		this.TextPr = null;
+		this.Opacity = null;
+		this.Angle = 0;
+		this.BackgroundColor = null;
+		this.Outline = null;
+
+		this.ImageUrl = null;
+		this.Scale = null;
+		this.ImageW = null;
+		this.ImageH = null;
+
+		this.DivId = null;
+		this.Api = null;
+	}
+
+	window['Asc']['CAscWatermarkProperties'] = window['Asc'].CAscWatermarkProperties = CAscWatermarkProperties;
+
+	CAscWatermarkProperties.prototype['put_Api'] = CAscWatermarkProperties.prototype.put_Api = function (v) {
+		this.Api = v;
+	};
+	CAscWatermarkProperties.prototype['put_Type'] = CAscWatermarkProperties.prototype.put_Type = function (v) {
+		this.Type = v;
+	};
+
+	CAscWatermarkProperties.prototype['get_Type'] = CAscWatermarkProperties.prototype.get_Type = function () {
+		return this.Type;
+	};
+	CAscWatermarkProperties.prototype['put_Text'] = CAscWatermarkProperties.prototype.put_Text = function (v) {
+		this.Text = v;
+	};
+	CAscWatermarkProperties.prototype['get_Text'] = CAscWatermarkProperties.prototype.get_Text = function () {
+		return this.Text;
+	};
+	CAscWatermarkProperties.prototype['put_TextPr'] = CAscWatermarkProperties.prototype.put_TextPr = function (v) {
+		this.TextPr = v;
+	};
+	CAscWatermarkProperties.prototype['get_TextPr'] = CAscWatermarkProperties.prototype.get_TextPr = function () {
+		return this.TextPr;
+	};
+	CAscWatermarkProperties.prototype['put_Opacity'] = CAscWatermarkProperties.prototype.put_Opacity = function (v) {
+		this.Opacity = v;
+	};
+	CAscWatermarkProperties.prototype['get_Opacity'] = CAscWatermarkProperties.prototype.get_Opacity = function () {
+		return this.Opacity;
+	};
+	CAscWatermarkProperties.prototype['put_IsDiagonal'] = CAscWatermarkProperties.prototype.put_IsDiagonal = function (v) {
+		if(v) {
+			this.Angle = 45;
+		}
+		else {
+			this.Angle = 0;
+		}
+	};
+	CAscWatermarkProperties.prototype['get_IsDiagonal'] = CAscWatermarkProperties.prototype.get_IsDiagonal = function () {
+		if(AscFormat.fApproxEqual(this.Angle, 0)) {
+			return false;
+		}
+		return true;
+	};
+	CAscWatermarkProperties.prototype['get_Angle'] = CAscWatermarkProperties.prototype.get_Angle = function () {
+		return this.Angle;
+	};
+	CAscWatermarkProperties.prototype['put_Angle'] = CAscWatermarkProperties.prototype.put_Angle = function (v) {
+		if(!AscFormat.isRealNumber(v)) {
+			return;
+		}
+		let dValue = v;
+		while (dValue < 0) {
+			dValue += 360;
+		}
+		while (dValue >= 360) {
+			dValue -= 360;
+		}
+		this.Angle = dValue;
+	};
+	CAscWatermarkProperties.prototype.getXfrmRot = function () {
+		if(this.Angle > 0) {
+			return Math.PI * (360 - this.Angle) / 180;
+		}
+		return 0;
+	};
+	CAscWatermarkProperties.prototype.setXfrmRot = function (dRot) {
+		if(AscFormat.isRealNumber(dRot) && dRot > 0) {
+			this.Angle = (360 - 180 * (dRot / Math.PI)) + 0.5 >> 0;
+		}
+	};
+
+	CAscWatermarkProperties.prototype['put_ImageUrl'] = CAscWatermarkProperties.prototype.put_ImageUrl = function (sUrl, token) {
+		var _this = this;
+		if(!_this.Api)
+		{
+			return;
+		}
+		AscCommon.sendImgUrls(_this.Api, [sUrl], function(data) {
+			if (data && data[0] && data[0].url !== "error")
+			{
+				var url = AscCommon.g_oDocumentUrls.imagePath2Local(data[0].path);
+				_this.Api.ImageLoader.LoadImagesWithCallback([AscCommon.getFullImageSrc2(url)], function(){
+					_this.ImageUrl = url;
+					_this.Type = Asc.c_oAscWatermarkType.Image;
+					_this.drawTexture();
+					_this.Api.sendEvent("asc_onWatermarkImageLoaded");
+				});
+			}
+		}, undefined, token);
+	};
+	CAscWatermarkProperties.prototype['put_ImageUrl2'] = CAscWatermarkProperties.prototype.put_ImageUrl2 = function (sUrl) {
+		this.ImageUrl = sUrl;
+	};
+	CAscWatermarkProperties.prototype['get_ImageUrl'] = CAscWatermarkProperties.prototype.get_ImageUrl = function () {
+		return this.ImageUrl;
+	};
+	CAscWatermarkProperties.prototype['put_Scale'] = CAscWatermarkProperties.prototype.put_Scale = function (v) {
+		this.Scale = v;
+	};
+	CAscWatermarkProperties.prototype['get_Scale'] = CAscWatermarkProperties.prototype.get_Scale = function () {
+		return this.Scale || 1.0;
+	};
+	CAscWatermarkProperties.prototype['put_ImageSize'] = CAscWatermarkProperties.prototype.put_ImageSize = function (w, h) {
+		this.ImageW = w;
+		this.ImageH = h;
+		this.Scale = -1;
+	};
+	CAscWatermarkProperties.prototype['get_ImageWidth'] = CAscWatermarkProperties.prototype.get_ImageWidth = function () {
+		return this.ImageW;
+	};
+	CAscWatermarkProperties.prototype['get_ImageHeight'] = CAscWatermarkProperties.prototype.get_ImageHeight = function () {
+		return this.ImageH;
+	};
+	CAscWatermarkProperties.prototype['put_BackgroundColor'] = CAscWatermarkProperties.prototype.put_BackgroundColor = function (v) {
+		this.BackgroundColor = v;
+	};
+	CAscWatermarkProperties.prototype['get_BackgroundColor'] = CAscWatermarkProperties.prototype.get_BackgroundColor = function () {
+		return this.BackgroundColor;
+	};
+	CAscWatermarkProperties.prototype['put_Outline'] = CAscWatermarkProperties.prototype.put_Outline = function (v) {
+		this.Outline = v;
+	};
+	CAscWatermarkProperties.prototype['get_Outline'] = CAscWatermarkProperties.prototype.get_Outline = function () {
+		return this.Outline;
+	};
+	CAscWatermarkProperties.prototype['put_DivId'] = CAscWatermarkProperties.prototype.put_DivId = function (v) {
+		this.DivId = v;
+		this.drawTexture();
+	};
+	CAscWatermarkProperties.prototype['updateView'] = CAscWatermarkProperties.prototype.updateView = function (v) {
+		this.drawTexture();
+	};
+	CAscWatermarkProperties.prototype['showFileDialog'] = CAscWatermarkProperties.prototype.showFileDialog = function () {
+		if(!this.Api || !this.DivId){
+			return;
+		}
+		var t = this.Api;
+		var _this = this;
+		AscCommon.ShowImageFileDialog(t.documentId, t.documentUserId, t.CoAuthoringApi.get_jwt(), t.documentShardKey, t.documentWopiSrc, t.documentUserSessionId, function(error, files)
+			{
+				if (Asc.c_oAscError.ID.No !== error)
+				{
+					t.sendEvent("asc_onError", error, Asc.c_oAscError.Level.NoCritical);
+				}
+				else
+				{
+					t.sync_StartAction(Asc.c_oAscAsyncActionType.BlockInteraction, Asc.c_oAscAsyncAction.UploadImage);
+					AscCommon.UploadImageFiles(files, t.documentId, t.documentUserId, t.CoAuthoringApi.get_jwt(), t.documentShardKey, t.documentWopiSrc, t.documentUserSessionId, function(error, urls)
+					{
+						if (Asc.c_oAscError.ID.No !== error)
+						{
+							t.sendEvent("asc_onError", error, Asc.c_oAscError.Level.NoCritical);
+							t.sync_EndAction(Asc.c_oAscAsyncActionType.BlockInteraction, Asc.c_oAscAsyncAction.UploadImage);
+						}
+						else
+						{
+							t.ImageLoader.LoadImagesWithCallback(urls, function(){
+								if(urls.length > 0)
+								{
+									_this.ImageUrl = urls[0];
+									_this.Type = Asc.c_oAscWatermarkType.Image;
+									_this.drawTexture();
+									t.sendEvent("asc_onWatermarkImageLoaded");
+								}
+								t.sync_EndAction(Asc.c_oAscAsyncActionType.BlockInteraction, Asc.c_oAscAsyncAction.UploadImage);
+							});
+						}
+					});
+				}
+			},
+			function(error)
+			{
+				if (Asc.c_oAscError.ID.No !== error)
+				{
+					t.sendEvent("asc_onError", error, Asc.c_oAscError.Level.NoCritical);
+				}
+				t.sync_StartAction(Asc.c_oAscAsyncActionType.BlockInteraction, Asc.c_oAscAsyncAction.UploadImage);
+			});
+	};
+
+	CAscWatermarkProperties.prototype['loadImageUrl'] = CAscWatermarkProperties.prototype.loadImageUrl = function(sUrl, token)	{
+		var _this = this;
+		if(!_this.Api)
+		{
+			return;
+		}
+		AscCommon.sendImgUrls(_this.Api, [sUrl], function(data) {
+			if (data && data[0] && data[0].url !== "error")
+			{
+				_this.ImageLoader.LoadImagesWithCallback([data[0].url], function(){
+					_this.ImageUrl = data[0].url;
+					_this.Type = Asc.c_oAscWatermarkType.Image;
+					_this.drawTexture();
+					_this.sendEvent("asc_onWatermarkImageLoaded");
+				});
+			}
+		}, undefined, token);
+	};
+
+	CAscWatermarkProperties.prototype['drawTexture'] = CAscWatermarkProperties.prototype.drawTexture = function () {
+		if(!this.ImageUrl || !this.Api){
+			return;
+		}
+		var oDiv = document.getElementById(this.DivId);
+		if(!oDiv){
+			return;
+		}
+		var aChildren = oDiv.children;
+		var oCanvas = null;
+		for(var i = 0; i < aChildren.length; ++i){
+			if(aChildren[i].nodeName && aChildren[i].nodeName.toUpperCase() === 'CANVAS'){
+				oCanvas = aChildren[i];
+				break;
+			}
+		}
+		var nWidth = oDiv.clientWidth;
+		var nHeight = oDiv.clientHeight;
+		if(null === oCanvas){
+			oCanvas = document.createElement('canvas');
+			oCanvas.width = parseInt(nWidth);
+			oCanvas.height = parseInt(nHeight);
+			oDiv.appendChild(oCanvas);
+		}
+		var oContext = oCanvas.getContext('2d');
+		oContext.clearRect(0, 0, oCanvas.width, oCanvas.height);
+		var _img = this.Api.ImageLoader.map_image_index[AscCommon.getFullImageSrc2(this.ImageUrl)];
+		if (_img != undefined && _img.Image != null && _img.Status != AscFonts.ImageLoadStatus.Loading)
+		{
+			var _x = 0;
+			var _y = 0;
+			var _w = Math.max(_img.Image.width, 1);
+			var _h = Math.max(_img.Image.height, 1);
+
+			var dAspect1 = nWidth / nHeight;
+			var dAspect2 = _w / _h;
+
+			_w = nWidth;
+			_h = nHeight;
+			if (dAspect1 >= dAspect2)
+			{
+				_w = dAspect2 * nHeight;
+				_x = (nWidth - _w) / 2;
+			}
+			else
+			{
+				_h = _w / dAspect2;
+				_y = (nHeight - _h) / 2;
+			}
+			oContext.drawImage(_img.Image, _x, _y, _w, _h);
+		}
+		else if (!_img || !_img.Image)
+		{
+			oContext.lineWidth = 1;
+
+			oContext.beginPath();
+			oContext.moveTo(0, 0);
+			oContext.lineTo(nWidth, nHeight);
+			oContext.moveTo(nWidth, 0);
+			oContext.lineTo(0, nHeight);
+			oContext.strokeStyle = "#FF0000";
+			oContext.stroke();
+
+			oContext.beginPath();
+			oContext.moveTo(0, 0);
+			oContext.lineTo(nWidth, 0);
+			oContext.lineTo(nWidth, nHeight);
+			oContext.lineTo(0, nHeight);
+			oContext.closePath();
+
+			oContext.strokeStyle = "#000000";
+			oContext.stroke();
+			oContext.beginPath();
+		}
+	};
+	CAscWatermarkProperties.prototype.isEqual = function(oPr)
+	{
+		if(!oPr)
+		{
+			return false;
+		}
+		if(this.Type !== oPr.Type)
+		{
+			return false;
+		}
+		if(this.Text !== oPr.Text)
+		{
+			return false;
+		}
+
+		if(this.TextPr && !oPr.TextPr ||
+		   !this.TextPr && oPr.TextPr)
+		{
+			return false;
+		}
+		if(this.TextPr)
+		{
+			let oCurDocTextPr = new AscWord.CTextPr();
+			let oDocTextPr = new AscWord.CTextPr();
+			oCurDocTextPr.Set_FromObject(this.TextPr);
+			oDocTextPr.Set_FromObject(oPr.TextPr);
+			if(!oCurDocTextPr.IsEqual(oDocTextPr))
+			{
+				return false;
+			}
+		}
+		if(AscFormat.isRealNumber(this.Opacity) && !AscFormat.isRealNumber(oPr.Opacity) ||
+			!AscFormat.isRealNumber(this.Opacity) && AscFormat.isRealNumber(oPr.Opacity) ||
+			AscFormat.isRealNumber(this.Opacity) && !AscFormat.fApproxEqual(this.Opacity, oPr.Opacity, 1))
+		{
+			return false;
+		}
+		if(!AscFormat.fApproxEqual(this.Angle, oPr.Angle))
+		{
+			return false;
+		}
+		if(this.ImageUrl !== oPr.ImageUrl)
+		{
+			return false;
+		}
+		if(AscFormat.isRealNumber(this.Scale) && !AscFormat.isRealNumber(oPr.Scale) ||
+			!AscFormat.isRealNumber(this.Scale) && AscFormat.isRealNumber(oPr.Scale) ||
+			AscFormat.isRealNumber(this.Scale) && !AscFormat.fApproxEqual(this.Scale, oPr.Scale))
+		{
+			return false;
+		}
+		return true;
+	};
+
+	function CAscCaptionProperties()
+	{
+		this.Name = null;
+		this.Additional = null;
+		this.Label = null;
+		this.Before = false;
+		this.ExcludeLabel = false;
+		this.Format = Asc.c_oAscNumberingFormat.Decimal;
+
+		this.IncludeChapterNumber = false;
+		this.HeadingLvl = null;
+		this.Separator = ":";
+
+		this.Document = null;
+	}
+
+	function CAscDateTime()
+	{
+		this.Format = null;
+		this.Update = true;
+		this.Lang   = null;
+	}
+	CAscDateTime.prototype.get_Format = function()
+	{
+		return this.Format;
+	};
+	CAscDateTime.prototype.put_Format = function(v)
+	{
+		this.Format = v;
+	};
+	CAscDateTime.prototype.get_Update = function()
+	{
+		return this.Update;
+	};
+	CAscDateTime.prototype.put_Update = function(v)
+	{
+		this.Update = v;
+	};
+	CAscDateTime.prototype.get_Lang = function()
+	{
+		return this.Lang;
+	};
+	CAscDateTime.prototype.put_Lang = function(v)
+	{
+		this.Lang = v;
+	};
+	CAscDateTime.prototype.get_FormatsExamples = function()
+	{
+		return Asc.c_oAscDateTimeFormat[this.Lang] ? Asc.c_oAscDateTimeFormat[this.Lang] : Asc.c_oAscDateTimeFormat[lcid_enUS];
+	};
+	CAscDateTime.prototype.get_String = function(sFormat, sDate, nLangId)
+	{
+		if (undefined === sFormat)
+			sFormat = this.Format;
+
+		if (undefined === nLangId)
+			nLangId = this.Lang;
+
+		var oFormat = AscCommon.oNumFormatCache.get(sFormat, AscCommon.NumFormatType.WordFieldDate);
+		if (oFormat)
+		{
+			var oCultureInfo = AscCommon.g_aCultureInfos[nLangId];
+			if (!oCultureInfo)
+				oCultureInfo = AscCommon.g_aCultureInfos[1033];
+
+			var oDateTime = sDate ? new Asc.cDate(sDate) : new Asc.cDate();
+			return oFormat.formatToWord(oDateTime.getExcelDate(true) + (oDateTime.getHours() * 60 * 60 + oDateTime.getMinutes() * 60 + oDateTime.getSeconds()) / AscCommonExcel.c_sPerDay, 15, oCultureInfo);
+		}
+
+		return sDate;
+	};
+
+	window['Asc']['CAscDateTime'] = window['Asc'].CAscDateTime = CAscDateTime;
+
+	CAscDateTime.prototype['get_Format']          = CAscDateTime.prototype.get_Format;
+	CAscDateTime.prototype['put_Format']          = CAscDateTime.prototype.put_Format;
+	CAscDateTime.prototype['get_Update']          = CAscDateTime.prototype.get_Update;
+	CAscDateTime.prototype['put_Update']          = CAscDateTime.prototype.put_Update;
+	CAscDateTime.prototype['get_Lang']            = CAscDateTime.prototype.get_Lang;
+	CAscDateTime.prototype['put_Lang']            = CAscDateTime.prototype.put_Lang;
+	CAscDateTime.prototype['get_FormatsExamples'] = CAscDateTime.prototype.get_FormatsExamples;
+	CAscDateTime.prototype["get_String"]          = CAscDateTime.prototype.get_String;
+
+
+	window['Asc']['CAscCaptionProperties'] = window['Asc'].CAscCaptionProperties = CAscCaptionProperties;
+	var prot = CAscCaptionProperties.prototype;
+	prot.get_Name = prot["get_Name"] = function(){return this.Name;};
+	prot.get_Label = prot["get_Label"] = function()
+	{
+		if (!(typeof this.Label === "string"))
+			return this.Label;
+		
+		return this.Label.split("_").join(" ");
+	};
+	prot.get_Before = prot["get_Before"] = function(){return this.Before;};
+	prot.get_ExcludeLabel = prot["get_ExcludeLabel"] = function(){return this.ExcludeLabel;};
+	prot.get_Format = prot["get_Format"] = function(){return this.Format;};
+	prot.get_FormatGeneral  = prot["get_FormatGeneral"] =function()
+	{
+		switch (this.Format) {
+			case Asc.c_oAscNumberingFormat.UpperLetter:
+			{
+				return "ALPHABETIC";
+			}
+			case Asc.c_oAscNumberingFormat.LowerLetter:
+			{
+				return "alphabetic";
+			}
+			case Asc.c_oAscNumberingFormat.UpperRoman:
+			{
+				return "Roman";
+			}
+			case Asc.c_oAscNumberingFormat.LowerRoman:
+			{
+				return  "roman";
+			}
+			default:
+			{
+				return "Arabic";
+			}
+		}
+	};
+	prot.get_IncludeChapterNumber = prot["get_IncludeChapterNumber"] = function(){return this.IncludeChapterNumber ;};
+	prot.get_HeadingLvl = prot["get_HeadingLvl"] = function(){return this.HeadingLvl;};
+	prot.get_Separator = prot["get_Separator"] = function(){return this.Separator;};
+	prot.get_Additional = prot["get_Additional"] = function(){return this.Additional;};
+
+	prot.put_Name = prot["put_Name"] = function(v){this.Name = v;};
+	prot.put_Label = prot["put_Label"] = function(v){this.Label = v;};
+	prot.put_Before = prot["put_Before"] = function(v){this.Before = v;};
+	prot.put_ExcludeLabel = prot["put_ExcludeLabel"] = function(v){this.ExcludeLabel = v;};
+	prot.put_Format = prot["put_Format"] = function(v){this.Format = v;};
+	prot.put_IncludeChapterNumber = prot["put_IncludeChapterNumber"] = function(v){this.IncludeChapterNumber  = v;};
+	prot.put_HeadingLvl = prot["put_HeadingLvl"] = function(v){this.HeadingLvl = v;};
+	prot.put_Separator = prot["put_Separator"] = function(v){this.Separator = v;};
+	prot.put_Additional = prot["put_Additional"] = function(v){this.Additional = v;};
+	prot.getSeqInstruction = function()
+	{
+		var oComplexField = new CFieldInstructionSEQ();
+		if(this.Format)
+		{
+			oComplexField.SetGeneralSwitches([this.Format]);
+		}
+		if(this.Label)
+		{
+			oComplexField.SetId(this.getLabelForInstruction());
+		}
+		if(AscFormat.isRealNumber(this.HeadingLvl))
+		{
+			oComplexField.SetS(this.HeadingLvl);
+		}
+		return oComplexField;
+	};
+	prot.getLabelForInstruction = function()
+	{
+		if (!(typeof this.Label === "string"))
+			return "";
+		
+		return this.Label.split(" ").join("_");
+	};
+	prot.getSeqInstructionLine = function()
+	{
+		return this.getSeqInstruction().ToString();
+	};
+	prot.updateName = prot["updateName"] = function()
+	{
+		this.Name = "";
+		if(!this.ExcludeLabel)
+		{
+			if(typeof this.Label === "string" && this.Label.length > 0)
+			{
+				this.Name += (this.Label + " ");
+			}
+		}
+		if(this.IncludeChapterNumber)
+		{
+			this.Name += "1";
+			if(typeof this.Separator === "string" && this.Separator.length > 0)
+			{
+				this.Name += this.Separator;
+			}
+			else
+			{
+				this.Name += " ";
+			}
+		}
+		this.Name += AscCommon.IntToNumberFormat(1, this.Format);
+	};
+
+	/**
+	* Класс для настроек конвертации текста в таблицу
+	* oSelectedContent {AscCommonWord.CSelectedContent}
+	* @constructor
+	*/
+	function CAscTextToTableProperties(oSelectedContent)
+	{
+		this.Rows			= 0;
+		this.Cols			= 0;
+		this.AutoFitType	= Asc.c_oAscTextToTableAutoFitType.Fixed;
+		this.FitValue		= -1;
+		this.SeparatorType	= Asc.c_oAscTextToTableSeparator.Paragraph;
+		this.Separator		= null;
+		this.Selected		= oSelectedContent;
+	}
+	CAscTextToTableProperties.prototype.get_Size = function()
+	{
+		return [this.Rows, this.Cols];
+	};
+	CAscTextToTableProperties.prototype.put_ColsCount = function(nCols)
+	{
+		this.Cols = (nCols > 1) ? nCols : 1;
+		this.CalculateTableSize(true);
+		return this.get_Size();
+	};
+	CAscTextToTableProperties.prototype.get_ColsCount = function()
+	{
+		return this.Cols;
+	};
+	CAscTextToTableProperties.prototype.put_RowsCount = function(nRows)
+	{
+		this.Rows = (nRows > 1) ? nRows : 1;
+	};
+	CAscTextToTableProperties.prototype.get_RowsCount = function()
+	{
+		return this.Rows;
+	};
+	CAscTextToTableProperties.prototype.get_AutoFitType = function()
+	{
+		return this.AutoFitType;
+	};
+	CAscTextToTableProperties.prototype.put_AutoFitType = function(nAutoFitType)
+	{
+		this.AutoFitType = nAutoFitType;
+	};
+	CAscTextToTableProperties.prototype.get_Fit = function()
+	{
+		return this.FitValue;
+	};
+	CAscTextToTableProperties.prototype.put_Fit = function(val)
+	{
+		this.FitValue = val;
+	};
+	CAscTextToTableProperties.prototype.get_SeparatorType = function()
+	{
+		return this.SeparatorType;
+	};
+	CAscTextToTableProperties.prototype.put_SeparatorType = function(nSeparatorType)
+	{
+		this.SeparatorType = nSeparatorType;
+		this.CalculateTableSize();
+		return this.get_Size();
+	};
+	CAscTextToTableProperties.prototype.get_Separator = function()
+	{
+		return this.Separator;
+	};
+	CAscTextToTableProperties.prototype.put_Separator = function(nCharCode)
+	{
+		this.Separator = nCharCode;
+		return this.put_SeparatorType(Asc.c_oAscTextToTableSeparator.Symbol);
+	};
+	CAscTextToTableProperties.prototype.CalculateTableSize = function(isColsFixed)
+	{
+		var nMaxCols = isColsFixed ? this.Cols : 0;
+		var oEngine  = new AscCommonWord.CTextToTableEngine();
+		oEngine.SetCalculateTableSizeMode(this.SeparatorType, this.Separator, nMaxCols);
+		for (var nIndex = 0, nCount = this.Selected.Elements.length; nIndex < nCount; ++nIndex)
+		{
+			var oElement = this.Selected.Elements[nIndex].Element;
+			oElement.CalculateTextToTable(oEngine);
+		}
+
+		var nCols = isColsFixed ? nMaxCols : oEngine.Cols;
+		var nRows = oEngine.Rows;
+
+		this.Cols = (nCols > 1) ? nCols : 1;
+		this.Rows = (nRows > 1) ? nRows : 1;
+	};
+
+	//----------------------------------------------------------
+	// CSignatureFormProps
+	//----------------------------------------------------------
+	function CSignatureFormProps(api, formObj)
+	{
+		this.Api = api;
+		this.FormObj = formObj;
+		this.Mode = 0;               // 0 - upload, 1 - draw, 2 - type
+
+		// Upload state
+		this.ImageUrl = null;
+		this.RemoveBackground = false;
+		this.PreviewImgId = null;
+		this.ProcessedCanvas = null;
+
+		// Draw state
+		this.PreviewDrawId = null;
+		this.DrawCanvas = null;
+		this.DrawCtx = null;
+		this.LineSize = 2;
+		this.LineColor = "#000000";
+		this.IsDrawing = false;
+		this.DrawPaths = [];
+		this.CurrentPath = null;
+		this.UndoStack = [];
+		this.RedoStack = [];
+
+		// Type state
+		this.PreviewTypeId = null;
+		this.TypeText = "";
+		this.TypeFont = "Arial";
+		this.TypeFontSize = 11;
+		this.TypeBold = false;
+		this.TypeItalic = false;
+	}
+
+
+	CSignatureFormProps.prototype.put_PreviewImgId = function(divId)
+	{
+		this.PreviewImgId = divId;
+	};
+	CSignatureFormProps.prototype.put_PreviewDrawId = function(divId)
+	{
+		this.PreviewDrawId = divId;
+	};
+	CSignatureFormProps.prototype.put_PreviewTypeId = function(divId)
+	{
+		this.PreviewTypeId = divId;
+	};
+
+	CSignatureFormProps.prototype.updateView = function(mode)
+	{
+		this.Mode = mode;
+		if (mode === 0)
+		{
+			if (this.ImageUrl)
+			{
+				if (!this.ProcessedCanvas)
+					this._processImage();
+				this._renderImagePreview();
+			}
+		}
+		else if (mode === 1)
+		{
+			this._initDrawCanvas();
+			this._redrawAllPaths();
+		}
+		else if (mode === 2)
+		{
+			this._renderTypePreview();
+		}
+	};
+
+
+	CSignatureFormProps.prototype.showFileDialog = function()
+	{
+		const t = this.Api;
+		const _this = this;
+		if (!t)
+			return;
+
+		if (window["AscDesktopEditor"] && window["AscDesktopEditor"]["IsLocalFile"]())
+		{
+			window["AscDesktopEditor"]["OpenFilenameDialog"]("images", false, function(_file)
+			{
+				let file = _file;
+				if (Array.isArray(file))
+					file = file[0];
+				if (!file)
+					return;
+
+				let url = window["AscDesktopEditor"]["LocalFileGetImageUrl"](file);
+				let urls = [AscCommon.g_oDocumentUrls.getImageUrl(url)];
+
+				t.ImageLoader.LoadImagesWithCallback(urls, function()
+				{
+					if (urls.length > 0)
+					{
+						_this.ImageUrl = urls[0];
+						_this.ProcessedCanvas = null;
+						t.sendEvent("asc_onSignatureImageLoaded");
+					}
+				});
+			});
+		}
+		else
+		{
+			AscCommon.ShowImageFileDialog(t.documentId, t.documentUserId, t.CoAuthoringApi.get_jwt(),
+				t.documentShardKey, t.documentWopiSrc, t.documentUserSessionId, function(error, files)
+			{
+				if (Asc.c_oAscError.ID.No !== error)
+				{
+					t.sendEvent("asc_onError", error, Asc.c_oAscError.Level.NoCritical);
+				}
+				else
+				{
+					t.sync_StartAction(Asc.c_oAscAsyncActionType.BlockInteraction, Asc.c_oAscAsyncAction.UploadImage);
+					AscCommon.UploadImageFiles(files, t.documentId, t.documentUserId, t.CoAuthoringApi.get_jwt(),
+						t.documentShardKey, t.documentWopiSrc, t.documentUserSessionId, function(error, urls)
+					{
+						if (Asc.c_oAscError.ID.No !== error)
+						{
+							t.sendEvent("asc_onError", error, Asc.c_oAscError.Level.NoCritical);
+							t.sync_EndAction(Asc.c_oAscAsyncActionType.BlockInteraction, Asc.c_oAscAsyncAction.UploadImage);
+						}
+						else
+						{
+							t.ImageLoader.LoadImagesWithCallback(urls, function()
+							{
+								if (urls.length > 0)
+								{
+									_this.ImageUrl = urls[0];
+									_this.ProcessedCanvas = null;
+									t.sendEvent("asc_onSignatureImageLoaded");
+								}
+								t.sync_EndAction(Asc.c_oAscAsyncActionType.BlockInteraction, Asc.c_oAscAsyncAction.UploadImage);
+							});
+						}
+					});
+				}
+			});
+		}
+	};
+
+	CSignatureFormProps.prototype.put_ImageUrl = function(sUrl, token)
+	{
+		const _this = this;
+		const t = this.Api;
+		if (!t)
+			return;
+
+		AscCommon.sendImgUrls(t, [sUrl], function(data)
+		{
+			if (data && data[0] && data[0].url !== "error")
+			{
+				const url = AscCommon.g_oDocumentUrls.imagePath2Local(data[0].path);
+				t.ImageLoader.LoadImagesWithCallback([AscCommon.getFullImageSrc2(url)], function()
+				{
+					_this.ImageUrl = url;
+					_this.ProcessedCanvas = null;
+					t.sendEvent("asc_onSignatureImageLoaded");
+				});
+			}
+		}, undefined, token);
+	};
+
+	CSignatureFormProps.prototype.put_RemoveBackground = function(val)
+	{
+		this.RemoveBackground = val;
+		this._processImage();
+		this._renderImagePreview();
+	};
+
+	CSignatureFormProps.prototype.clearImg = function()
+	{
+		this.ImageUrl = null;
+		this.ProcessedCanvas = null;
+		if (this.PreviewImgId)
+		{
+			const oCanvas = AscCommon.checkCanvasInDiv(this.PreviewImgId);
+			if (oCanvas)
+			{
+				const ctx = oCanvas.getContext('2d');
+				ctx.clearRect(0, 0, oCanvas.width, oCanvas.height);
+			}
+		}
+	};
+
+	CSignatureFormProps.prototype._processImage = function()
+	{
+		if (!this.ImageUrl || !this.Api)
+		{
+			this.ProcessedCanvas = null;
+			return;
+		}
+
+		const _img = this.Api.ImageLoader.map_image_index[AscCommon.getFullImageSrc2(this.ImageUrl)];
+		if (!_img || !_img.Image || _img.Status === AscFonts.ImageLoadStatus.Loading)
+		{
+			this.ProcessedCanvas = null;
+			return;
+		}
+
+		let nW = _img.Image.naturalWidth || _img.Image.width;
+		let nH = _img.Image.naturalHeight || _img.Image.height;
+
+		if (!nW || !nH)
+		{
+			nW = nW || 1024;
+			nH = nH || 1024;
+		}
+
+		const nMaxSize = 4096;
+		if (nW > nMaxSize || nH > nMaxSize)
+		{
+			const dScale = Math.min(nMaxSize / nW, nMaxSize / nH);
+			nW = Math.round(nW * dScale);
+			nH = Math.round(nH * dScale);
+		}
+
+		if (!this.ProcessedCanvas)
+			this.ProcessedCanvas = document.createElement('canvas');
+
+		this.ProcessedCanvas.width = nW;
+		this.ProcessedCanvas.height = nH;
+		const ctx = this.ProcessedCanvas.getContext('2d');
+
+		try
+		{
+			ctx.drawImage(_img.Image, 0, 0, nW, nH);
+		}
+		catch (e)
+		{
+			return;
+		}
+
+		if (this.RemoveBackground)
+		{
+			try
+			{
+				const oData = ctx.getImageData(0, 0, nW, nH);
+				const px = oData.data;
+				const nLow = 50;
+				const nHigh = 230;
+				const nRange = nHigh - nLow;
+				for (let i = 0; i < px.length; i += 4)
+				{
+					const nLum = (px[i] * 299 + px[i + 1] * 587 + px[i + 2] * 114) / 1000;
+					if (nLum >= nHigh)
+						px[i + 3] = 0;
+					else if (nLum > nLow)
+						px[i + 3] = Math.min(px[i + 3], Math.round(255 * (nHigh - nLum) / nRange));
+				}
+				ctx.putImageData(oData, 0, 0);
+			}
+			catch (e)
+			{
+			}
+		}
+	};
+
+	CSignatureFormProps.prototype._renderImagePreview = function()
+	{
+		if (!this.PreviewImgId)
+			return;
+
+		const oCanvas = AscCommon.checkCanvasInDiv(this.PreviewImgId);
+		if (!oCanvas)
+			return;
+
+		const oContext = oCanvas.getContext('2d');
+		oContext.clearRect(0, 0, oCanvas.width, oCanvas.height);
+
+		if (!this.ProcessedCanvas)
+			return;
+
+		const nSrcW = this.ProcessedCanvas.width;
+		const nSrcH = this.ProcessedCanvas.height;
+		const rPR = AscCommon.AscBrowser.retinaPixelRatio;
+		const nLogicW = oCanvas.width / rPR;
+		const nLogicH = oCanvas.height / rPR;
+
+		let _w, _h;
+		if (nSrcW <= nLogicW && nSrcH <= nLogicH)
+		{
+			_w = nSrcW * rPR;
+			_h = nSrcH * rPR;
+		}
+		else
+		{
+			const dAspect2 = nSrcW / nSrcH;
+
+			_w = oCanvas.width;
+			_h = oCanvas.height;
+			if (oCanvas.width / oCanvas.height >= dAspect2)
+			{
+				_w = dAspect2 * oCanvas.height;
+			}
+			else
+			{
+				_h = _w / dAspect2;
+			}
+		}
+		const _x = (oCanvas.width - _w) / 2;
+		const _y = (oCanvas.height - _h) / 2;
+
+		this._drawCheckerboard(oContext, _x, _y, _w, _h);
+		oContext.drawImage(this.ProcessedCanvas, _x, _y, _w, _h);
+	};
+
+	CSignatureFormProps.prototype._drawCheckerboard = function(ctx, x, y, w, h)
+	{
+		const nCell = 8;
+		const cLight = "#ffffff";
+		const cDark = "#e0e0e0";
+
+		ctx.save();
+		ctx.beginPath();
+		ctx.rect(x, y, w, h);
+		ctx.clip();
+
+		for (let row = 0; row * nCell < h; row++)
+		{
+			for (let col = 0; col * nCell < w; col++)
+			{
+				ctx.fillStyle = ((row + col) % 2 === 0) ? cLight : cDark;
+				ctx.fillRect(x + col * nCell, y + row * nCell, nCell, nCell);
+			}
+		}
+		ctx.restore();
+	};
+
+
+	CSignatureFormProps.prototype._initDrawCanvas = function()
+	{
+		if (this.DrawCanvas || !this.PreviewDrawId)
+			return;
+
+		const oCanvas = AscCommon.checkCanvasInDiv(this.PreviewDrawId);
+		if (!oCanvas)
+			return;
+
+		oCanvas.style.cursor = 'crosshair';
+		oCanvas.style.touchAction = 'none';
+		this.DrawCanvas = oCanvas;
+		this.DrawCtx = oCanvas.getContext('2d');
+		this.DrawCtx.lineCap = 'round';
+		this.DrawCtx.lineJoin = 'round';
+
+		const _this = this;
+
+		this.DrawMouseMoveHandler = function(e) {
+			AscCommon.stopEvent(e);
+			_this._onDrawMove(e);
+		};
+		this.DrawMouseUpHandler = function(e) {
+			AscCommon.stopEvent(e);
+			_this._onDrawEnd(e);
+			if (window.removeEventListener) {
+				window.removeEventListener(AscCommon.getPtrEvtName("move"), _this.DrawMouseMoveHandler, false);
+				window.removeEventListener(AscCommon.getPtrEvtName("up"), _this.DrawMouseUpHandler, false);
+			}
+		};
+
+		oCanvas.addEventListener(AscCommon.getPtrEvtName("down"), function(e) {
+			AscCommon.stopEvent(e);
+			_this._onDrawStart(e);
+			if (window.addEventListener) {
+				window.addEventListener(AscCommon.getPtrEvtName("move"), _this.DrawMouseMoveHandler, false);
+				window.addEventListener(AscCommon.getPtrEvtName("up"), _this.DrawMouseUpHandler, false);
+			}
+		});
+	};
+
+	CSignatureFormProps.prototype._getDrawPos = function(e)
+	{
+		let clientX, clientY;
+		if (e.touches && e.touches.length > 0)
+		{
+			clientX = e.touches[0].clientX;
+			clientY = e.touches[0].clientY;
+		}
+		else if (e.changedTouches && e.changedTouches.length > 0)
+		{
+			clientX = e.changedTouches[0].clientX;
+			clientY = e.changedTouches[0].clientY;
+		}
+		else
+		{
+			clientX = e.clientX;
+			clientY = e.clientY;
+		}
+		const rect = this.DrawCanvas.getBoundingClientRect();
+		const scaleX = this.DrawCanvas.width / rect.width;
+		const scaleY = this.DrawCanvas.height / rect.height;
+		return {
+			x: (clientX - rect.left) * scaleX,
+			y: (clientY - rect.top) * scaleY
+		};
+	};
+
+	CSignatureFormProps.prototype._onDrawStart = function(e)
+	{
+		this.IsDrawing = true;
+		const pos = this._getDrawPos(e);
+		this.CurrentPath = [{x: pos.x, y: pos.y, size: this.LineSize, color: this.LineColor}];
+		this.RedoStack = [];
+		this._fireUndoRedoChanged();
+	};
+
+	CSignatureFormProps.prototype._onDrawMove = function(e)
+	{
+		if (!this.IsDrawing)
+			return;
+
+		const pos = this._getDrawPos(e);
+		const prev = this.CurrentPath[this.CurrentPath.length - 1];
+		const dx = pos.x - prev.x;
+		const dy = pos.y - prev.y;
+		if (dx * dx + dy * dy < 9)
+			return;
+
+		this.CurrentPath.push({x: pos.x, y: pos.y});
+
+		// redraw all finished paths + current path smoothly
+		this._redrawAllPaths();
+		this._drawSmoothPath(this.CurrentPath);
+	};
+
+	CSignatureFormProps.prototype._onDrawEnd = function(e)
+	{
+		if (!this.IsDrawing)
+			return;
+		this.IsDrawing = false;
+		if (this.CurrentPath && this.CurrentPath.length > 1)
+		{
+			this.DrawPaths.push(this.CurrentPath);
+			this.UndoStack.push(this.CurrentPath);
+			this._fireUndoRedoChanged();
+		}
+		this.CurrentPath = null;
+	};
+
+	CSignatureFormProps.prototype._drawSmoothPath = function(path)
+	{
+		if (!this.DrawCtx || !path || path.length < 2)
+			return;
+
+		const ctx = this.DrawCtx;
+		ctx.strokeStyle = path[0].color || this.LineColor;
+		ctx.lineWidth = path[0].size || this.LineSize;
+		ctx.beginPath();
+		ctx.moveTo(path[0].x, path[0].y);
+
+		if (path.length === 2)
+		{
+			ctx.lineTo(path[1].x, path[1].y);
+		}
+		else
+		{
+			for (let i = 1; i < path.length - 1; i++)
+			{
+				const mx = (path[i].x + path[i + 1].x) / 2;
+				const my = (path[i].y + path[i + 1].y) / 2;
+				ctx.quadraticCurveTo(path[i].x, path[i].y, mx, my);
+			}
+			const last = path[path.length - 1];
+			ctx.lineTo(last.x, last.y);
+		}
+		ctx.stroke();
+	};
+
+	CSignatureFormProps.prototype._redrawAllPaths = function()
+	{
+		if (!this.DrawCtx || !this.DrawCanvas)
+			return;
+
+		this.DrawCtx.clearRect(0, 0, this.DrawCanvas.width, this.DrawCanvas.height);
+		for (let i = 0; i < this.DrawPaths.length; i++)
+		{
+			this._drawSmoothPath(this.DrawPaths[i]);
+		}
+	};
+
+	CSignatureFormProps.prototype.put_LineSize = function(value)
+	{
+		this.LineSize = value;
+	};
+
+	CSignatureFormProps.prototype.put_LineColor = function(color)
+	{
+		if (typeof color === "string")
+		{
+			this.LineColor = color;
+		}
+		else if (color && undefined !== color.r && undefined !== color.g && undefined !== color.b)
+		{
+			this.LineColor = "#" + color.r.toString(16).padStart(2, '0') +
+			                       color.g.toString(16).padStart(2, '0') +
+			                       color.b.toString(16).padStart(2, '0');
+		}
+	};
+
+	CSignatureFormProps.prototype.clearDraw = function()
+	{
+		if (this.DrawPaths.length === 0)
+			return;
+		this.UndoStack.push({type: 'clear', paths: this.DrawPaths.slice()});
+		this.DrawPaths = [];
+		this.RedoStack = [];
+		this._redrawAllPaths();
+		this._fireUndoRedoChanged();
+	};
+
+	CSignatureFormProps.prototype.undo = function()
+	{
+		if (this.UndoStack.length === 0)
+			return;
+		const item = this.UndoStack.pop();
+		if (item.type === 'clear')
+		{
+			this.DrawPaths = item.paths;
+		}
+		else
+		{
+			const idx = this.DrawPaths.indexOf(item);
+			if (idx !== -1)
+				this.DrawPaths.splice(idx, 1);
+		}
+		this.RedoStack.push(item);
+		this._redrawAllPaths();
+		this._fireUndoRedoChanged();
+	};
+
+	CSignatureFormProps.prototype.redo = function()
+	{
+		if (this.RedoStack.length === 0)
+			return;
+		const item = this.RedoStack.pop();
+		if (item.type === 'clear')
+		{
+			this.DrawPaths = [];
+		}
+		else
+		{
+			this.DrawPaths.push(item);
+		}
+		this.UndoStack.push(item);
+		this._redrawAllPaths();
+		this._fireUndoRedoChanged();
+	};
+
+	CSignatureFormProps.prototype.asc_canUndo = function()
+	{
+		return this.UndoStack.length > 0;
+	};
+
+	CSignatureFormProps.prototype.asc_canRedo = function()
+	{
+		return this.RedoStack.length > 0;
+	};
+
+	CSignatureFormProps.prototype._fireUndoRedoChanged = function()
+	{
+		Asc.editor.sendEvent("asc_CanUndoSignature", this.asc_canUndo());
+		Asc.editor.sendEvent("asc_CanRedoSignature", this.asc_canRedo());
+	};
+
+
+	CSignatureFormProps.prototype.put_TypeFont = function(name)
+	{
+		this.TypeFont = name;
+
+		const loader = AscCommon.g_font_loader;
+		const fontinfo = AscFonts.g_fontApplication.GetFontInfo(name);
+		const _this = this;
+		const isAsync = loader.LoadFont(fontinfo, function() {
+			_this.Api.sync_EndAction(Asc.c_oAscAsyncActionType.Information, Asc.c_oAscAsyncAction.LoadFont);
+			_this._renderTypePreview();
+		});
+
+		if (isAsync)
+		{
+			this.Api.sync_StartAction(Asc.c_oAscAsyncActionType.Information, Asc.c_oAscAsyncAction.LoadFont);
+		}
+		else
+		{
+			this._renderTypePreview();
+		}
+	};
+
+	CSignatureFormProps.prototype.put_TypeFontSize = function(size)
+	{
+		this.TypeFontSize = size;
+		this._renderTypePreview();
+	};
+
+	CSignatureFormProps.prototype.put_TypeBold = function(val)
+	{
+		this.TypeBold = val;
+		this._renderTypePreview();
+	};
+
+	CSignatureFormProps.prototype.put_TypeItalic = function(val)
+	{
+		this.TypeItalic = val;
+		this._renderTypePreview();
+	};
+
+	CSignatureFormProps.prototype.setText = function(text)
+	{
+		this.TypeText = text;
+		this._renderTypePreview();
+	};
+
+	CSignatureFormProps.prototype.clearType = function()
+	{
+		this.TypeText = "";
+		this._renderTypePreview();
+	};
+
+	CSignatureFormProps.prototype._renderTypePreview = function()
+	{
+		if (!this.PreviewTypeId)
+			return;
+
+		const oCanvas = AscCommon.checkCanvasInDiv(this.PreviewTypeId);
+		if (!oCanvas)
+			return;
+
+		const ctx = oCanvas.getContext('2d');
+		ctx.clearRect(0, 0, oCanvas.width, oCanvas.height);
+
+		if (!this.TypeText || !this.Api)
+			return;
+
+		const _this = this;
+		AscFonts.FontPickerByCharacter.checkText(this.TypeText, this, function()
+		{
+			_this._drawTypeContent(oCanvas);
+		});
+	};
+
+	CSignatureFormProps.prototype._buildTypeParagraph = function()
+	{
+		const oLogicDocument = this.Api.WordControl.m_oLogicDocument;
+		if (!oLogicDocument)
+			return null;
+
+		const _this = this;
+		return AscCommon.ExecuteNoHistory(function()
+		{
+			const hdr = new AscCommonWord.CHeaderFooter(oLogicDocument.HdrFtr, oLogicDocument, _this.Api.WordControl.m_oDrawingDocument, AscCommon.hdrftr_Header);
+			const _dc = hdr.Content;
+
+			const par = new AscWord.Paragraph(_dc, false);
+			const run = new AscCommonWord.ParaRun(par, false);
+			run.AddText(_this.TypeText);
+
+			const textPr = new AscCommonWord.CTextPr();
+			textPr.FontFamily = {Name: _this.TypeFont, Index: -1};
+			textPr.RFonts.SetAll(_this.TypeFont, -1);
+			textPr.FontSize = _this.TypeFontSize;
+			textPr.Bold = _this.TypeBold;
+			textPr.Italic = _this.TypeItalic;
+			textPr.Color = new AscCommonWord.CDocumentColor(0, 0, 0, false);
+			run.Set_Pr(textPr);
+
+			_dc.Internal_Content_Add(0, par, false);
+			par.Add_ToContent(0, run);
+
+			const _ind = new AscWord.CParaInd();
+			_ind.FirstLine = 0;
+			_ind.Left = 0;
+			_ind.Right = 0;
+			par.Set_Ind(_ind, false);
+
+			const _sp = new AscWord.ParaSpacing();
+			_sp.Line = 1;
+			_sp.LineRule = Asc.linerule_Auto;
+			_sp.Before = 0;
+			_sp.BeforeAutoSpacing = false;
+			_sp.After = 0;
+			_sp.AfterAutoSpacing = false;
+			par.Set_Spacing(_sp, false);
+
+			_dc.Reset(0, 0, 10000, 10000);
+			_dc.Recalculate_Page(0, true);
+
+			const contentW = par.getRange(0, 0).W;
+
+			_dc.Reset(0, 0, contentW + AscWord.EPSILON, 10000);
+			_dc.Recalculate_Page(0, true);
+
+			const line = par.Lines[0];
+			return {
+				par: par,
+				contentW: contentW,
+				contentH: line.Bottom - line.Top,
+				lineTop: line.Top
+			};
+		});
+	};
+
+	CSignatureFormProps.prototype._drawTypeContent = function(oCanvas)
+	{
+		const ctx = oCanvas.getContext('2d');
+		ctx.clearRect(0, 0, oCanvas.width, oCanvas.height);
+
+		const result = this._buildTypeParagraph();
+		if (!result)
+			return;
+
+		const rPR = AscCommon.AscBrowser.retinaPixelRatio;
+		const koef = AscCommon.g_dKoef_pix_to_mm / rPR;
+		const wMM = oCanvas.width * koef;
+		const hMM = oCanvas.height * koef;
+
+		const graphics = new AscCommon.CGraphics();
+		graphics.init(ctx, oCanvas.width, oCanvas.height, wMM, hMM);
+		graphics.m_oFontManager = AscCommon.g_fontManager;
+
+		const xOff = (wMM - result.contentW) / 2;
+		const yOff = (hMM - result.contentH) / 2 - result.lineTop;
+
+		graphics.transform(1, 0, 0, 1, 0, 0);
+		graphics.save();
+		graphics._s();
+		graphics._m(0, 0);
+		graphics._l(wMM, 0);
+		graphics._l(wMM, hMM);
+		graphics._l(0, hMM);
+		graphics._z();
+		graphics.clip();
+
+		let oldParamarks = this.Api.ShowParaMarks;
+		this.Api.ShowParaMarks = false;
+		result.par.Shift(0, xOff, yOff);
+		result.par.Draw(0, graphics);
+		this.Api.ShowParaMarks = oldParamarks;
+
+		graphics.restore();
+	};
+
+	CSignatureFormProps.prototype.getResult = function()
+	{
+		let imageData = null;
+		const mode = this.Mode;
+
+		switch (mode)
+		{
+			case 0:
+				if (this.RemoveBackground && this.ProcessedCanvas)
+					imageData = this.ProcessedCanvas.toDataURL("image/png");
+				else
+					imageData = AscCommon.getFullImageSrc2(this.ImageUrl);
+				break;
+			case 1:
+				imageData = this._getDrawImageData();
+				break;
+			case 2:
+				imageData = this._getTypeImageData();
+				break;
+		}
+
+		const oControl = this.FormObj ? (this.FormObj.get_Obj ? this.FormObj.get_Obj() : this.FormObj["obj"]) : null;
+		return {
+			imageData: imageData,
+			internalId: oControl ? oControl.Get_Id() : null
+		};
+	};
+
+	CSignatureFormProps.prototype._getDrawImageData = function()
+	{
+		if (!this.DrawCanvas || this.DrawPaths.length === 0)
+			return null;
+
+		// bounding box from path points + line width padding
+		let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+		for (let i = 0; i < this.DrawPaths.length; i++)
+		{
+			const path = this.DrawPaths[i];
+			const half = (path[0].size || this.LineSize) / 2;
+			for (let j = 0; j < path.length; j++)
+			{
+				if (path[j].x - half < minX) minX = path[j].x - half;
+				if (path[j].y - half < minY) minY = path[j].y - half;
+				if (path[j].x + half > maxX) maxX = path[j].x + half;
+				if (path[j].y + half > maxY) maxY = path[j].y + half;
+			}
+		}
+
+		const nPadding = 20;
+		minX = Math.max(0, Math.floor(minX) - nPadding);
+		minY = Math.max(0, Math.floor(minY) - nPadding);
+		maxX = Math.min(this.DrawCanvas.width, Math.ceil(maxX) + nPadding);
+		maxY = Math.min(this.DrawCanvas.height, Math.ceil(maxY) + nPadding);
+
+		const w = maxX - minX;
+		const h = maxY - minY;
+		if (w <= 0 || h <= 0)
+			return null;
+
+		const oCanvas = document.createElement('canvas');
+		oCanvas.width = w;
+		oCanvas.height = h;
+		const ctx = oCanvas.getContext('2d');
+		ctx.drawImage(this.DrawCanvas, minX, minY, w, h, 0, 0, w, h);
+		return oCanvas.toDataURL("image/png");
+	};
+
+	CSignatureFormProps.prototype._getTypeImageData = function()
+	{
+		if (!this.TypeText || !this.Api)
+			return null;
+
+		const result = this._buildTypeParagraph();
+		if (!result)
+			return null;
+
+		const rPR = AscCommon.AscBrowser.retinaPixelRatio;
+		const koef = AscCommon.g_dKoef_pix_to_mm / rPR;
+		const nPadding = 20;
+		const pxW = Math.ceil(result.contentW / koef) + nPadding * 2;
+		const pxH = Math.ceil(result.contentH / koef) + nPadding * 2;
+		if (pxW <= nPadding * 2 || pxH <= nPadding * 2)
+			return null;
+
+		const paddingMM = nPadding * koef;
+		const totalW = result.contentW + paddingMM * 2;
+		const totalH = result.contentH + paddingMM * 2;
+
+		const oCanvas = document.createElement('canvas');
+		oCanvas.width = pxW;
+		oCanvas.height = pxH;
+
+		const graphics = new AscCommon.CGraphics();
+		graphics.init(oCanvas.getContext('2d'), pxW, pxH, totalW, totalH);
+		graphics.m_oFontManager = AscCommon.g_fontManager;
+
+		graphics.transform(1, 0, 0, 1, 0, 0);
+		graphics.save();
+
+		let oldParamarks = this.Api.ShowParaMarks;
+		this.Api.ShowParaMarks = false;
+		result.par.Shift(0, paddingMM, -result.lineTop + paddingMM);
+		result.par.Draw(0, graphics);
+		this.Api.ShowParaMarks = oldParamarks;
+
+		graphics.restore();
+		return oCanvas.toDataURL("image/png");
+	};
+
+	// ---- Export ----
+
+	window['Asc']['CSignatureFormProps'] = window['Asc'].CSignatureFormProps = CSignatureFormProps;
+	var prot = CSignatureFormProps.prototype;
+	prot['put_PreviewImgId']    = prot.put_PreviewImgId;
+	prot['put_PreviewDrawId']   = prot.put_PreviewDrawId;
+	prot['put_PreviewTypeId']   = prot.put_PreviewTypeId;
+	prot['updateView']          = prot.updateView;
+	prot['showFileDialog']      = prot.showFileDialog;
+	prot['put_ImageUrl']        = prot.put_ImageUrl;
+	prot['put_RemoveBackground'] = prot.put_RemoveBackground;
+	prot['clearImg']            = prot.clearImg;
+	prot['put_LineSize']        = prot.put_LineSize;
+	prot['put_LineColor']       = prot.put_LineColor;
+	prot['clearDraw']           = prot.clearDraw;
+	prot['undo']                = prot.undo;
+	prot['redo']                = prot.redo;
+	prot['asc_canUndo']         = prot.asc_canUndo;
+	prot['asc_canRedo']         = prot.asc_canRedo;
+	prot['put_TypeFont']        = prot.put_TypeFont;
+	prot['put_TypeFontSize']    = prot.put_TypeFontSize;
+	prot['put_TypeBold']        = prot.put_TypeBold;
+	prot['put_TypeItalic']      = prot.put_TypeItalic;
+	prot['setText']             = prot.setText;
+	prot['clearType']           = prot.clearType;
+	prot['getResult']           = prot.getResult;
+
+	window['Asc']['CAscTextToTableProperties']				 = window['Asc'].CAscTextToTableProperties = CAscTextToTableProperties;
+	CAscTextToTableProperties.prototype['get_Size']			 = CAscTextToTableProperties.prototype.get_Size;
+	CAscTextToTableProperties.prototype['put_RowsCount']	 = CAscTextToTableProperties.prototype.put_RowsCount;
+	CAscTextToTableProperties.prototype['get_RowsCount']	 = CAscTextToTableProperties.prototype.get_RowsCount;
+	CAscTextToTableProperties.prototype['put_ColsCount']	 = CAscTextToTableProperties.prototype.put_ColsCount;
+	CAscTextToTableProperties.prototype['get_ColsCount']	 = CAscTextToTableProperties.prototype.get_ColsCount;
+	CAscTextToTableProperties.prototype['get_AutoFitType']	 = CAscTextToTableProperties.prototype.get_AutoFitType;
+	CAscTextToTableProperties.prototype['put_AutoFitType'] 	 = CAscTextToTableProperties.prototype.put_AutoFitType;
+	CAscTextToTableProperties.prototype['get_Fit']			 = CAscTextToTableProperties.prototype.get_Fit;
+	CAscTextToTableProperties.prototype['put_Fit']			 = CAscTextToTableProperties.prototype.put_Fit;
+	CAscTextToTableProperties.prototype['get_SeparatorType'] = CAscTextToTableProperties.prototype.get_SeparatorType;
+	CAscTextToTableProperties.prototype['put_SeparatorType'] = CAscTextToTableProperties.prototype.put_SeparatorType;
+	CAscTextToTableProperties.prototype['get_Separator']	 = CAscTextToTableProperties.prototype.get_Separator;
+	CAscTextToTableProperties.prototype['put_Separator']	 = CAscTextToTableProperties.prototype.put_Separator;
+
+})(window, undefined);
