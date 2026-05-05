@@ -1,4 +1,4 @@
-# ONLYOFFICE Desktop Editors - Extreme Optimized v1 (ruletzz Edition)
+# ONLYOFFICE Desktop Editors - Optimized v1 (ruletzz Edition)
 [![License](https://img.shields.io/badge/License-GNU%20AGPL%20V3green.svg)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
 [ONLYOFFICE Desktop Editors](https://www.onlyoffice.com/desktop.aspx) is a free office suite that combines text, spreadsheet, presentation, and PDF editors & Diagram Viewer. It is fully compatible with Office Open XML formats: .docx, .xlsx, .pptx.
@@ -23,9 +23,11 @@ To achieve these speeds, I have:
 - **Processing Throughput:** Significant reduction in main-thread blocking due to modular decoupling.
 
 ### 🎞️   Performance Comparison
-![Before and After]
-https://puu.sh/KMfwK/f142f9d052.gif
-https://puu.sh/KKFCT/17292cf3dc.gif
+[Before and After]
+<p align="center">
+  <img src="https://puu.sh/KMfwK/f142f9d052.gif" width="45%" />
+  <img src="https://puu.sh/KKFCT/17292cf3dc.gif" width="45%" />
+</p>
 
 ---
 
