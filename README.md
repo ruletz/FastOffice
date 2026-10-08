@@ -25,8 +25,8 @@ To achieve these speeds, I have:
 ### 🎞️   Performance Comparison
 [Before and After]
 <p align="center">
-  <img src="https://imgur.com/a/8JbPxh8" width="45%" />
-  <img src="https://imgur.com/a/qXtGaoi" width="45%" />
+  <img src="https://i.imgur.com/ptdw93q.gif" width="45%" />
+  <img src="https://i.imgur.com/ovzX3Vp.gif" width="45%" />
 </p>
 
 ---
